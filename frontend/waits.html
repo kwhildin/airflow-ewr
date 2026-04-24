@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirFlow — Wait Times</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style-premium.css?v=p1" />
+</head>
+<body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="index.html" aria-label="AirFlow home">
+                <img class="brand-logo" src="assets/airflow-logo.png" alt="AirFlow" width="160" height="42" decoding="async" />
+            </a>
+
+            <nav class="topnav" aria-label="Primary">
+                <a class="topnav-link" href="index.html">Home</a>
+                <a class="topnav-link" href="plan.html">Plan My Trip</a>
+                <a class="topnav-link is-active" href="waits.html">Wait Times</a>
+                <a class="topnav-link" href="about.html">About</a>
+            </nav>
+
+            <nav class="topnav topnav--right" aria-label="Account">
+                <a class="topnav-link" href="saved.html">Saved</a>
+                <a class="topnav-link" href="profile.html">Profile</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page">
+        <section class="page-head page-head--row">
+            <div>
+                <h1 class="page-title">View Wait Times</h1>
+                <p class="page-subtitle">See current estimates for TSA wait times by terminal.</p>
+                <p class="page-meta">Last updated <time id="last-updated" datetime="">—</time></p>
+            </div>
+            <div class="page-head-actions">
+                <button type="button" class="btn btn-ghost" id="refresh-btn">Refresh</button>
+            </div>
+        </section>
+
+        <section class="summary-strip" aria-label="Airport summary">
+            <div class="summary-item">
+                <p class="summary-k">Fastest</p>
+                <p class="summary-v" id="summary-fastest">—</p>
+            </div>
+            <div class="summary-item">
+                <p class="summary-k">Slowest</p>
+                <p class="summary-v" id="summary-slowest">—</p>
+            </div>
+            <div class="summary-item">
+                <p class="summary-k">Congestion</p>
+                <p class="summary-v" id="summary-congestion">—</p>
+            </div>
+        </section>
+
+        <section class="waits-list" id="wait-grid" role="list"></section>
+    </main>
+
+    <script src="app.js?v=mock1"></script>
+</body>
+</html>
+

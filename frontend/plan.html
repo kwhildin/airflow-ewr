@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirFlow — Plan My Trip</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style-premium.css?v=p1" />
+</head>
+<body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="index.html" aria-label="AirFlow home">
+                <img class="brand-logo" src="assets/airflow-logo.png" alt="AirFlow" width="160" height="42" decoding="async" />
+            </a>
+
+            <nav class="topnav" aria-label="Primary">
+                <a class="topnav-link" href="index.html">Home</a>
+                <a class="topnav-link is-active" href="plan.html">Plan My Trip</a>
+                <a class="topnav-link" href="waits.html">Wait Times</a>
+                <a class="topnav-link" href="about.html">About</a>
+            </nav>
+
+            <nav class="topnav topnav--right" aria-label="Account">
+                <a class="topnav-link" href="saved.html">Saved</a>
+                <a class="topnav-link" href="profile.html">Profile</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page">
+        <section class="page-head">
+            <h1 class="page-title">Plan My Trip</h1>
+            <p class="page-subtitle">Search for your flight to get estimated security wait times and total time to your gate.</p>
+        </section>
+
+        <section class="card card--padded plan-search-card">
+            <div class="tabs" role="tablist" aria-label="Search mode">
+                <button type="button" class="tab is-active" id="mode-flight" role="tab" aria-selected="true" data-mode="flight">Search by flight</button>
+                <button type="button" class="tab" id="mode-route" role="tab" aria-selected="false" data-mode="route">Search by route</button>
+            </div>
+
+            <form id="lookup-form-flight" class="plan-form" aria-labelledby="mode-flight">
+                <div class="plan-input-row plan-input-row--single">
+                    <label class="field">
+                        <span class="field-label">Flight number</span>
+                        <input type="text" id="flight-input" name="flight" autocomplete="off" placeholder="e.g. UA1234" class="field-input" />
+                        <ul id="flight-input-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                    </label>
+                </div>
+                <div class="plan-primary-action">
+                    <button type="submit" class="btn btn-primary btn-wide">Search</button>
+                </div>
+            </form>
+
+            <form id="lookup-form-route" class="plan-form is-hidden" aria-labelledby="mode-route">
+                <div class="plan-input-row">
+                    <label class="field">
+                        <span class="field-label">Airline</span>
+                        <input type="text" id="airline-input" class="field-input" placeholder="e.g. United" autocomplete="off" />
+                        <ul id="airline-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Destination</span>
+                        <input type="text" id="destination-input" class="field-input" placeholder="e.g. SFO or San Francisco" autocomplete="off" />
+                        <ul id="destination-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                    </label>
+                </div>
+                <div class="plan-primary-action">
+                    <button type="submit" class="btn btn-primary btn-wide">Search</button>
+                </div>
+                <div class="plan-secondary-actions">
+                    <button type="button" class="btn btn-ghost" id="refresh-live-btn">Refresh live data</button>
+                </div>
+            </form>
+
+            <p id="trip-error" class="trip-error is-hidden" role="alert"></p>
+            <div class="plan-helper">
+                <p class="fineprint">
+                    Drive time uses Google Routes (traffic-aware for your planned departure). Set <code>GOOGLE_MAPS_API_KEY</code> in <code>.env</code> for the backend; optional <code>GOOGLE_MAPS_JS_API_KEY</code> enables address autocomplete in the browser.
+                </p>
+            </div>
+        </section>
+
+        <section class="subgrid">
+            <div class="subgrid-col">
+                <h2 class="section-title">Recent searches</h2>
+                <div id="recent-searches" class="chips is-hidden" aria-label="Recent searches">
+                    <div id="recent-searches-list" class="chips-row"></div>
+                </div>
+            </div>
+            <div class="subgrid-col">
+                <h2 class="section-title">Popular routes from EWR</h2>
+                <div class="chips">
+                    <a class="chip" href="plan.html#popular" data-popular="EWR → SFO">EWR → SFO</a>
+                    <a class="chip" href="plan.html#popular" data-popular="EWR → MCO">EWR → MCO</a>
+                    <a class="chip" href="plan.html#popular" data-popular="EWR → LAX">EWR → LAX</a>
+                    <a class="chip" href="plan.html#popular" data-popular="EWR → ATL">EWR → ATL</a>
+                </div>
+            </div>
+        </section>
+
+        <div id="flight-search-meta" class="flight-search-meta is-hidden"></div>
+
+        <section id="flight-results-wrap" class="results is-hidden" aria-label="Search results">
+            <h2 class="section-title">Results</h2>
+            <div id="flight-results-toolbar" class="flight-results-toolbar plan-results-toolbar is-hidden" aria-label="Result options">
+                <label class="plan-filter-departed">
+                    <input type="checkbox" id="flight-filter-show-departed" />
+                    <span>Show departed flights</span>
+                </label>
+            </div>
+            <ul id="flight-results-list" class="results-list" role="list"></ul>
+        </section>
+    </main>
+
+    <script src="saved-flights.js"></script>
+    <script src="app.js?v=maps2"></script>
+</body>
+</html>
+

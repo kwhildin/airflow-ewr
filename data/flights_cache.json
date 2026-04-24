@@ -1,0 +1,5440 @@
+{
+  "cached_at": "2026-04-24T00:31:11.178172+00:00",
+  "response": {
+    "pagination": {
+      "limit": 100,
+      "offset": 0,
+      "count": 100,
+      "total": 180
+    },
+    "data": [
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "active",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": null,
+          "delay": 3,
+          "scheduled": "2026-04-23T01:00:00+00:00",
+          "estimated": "2026-04-23T01:00:00+00:00",
+          "actual": "2026-04-23T01:18:00+00:00",
+          "estimated_runway": "2026-04-23T01:18:00+00:00",
+          "actual_runway": "2026-04-23T01:18:00+00:00"
+        },
+        "arrival": {
+          "airport": "Seoul (Incheon)",
+          "timezone": "Asia/Seoul",
+          "iata": "ICN",
+          "icao": "RKSI",
+          "terminal": "1",
+          "gate": "7",
+          "baggage": null,
+          "scheduled": "2026-04-24T05:15:00+00:00",
+          "delay": 18,
+          "estimated": "2026-04-24T05:18:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Premia",
+          "iata": "YP",
+          "icao": "APZ"
+        },
+        "flight": {
+          "number": "132",
+          "iata": "YP132",
+          "icao": "APZ132",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": "HL8516",
+          "iata": "B789",
+          "icao": "B789",
+          "icao24": "71C516"
+        },
+        "live": {
+          "updated": "2026-04-23T06:06:00+00:00",
+          "latitude": 43.816,
+          "longitude": -78.9743,
+          "altitude": 10355.6,
+          "direction": 306,
+          "speed_horizontal": 757.468,
+          "speed_vertical": 0,
+          "is_ground": false
+        }
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T08:01:00+00:00",
+          "estimated": "2026-04-23T08:01:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Internacional Benito Juarez",
+          "timezone": "America/Mexico_City",
+          "iata": "MEX",
+          "icao": "MMMX",
+          "terminal": "2",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T11:45:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Aeromexico",
+          "iata": "AM",
+          "icao": "AMX"
+        },
+        "flight": {
+          "number": "411",
+          "iata": "AM411",
+          "icao": "AMX411",
+          "codeshared": null
+        },
+        "aircraft": null,
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T08:01:00+00:00",
+          "estimated": "2026-04-23T08:01:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Internacional Benito Juarez",
+          "timezone": "America/Mexico_City",
+          "iata": "MEX",
+          "icao": "MMMX",
+          "terminal": "2",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T11:45:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "SAS",
+          "iata": "SK",
+          "icao": "SAS"
+        },
+        "flight": {
+          "number": "9507",
+          "iata": "SK9507",
+          "icao": "SAS9507",
+          "codeshared": {
+            "airline_name": "aeromexico",
+            "airline_iata": "am",
+            "airline_icao": "amx",
+            "flight_number": "411",
+            "flight_iata": "am411",
+            "flight_icao": "amx411"
+          }
+        },
+        "aircraft": null,
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T08:01:00+00:00",
+          "estimated": "2026-04-23T08:01:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Internacional Benito Juarez",
+          "timezone": "America/Mexico_City",
+          "iata": "MEX",
+          "icao": "MMMX",
+          "terminal": "2",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T11:45:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Delta Air Lines",
+          "iata": "DL",
+          "icao": "DAL"
+        },
+        "flight": {
+          "number": "9145",
+          "iata": "DL9145",
+          "icao": "DAL9145",
+          "codeshared": {
+            "airline_name": "aeromexico",
+            "airline_iata": "am",
+            "airline_icao": "amx",
+            "flight_number": "411",
+            "flight_iata": "am411",
+            "flight_icao": "amx411"
+          }
+        },
+        "aircraft": null,
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C107",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Ronald Reagan Washington National Airport",
+          "timezone": "America/New_York",
+          "iata": "DCA",
+          "icao": "KDCA",
+          "terminal": "2",
+          "gate": "B10",
+          "baggage": "4",
+          "scheduled": "2026-04-23T09:30:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "4500",
+          "iata": "UA4500",
+          "icao": "UAL4500",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A71654"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C75",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Luis Munoz Marin International",
+          "timezone": "America/Puerto_Rico",
+          "iata": "SJU",
+          "icao": "TJSJ",
+          "terminal": "B",
+          "gate": "B9",
+          "baggage": null,
+          "scheduled": "2026-04-23T12:04:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2143",
+          "iata": "UA2143",
+          "icao": "UAL2143",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A9067B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C75",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Luis Munoz Marin International",
+          "timezone": "America/Puerto_Rico",
+          "iata": "SJU",
+          "icao": "TJSJ",
+          "terminal": "B",
+          "gate": "B9",
+          "baggage": null,
+          "scheduled": "2026-04-23T12:04:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "5301",
+          "iata": "AC5301",
+          "icao": "ACA5301",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2143",
+            "flight_iata": "ua2143",
+            "flight_icao": "ual2143"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A9067B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C123",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F19",
+          "baggage": "9",
+          "scheduled": "2026-04-23T11:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1777",
+          "iata": "UA1777",
+          "icao": "UAL1777",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A1F2B1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C123",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F19",
+          "baggage": "9",
+          "scheduled": "2026-04-23T11:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Virgin Australia",
+          "iata": "VA",
+          "icao": "VOZ"
+        },
+        "flight": {
+          "number": "8165",
+          "iata": "VA8165",
+          "icao": "VOZ8165",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1777",
+            "flight_iata": "ua1777",
+            "flight_icao": "ual1777"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A1F2B1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C123",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F19",
+          "baggage": "9",
+          "scheduled": "2026-04-23T11:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air New Zealand",
+          "iata": "NZ",
+          "icao": "ANZ"
+        },
+        "flight": {
+          "number": "9131",
+          "iata": "NZ9131",
+          "icao": "ANZ9131",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1777",
+            "flight_iata": "ua1777",
+            "flight_icao": "ual1777"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A1F2B1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C123",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F19",
+          "baggage": "9",
+          "scheduled": "2026-04-23T11:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "All Nippon Airways",
+          "iata": "NH",
+          "icao": "ANA"
+        },
+        "flight": {
+          "number": "7007",
+          "iata": "NH7007",
+          "icao": "ANA7007",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1777",
+            "flight_iata": "ua1777",
+            "flight_icao": "ual1777"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A1F2B1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C112",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "44",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "411",
+          "iata": "UA411",
+          "icao": "UAL411",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AAA267"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C112",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "44",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Azul",
+          "iata": "AD",
+          "icao": "AZU"
+        },
+        "flight": {
+          "number": "7063",
+          "iata": "AD7063",
+          "icao": "AZU7063",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "411",
+            "flight_iata": "ua411",
+            "flight_icao": "ual411"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AAA267"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C112",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "44",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3115",
+          "iata": "AC3115",
+          "icao": "ACA3115",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "411",
+            "flight_iata": "ua411",
+            "flight_icao": "ual411"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AAA267"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Miami International Airport",
+          "timezone": "America/New_York",
+          "iata": "MIA",
+          "icao": "KMIA",
+          "terminal": null,
+          "gate": "E10",
+          "baggage": "24",
+          "scheduled": "2026-04-23T11:11:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "2937",
+          "iata": "AA2937",
+          "icao": "AAL2937",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A540E3"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A9",
+          "delay": null,
+          "scheduled": "2026-04-23T08:00:00+00:00",
+          "estimated": "2026-04-23T08:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Dallas/Fort Worth International",
+          "timezone": "America/Chicago",
+          "iata": "DFW",
+          "icao": "KDFW",
+          "terminal": "A",
+          "gate": "A21",
+          "baggage": "A17",
+          "scheduled": "2026-04-23T11:03:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "1303",
+          "iata": "AA1303",
+          "icao": "AAL1303",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "ADDF01"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B41",
+          "delay": null,
+          "scheduled": "2026-04-23T07:59:00+00:00",
+          "estimated": "2026-04-23T07:59:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "1",
+          "gate": "B12",
+          "baggage": "6",
+          "scheduled": "2026-04-23T11:25:00+00:00",
+          "delay": 10,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Alaska Airlines",
+          "iata": "AS",
+          "icao": "ASA"
+        },
+        "flight": {
+          "number": "344",
+          "iata": "AS344",
+          "icao": "ASA344",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "ACB824"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B41",
+          "delay": null,
+          "scheduled": "2026-04-23T07:59:00+00:00",
+          "estimated": "2026-04-23T07:59:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "1",
+          "gate": "B12",
+          "baggage": "6",
+          "scheduled": "2026-04-23T11:25:00+00:00",
+          "delay": 10,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "7469",
+          "iata": "AA7469",
+          "icao": "AAL7469",
+          "codeshared": {
+            "airline_name": "alaska airlines",
+            "airline_iata": "as",
+            "airline_icao": "asa",
+            "flight_number": "344",
+            "flight_iata": "as344",
+            "flight_icao": "asa344"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "ACB824"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C71",
+          "delay": null,
+          "scheduled": "2026-04-23T07:56:00+00:00",
+          "estimated": "2026-04-23T07:56:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Aeropuerto de las Am\u00e9ricas",
+          "timezone": "America/Santo_Domingo",
+          "iata": "SDQ",
+          "icao": "MDSD",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T11:55:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1984",
+          "iata": "UA1984",
+          "icao": "UAL1984",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A5D643"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C103",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "International Jetport",
+          "timezone": "America/New_York",
+          "iata": "PWM",
+          "icao": "KPWM",
+          "terminal": null,
+          "gate": "2",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "4438",
+          "iata": "UA4438",
+          "icao": "UAL4438",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A7000A"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C103",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "International Jetport",
+          "timezone": "America/New_York",
+          "iata": "PWM",
+          "icao": "KPWM",
+          "terminal": null,
+          "gate": "2",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Copa Airlines",
+          "iata": "CM",
+          "icao": "CMP"
+        },
+        "flight": {
+          "number": "1368",
+          "iata": "CM1368",
+          "icao": "CMP1368",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "4438",
+            "flight_iata": "ua4438",
+            "flight_icao": "ual4438"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A7000A"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C103",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "International Jetport",
+          "timezone": "America/New_York",
+          "iata": "PWM",
+          "icao": "KPWM",
+          "terminal": null,
+          "gate": "2",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3464",
+          "iata": "AC3464",
+          "icao": "ACA3464",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "4438",
+            "flight_iata": "ua4438",
+            "flight_icao": "ual4438"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A7000A"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C120",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Palm Beach International Airport",
+          "timezone": "America/New_York",
+          "iata": "PBI",
+          "icao": "KPBI",
+          "terminal": null,
+          "gate": "B6",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1253",
+          "iata": "UA1253",
+          "icao": "UAL1253",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A44565"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C120",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Palm Beach International Airport",
+          "timezone": "America/New_York",
+          "iata": "PBI",
+          "icao": "KPBI",
+          "terminal": null,
+          "gate": "B6",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "5148",
+          "iata": "AC5148",
+          "icao": "ACA5148",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1253",
+            "flight_iata": "ua1253",
+            "flight_icao": "ual1253"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A44565"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C111",
+          "delay": null,
+          "scheduled": "2026-04-23T07:55:00+00:00",
+          "estimated": "2026-04-23T07:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Logan International",
+          "timezone": "America/New_York",
+          "iata": "BOS",
+          "icao": "KBOS",
+          "terminal": "B",
+          "gate": "B24",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:11:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "593",
+          "iata": "UA593",
+          "icao": "UAL593",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A94B2B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C83",
+          "delay": null,
+          "scheduled": "2026-04-23T07:52:00+00:00",
+          "estimated": "2026-04-23T07:52:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Denver International",
+          "timezone": "America/Denver",
+          "iata": "DEN",
+          "icao": "KDEN",
+          "terminal": null,
+          "gate": "B22",
+          "baggage": "12",
+          "scheduled": "2026-04-23T10:24:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2336",
+          "iata": "UA2336",
+          "icao": "UAL2336",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A3C3E0"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A14",
+          "delay": null,
+          "scheduled": "2026-04-23T07:50:00+00:00",
+          "estimated": "2026-04-23T07:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Providenciales International Airport",
+          "timezone": "America/Grand_Turk",
+          "iata": "PLS",
+          "icao": "MBPV",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T11:29:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1465",
+          "iata": "UA1465",
+          "icao": "UAL1465",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A4497F"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A12",
+          "delay": null,
+          "scheduled": "2026-04-23T07:50:00+00:00",
+          "estimated": "2026-04-23T07:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Seattle-Tacoma International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SEA",
+          "icao": "KSEA",
+          "terminal": null,
+          "gate": "B11",
+          "baggage": "9",
+          "scheduled": "2026-04-23T11:02:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1330",
+          "iata": "UA1330",
+          "icao": "UAL1330",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A5D713"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C82",
+          "delay": null,
+          "scheduled": "2026-04-23T07:50:00+00:00",
+          "estimated": "2026-04-23T07:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "George Bush Intercontinental",
+          "timezone": "America/Chicago",
+          "iata": "IAH",
+          "icao": "KIAH",
+          "terminal": "C",
+          "gate": "C37",
+          "baggage": "C12",
+          "scheduled": "2026-04-23T10:55:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "332",
+          "iata": "UA332",
+          "icao": "UAL332",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA3AE2"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C82",
+          "delay": null,
+          "scheduled": "2026-04-23T07:50:00+00:00",
+          "estimated": "2026-04-23T07:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "George Bush Intercontinental",
+          "timezone": "America/Chicago",
+          "iata": "IAH",
+          "icao": "KIAH",
+          "terminal": "C",
+          "gate": "C37",
+          "baggage": "C12",
+          "scheduled": "2026-04-23T10:55:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air New Zealand",
+          "iata": "NZ",
+          "icao": "ANZ"
+        },
+        "flight": {
+          "number": "6595",
+          "iata": "NZ6595",
+          "icao": "ANZ6595",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "332",
+            "flight_iata": "ua332",
+            "flight_icao": "ual332"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA3AE2"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A33",
+          "delay": null,
+          "scheduled": "2026-04-23T07:50:00+00:00",
+          "estimated": "2026-04-23T07:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Harry Reid International Airport",
+          "timezone": "America/Los_Angeles",
+          "iata": "LAS",
+          "icao": "KLAS",
+          "terminal": "3",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:40:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "JetBlue",
+          "iata": "B6",
+          "icao": "JBU"
+        },
+        "flight": {
+          "number": "957",
+          "iata": "B6957",
+          "icao": "JBU957",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD2095"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A10",
+          "delay": null,
+          "scheduled": "2026-04-23T07:42:00+00:00",
+          "estimated": "2026-04-23T07:42:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Charlotte Douglas",
+          "timezone": "America/New_York",
+          "iata": "CLT",
+          "icao": "KCLT",
+          "terminal": null,
+          "gate": "A9",
+          "baggage": "1",
+          "scheduled": "2026-04-23T09:50:00+00:00",
+          "delay": 25,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "2505",
+          "iata": "AA2505",
+          "icao": "AAL2505",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AAEE3B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A15",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "1",
+          "gate": "B7",
+          "baggage": "6",
+          "scheduled": "2026-04-23T09:23:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1610",
+          "iata": "UA1610",
+          "icao": "UAL1610",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0B88C"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A15",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "1",
+          "gate": "B7",
+          "baggage": "6",
+          "scheduled": "2026-04-23T09:23:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air New Zealand",
+          "iata": "NZ",
+          "icao": "ANZ"
+        },
+        "flight": {
+          "number": "2342",
+          "iata": "NZ2342",
+          "icao": "ANZ2342",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1610",
+            "flight_iata": "ua1610",
+            "flight_icao": "ual1610"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0B88C"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A15",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "1",
+          "gate": "B7",
+          "baggage": "6",
+          "scheduled": "2026-04-23T09:23:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "5205",
+          "iata": "AC5205",
+          "icao": "ACA5205",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1610",
+            "flight_iata": "ua1610",
+            "flight_icao": "ual1610"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0B88C"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C72",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Miami International Airport",
+          "timezone": "America/New_York",
+          "iata": "MIA",
+          "icao": "KMIA",
+          "terminal": null,
+          "gate": "H14",
+          "baggage": "6",
+          "scheduled": "2026-04-23T10:53:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "538",
+          "iata": "UA538",
+          "icao": "UAL538",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA7F25"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C72",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Miami International Airport",
+          "timezone": "America/New_York",
+          "iata": "MIA",
+          "icao": "KMIA",
+          "terminal": null,
+          "gate": "H14",
+          "baggage": "6",
+          "scheduled": "2026-04-23T10:53:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "avianca",
+          "iata": "AV",
+          "icao": "AVA"
+        },
+        "flight": {
+          "number": "2002",
+          "iata": "AV2002",
+          "icao": "AVA2002",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "538",
+            "flight_iata": "ua538",
+            "flight_icao": "ual538"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA7F25"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C72",
+          "delay": null,
+          "scheduled": "2026-04-23T07:40:00+00:00",
+          "estimated": "2026-04-23T07:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Miami International Airport",
+          "timezone": "America/New_York",
+          "iata": "MIA",
+          "icao": "KMIA",
+          "terminal": null,
+          "gate": "H14",
+          "baggage": "6",
+          "scheduled": "2026-04-23T10:53:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3163",
+          "iata": "AC3163",
+          "icao": "ACA3163",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "538",
+            "flight_iata": "ua538",
+            "flight_icao": "ual538"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA7F25"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C99",
+          "delay": null,
+          "scheduled": "2026-04-23T07:36:00+00:00",
+          "estimated": "2026-04-23T07:36:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Lester B. Pearson International",
+          "timezone": "America/Toronto",
+          "iata": "YYZ",
+          "icao": "CYYZ",
+          "terminal": "1",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T09:19:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "3553",
+          "iata": "UA3553",
+          "icao": "UAL3553",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A9FFEB"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C99",
+          "delay": null,
+          "scheduled": "2026-04-23T07:36:00+00:00",
+          "estimated": "2026-04-23T07:36:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Lester B. Pearson International",
+          "timezone": "America/Toronto",
+          "iata": "YYZ",
+          "icao": "CYYZ",
+          "terminal": "1",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T09:19:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3269",
+          "iata": "AC3269",
+          "icao": "ACA3269",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "3553",
+            "flight_iata": "ua3553",
+            "flight_icao": "ual3553"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A9FFEB"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C87",
+          "delay": null,
+          "scheduled": "2026-04-23T07:35:00+00:00",
+          "estimated": "2026-04-23T07:35:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Ottawa Macdonald-Cartier International",
+          "timezone": "America/Toronto",
+          "iata": "YOW",
+          "icao": "CYOW",
+          "terminal": null,
+          "gate": "6",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:11:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "3717",
+          "iata": "UA3717",
+          "icao": "UAL3717",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA9679"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C87",
+          "delay": null,
+          "scheduled": "2026-04-23T07:35:00+00:00",
+          "estimated": "2026-04-23T07:35:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Ottawa Macdonald-Cartier International",
+          "timezone": "America/Toronto",
+          "iata": "YOW",
+          "icao": "CYOW",
+          "terminal": null,
+          "gate": "6",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:11:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "4399",
+          "iata": "AC4399",
+          "icao": "ACA4399",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "3717",
+            "flight_iata": "ua3717",
+            "flight_icao": "ual3717"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA9679"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C94",
+          "delay": null,
+          "scheduled": "2026-04-23T07:35:00+00:00",
+          "estimated": "2026-04-23T07:35:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Daniel Oduber International",
+          "timezone": "America/Costa_Rica",
+          "iata": "LIR",
+          "icao": "MRLB",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:44:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1876",
+          "iata": "UA1876",
+          "icao": "UAL1876",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B157"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C94",
+          "delay": null,
+          "scheduled": "2026-04-23T07:35:00+00:00",
+          "estimated": "2026-04-23T07:35:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Daniel Oduber International",
+          "timezone": "America/Costa_Rica",
+          "iata": "LIR",
+          "icao": "MRLB",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:44:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "4275",
+          "iata": "AC4275",
+          "icao": "ACA4275",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1876",
+            "flight_iata": "ua1876",
+            "flight_icao": "ual1876"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B157"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A23",
+          "delay": null,
+          "scheduled": "2026-04-23T07:35:00+00:00",
+          "estimated": "2026-04-23T07:35:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Los Cabos",
+          "timezone": "America/Mazatlan",
+          "iata": "SJD",
+          "icao": "MMSD",
+          "terminal": "2",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:27:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1419",
+          "iata": "UA1419",
+          "icao": "UAL1419",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B10B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B42",
+          "delay": null,
+          "scheduled": "2026-04-23T07:29:00+00:00",
+          "estimated": "2026-04-23T07:29:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Seattle-Tacoma International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SEA",
+          "icao": "KSEA",
+          "terminal": null,
+          "gate": "N3",
+          "baggage": "16",
+          "scheduled": "2026-04-23T10:36:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Alaska Airlines (Boeing 100 Years Strong Livery)",
+          "iata": "AS",
+          "icao": "ASA"
+        },
+        "flight": {
+          "number": "299",
+          "iata": "AS299",
+          "icao": "ASA299",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24DC1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B42",
+          "delay": null,
+          "scheduled": "2026-04-23T07:29:00+00:00",
+          "estimated": "2026-04-23T07:29:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Seattle-Tacoma International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SEA",
+          "icao": "KSEA",
+          "terminal": null,
+          "gate": "N3",
+          "baggage": "16",
+          "scheduled": "2026-04-23T10:36:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Korean Air",
+          "iata": "KE",
+          "icao": "KAL"
+        },
+        "flight": {
+          "number": "6271",
+          "iata": "KE6271",
+          "icao": "KAL6271",
+          "codeshared": {
+            "airline_name": "alaska airlines (boeing 100 years strong livery)",
+            "airline_iata": "as",
+            "airline_icao": "asa",
+            "flight_number": "299",
+            "flight_iata": "as299",
+            "flight_icao": "asa299"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24DC1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B42",
+          "delay": null,
+          "scheduled": "2026-04-23T07:29:00+00:00",
+          "estimated": "2026-04-23T07:29:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Seattle-Tacoma International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SEA",
+          "icao": "KSEA",
+          "terminal": null,
+          "gate": "N3",
+          "baggage": "16",
+          "scheduled": "2026-04-23T10:36:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Japan Airlines",
+          "iata": "JL",
+          "icao": "JTL"
+        },
+        "flight": {
+          "number": "6381",
+          "iata": "JL6381",
+          "icao": "JTL6381",
+          "codeshared": {
+            "airline_name": "alaska airlines (boeing 100 years strong livery)",
+            "airline_iata": "as",
+            "airline_icao": "asa",
+            "flight_number": "299",
+            "flight_iata": "as299",
+            "flight_icao": "asa299"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24DC1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": "B42",
+          "delay": null,
+          "scheduled": "2026-04-23T07:29:00+00:00",
+          "estimated": "2026-04-23T07:29:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Seattle-Tacoma International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SEA",
+          "icao": "KSEA",
+          "terminal": null,
+          "gate": "N3",
+          "baggage": "16",
+          "scheduled": "2026-04-23T10:36:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "7515",
+          "iata": "AA7515",
+          "icao": "AAL7515",
+          "codeshared": {
+            "airline_name": "alaska airlines (boeing 100 years strong livery)",
+            "airline_iata": "as",
+            "airline_icao": "asa",
+            "flight_number": "299",
+            "flight_iata": "as299",
+            "flight_icao": "asa299"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24DC1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C110",
+          "delay": null,
+          "scheduled": "2026-04-23T07:25:00+00:00",
+          "estimated": "2026-04-23T07:25:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Sarasota/Bradenton International",
+          "timezone": "America/New_York",
+          "iata": "SRQ",
+          "icao": "KSRQ",
+          "terminal": null,
+          "gate": "B11",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:30:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2631",
+          "iata": "UA2631",
+          "icao": "UAL2631",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A44588"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C110",
+          "delay": null,
+          "scheduled": "2026-04-23T07:25:00+00:00",
+          "estimated": "2026-04-23T07:25:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Sarasota/Bradenton International",
+          "timezone": "America/New_York",
+          "iata": "SRQ",
+          "icao": "KSRQ",
+          "terminal": null,
+          "gate": "B11",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:30:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3223",
+          "iata": "AC3223",
+          "icao": "ACA3223",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2631",
+            "flight_iata": "ua2631",
+            "flight_icao": "ual2631"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A44588"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C86",
+          "delay": null,
+          "scheduled": "2026-04-23T07:25:00+00:00",
+          "estimated": "2026-04-23T07:25:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Juan Santamar\u00eda International",
+          "timezone": "America/Costa_Rica",
+          "iata": "SJO",
+          "icao": "MROC",
+          "terminal": "M",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:42:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1067",
+          "iata": "UA1067",
+          "icao": "UAL1067",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A12756"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A31",
+          "delay": null,
+          "scheduled": "2026-04-23T07:25:00+00:00",
+          "estimated": "2026-04-23T07:25:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Canc\u00fan International",
+          "timezone": "America/Cancun",
+          "iata": "CUN",
+          "icao": "MMUN",
+          "terminal": "4",
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:39:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "JetBlue",
+          "iata": "B6",
+          "icao": "JBU"
+        },
+        "flight": {
+          "number": "1229",
+          "iata": "B61229",
+          "icao": "JBU1229",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A8BC71"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C80",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Los Angeles International",
+          "timezone": "America/Los_Angeles",
+          "iata": "LAX",
+          "icao": "KLAX",
+          "terminal": "7",
+          "gate": "75B",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:35:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2445",
+          "iata": "UA2445",
+          "icao": "UAL2445",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0A903"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C80",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Los Angeles International",
+          "timezone": "America/Los_Angeles",
+          "iata": "LAX",
+          "icao": "KLAX",
+          "terminal": "7",
+          "gate": "75B",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:35:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Virgin Australia",
+          "iata": "VA",
+          "icao": "VOZ"
+        },
+        "flight": {
+          "number": "8538",
+          "iata": "VA8538",
+          "icao": "VOZ8538",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2445",
+            "flight_iata": "ua2445",
+            "flight_icao": "ual2445"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0A903"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C80",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Los Angeles International",
+          "timezone": "America/Los_Angeles",
+          "iata": "LAX",
+          "icao": "KLAX",
+          "terminal": "7",
+          "gate": "75B",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:35:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air New Zealand",
+          "iata": "NZ",
+          "icao": "ANZ"
+        },
+        "flight": {
+          "number": "9537",
+          "iata": "NZ9537",
+          "icao": "ANZ9537",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2445",
+            "flight_iata": "ua2445",
+            "flight_icao": "ual2445"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0A903"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C80",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Los Angeles International",
+          "timezone": "America/Los_Angeles",
+          "iata": "LAX",
+          "icao": "KLAX",
+          "terminal": "7",
+          "gate": "75B",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:35:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "All Nippon Airways",
+          "iata": "NH",
+          "icao": "ANA"
+        },
+        "flight": {
+          "number": "7229",
+          "iata": "NH7229",
+          "icao": "ANA7229",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2445",
+            "flight_iata": "ua2445",
+            "flight_icao": "ual2445"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0A903"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C105",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Tampa International",
+          "timezone": "America/New_York",
+          "iata": "TPA",
+          "icao": "KTPA",
+          "terminal": null,
+          "gate": "A6",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:22:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1979",
+          "iata": "UA1979",
+          "icao": "UAL1979",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A445EF"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C105",
+          "delay": null,
+          "scheduled": "2026-04-23T07:20:00+00:00",
+          "estimated": "2026-04-23T07:20:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Tampa International",
+          "timezone": "America/New_York",
+          "iata": "TPA",
+          "icao": "KTPA",
+          "terminal": null,
+          "gate": "A6",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:22:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3242",
+          "iata": "AC3242",
+          "icao": "ACA3242",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1979",
+            "flight_iata": "ua1979",
+            "flight_icao": "ual1979"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A445EF"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A21",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Raleigh-durham International Airport",
+          "timezone": "America/New_York",
+          "iata": "RDU",
+          "icao": "KRDU",
+          "terminal": "2",
+          "gate": "D13",
+          "baggage": "4",
+          "scheduled": "2026-04-23T08:59:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1890",
+          "iata": "UA1890",
+          "icao": "UAL1890",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A0E6C6"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C96",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Savannah/Hilton Head",
+          "timezone": "America/New_York",
+          "iata": "SAV",
+          "icao": "KSAV",
+          "terminal": null,
+          "gate": "3",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:37:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1348",
+          "iata": "UA1348",
+          "icao": "UAL1348",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA7F01"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C96",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Savannah/Hilton Head",
+          "timezone": "America/New_York",
+          "iata": "SAV",
+          "icao": "KSAV",
+          "terminal": null,
+          "gate": "3",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:37:00+00:00",
+          "delay": 19,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3057",
+          "iata": "AC3057",
+          "icao": "ACA3057",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1348",
+            "flight_iata": "ua1348",
+            "flight_icao": "ual1348"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA7F01"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A20",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Jacksonville,",
+          "timezone": "America/New_York",
+          "iata": "JAX",
+          "icao": "KJAX",
+          "terminal": null,
+          "gate": "A6",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:54:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1207",
+          "iata": "UA1207",
+          "icao": "UAL1207",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AB9B9D"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A20",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Jacksonville,",
+          "timezone": "America/New_York",
+          "iata": "JAX",
+          "icao": "KJAX",
+          "terminal": null,
+          "gate": "A6",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:54:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "4735",
+          "iata": "AC4735",
+          "icao": "ACA4735",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1207",
+            "flight_iata": "ua1207",
+            "flight_icao": "ual1207"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AB9B9D"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C88",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Antonio International",
+          "timezone": "America/Chicago",
+          "iata": "SAT",
+          "icao": "KSAT",
+          "terminal": "B",
+          "gate": "B3",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:34:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "591",
+          "iata": "UA591",
+          "icao": "UAL591",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA2BA4"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C88",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Antonio International",
+          "timezone": "America/Chicago",
+          "iata": "SAT",
+          "icao": "KSAT",
+          "terminal": "B",
+          "gate": "B3",
+          "baggage": "3",
+          "scheduled": "2026-04-23T10:34:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3840",
+          "iata": "AC3840",
+          "icao": "ACA3840",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "591",
+            "flight_iata": "ua591",
+            "flight_icao": "ual591"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AA2BA4"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A07",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Salt Lake City International",
+          "timezone": "America/Denver",
+          "iata": "SLC",
+          "icao": "KSLC",
+          "terminal": null,
+          "gate": "A12",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:26:00+00:00",
+          "delay": 21,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Delta Air Lines",
+          "iata": "DL",
+          "icao": "DAL"
+        },
+        "flight": {
+          "number": "1009",
+          "iata": "DL1009",
+          "icao": "DAL1009",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AC76F2"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A07",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Salt Lake City International",
+          "timezone": "America/Denver",
+          "iata": "SLC",
+          "icao": "KSLC",
+          "terminal": null,
+          "gate": "A12",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:26:00+00:00",
+          "delay": 21,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Korean Air",
+          "iata": "KE",
+          "icao": "KAL"
+        },
+        "flight": {
+          "number": "3297",
+          "iata": "KE3297",
+          "icao": "KAL3297",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1009",
+            "flight_iata": "dl1009",
+            "flight_icao": "dal1009"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AC76F2"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A07",
+          "delay": null,
+          "scheduled": "2026-04-23T07:15:00+00:00",
+          "estimated": "2026-04-23T07:15:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Salt Lake City International",
+          "timezone": "America/Denver",
+          "iata": "SLC",
+          "icao": "KSLC",
+          "terminal": null,
+          "gate": "A12",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:26:00+00:00",
+          "delay": 21,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air France",
+          "iata": "AF",
+          "icao": "AFR"
+        },
+        "flight": {
+          "number": "2689",
+          "iata": "AF2689",
+          "icao": "AFR2689",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1009",
+            "flight_iata": "dl1009",
+            "flight_icao": "dal1009"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AC76F2"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A19",
+          "delay": null,
+          "scheduled": "2026-04-23T07:10:00+00:00",
+          "estimated": "2026-04-23T07:10:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "1",
+          "gate": "B10",
+          "baggage": "6",
+          "scheduled": "2026-04-23T09:00:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2605",
+          "iata": "UA2605",
+          "icao": "UAL2605",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24591"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A19",
+          "delay": null,
+          "scheduled": "2026-04-23T07:10:00+00:00",
+          "estimated": "2026-04-23T07:10:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "1",
+          "gate": "B10",
+          "baggage": "6",
+          "scheduled": "2026-04-23T09:00:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3572",
+          "iata": "AC3572",
+          "icao": "ACA3572",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2605",
+            "flight_iata": "ua2605",
+            "flight_icao": "ual2605"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A24591"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A8",
+          "delay": null,
+          "scheduled": "2026-04-23T07:10:00+00:00",
+          "estimated": "2026-04-23T07:10:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "3",
+          "gate": "H16",
+          "baggage": "9",
+          "scheduled": "2026-04-23T09:02:00+00:00",
+          "delay": 25,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "American Airlines",
+          "iata": "AA",
+          "icao": "AAL"
+        },
+        "flight": {
+          "number": "909",
+          "iata": "AA909",
+          "icao": "AAL909",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A32893"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A8",
+          "delay": null,
+          "scheduled": "2026-04-23T07:10:00+00:00",
+          "estimated": "2026-04-23T07:10:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Chicago O'hare International",
+          "timezone": "America/Chicago",
+          "iata": "ORD",
+          "icao": "KORD",
+          "terminal": "3",
+          "gate": "H16",
+          "baggage": "9",
+          "scheduled": "2026-04-23T09:02:00+00:00",
+          "delay": 25,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Japan Airlines",
+          "iata": "JL",
+          "icao": "JTL"
+        },
+        "flight": {
+          "number": "7359",
+          "iata": "JL7359",
+          "icao": "JTL7359",
+          "codeshared": {
+            "airline_name": "american airlines",
+            "airline_iata": "aa",
+            "airline_icao": "aal",
+            "flight_number": "909",
+            "flight_iata": "aa909",
+            "flight_icao": "aal909"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A32893"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C138",
+          "delay": null,
+          "scheduled": "2026-04-23T07:05:00+00:00",
+          "estimated": "2026-04-23T07:05:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F15",
+          "baggage": "9",
+          "scheduled": "2026-04-23T10:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1960",
+          "iata": "UA1960",
+          "icao": "UAL1960",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B8FE"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C138",
+          "delay": null,
+          "scheduled": "2026-04-23T07:05:00+00:00",
+          "estimated": "2026-04-23T07:05:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F15",
+          "baggage": "9",
+          "scheduled": "2026-04-23T10:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Virgin Australia",
+          "iata": "VA",
+          "icao": "VOZ"
+        },
+        "flight": {
+          "number": "8163",
+          "iata": "VA8163",
+          "icao": "VOZ8163",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1960",
+            "flight_iata": "ua1960",
+            "flight_icao": "ual1960"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B8FE"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C138",
+          "delay": null,
+          "scheduled": "2026-04-23T07:05:00+00:00",
+          "estimated": "2026-04-23T07:05:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "San Francisco International",
+          "timezone": "America/Los_Angeles",
+          "iata": "SFO",
+          "icao": "KSFO",
+          "terminal": "3",
+          "gate": "F15",
+          "baggage": "9",
+          "scheduled": "2026-04-23T10:25:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air New Zealand",
+          "iata": "NZ",
+          "icao": "ANZ"
+        },
+        "flight": {
+          "number": "9130",
+          "iata": "NZ9130",
+          "icao": "ANZ9130",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1960",
+            "flight_iata": "ua1960",
+            "flight_icao": "ual1960"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A2B8FE"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C102",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Fort Lauderdale\u2013Hollywood International",
+          "timezone": "America/New_York",
+          "iata": "FLL",
+          "icao": "KFLL",
+          "terminal": "1",
+          "gate": "C3",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:05:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1364",
+          "iata": "UA1364",
+          "icao": "UAL1364",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A837A3"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C102",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Fort Lauderdale\u2013Hollywood International",
+          "timezone": "America/New_York",
+          "iata": "FLL",
+          "icao": "KFLL",
+          "terminal": "1",
+          "gate": "C3",
+          "baggage": null,
+          "scheduled": "2026-04-23T10:05:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3066",
+          "iata": "AC3066",
+          "icao": "ACA3066",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1364",
+            "flight_iata": "ua1364",
+            "flight_icao": "ual1364"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A837A3"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C101",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Ronald Reagan Washington National Airport",
+          "timezone": "America/New_York",
+          "iata": "DCA",
+          "icao": "KDCA",
+          "terminal": "2",
+          "gate": "B10",
+          "baggage": "4",
+          "scheduled": "2026-04-23T08:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "4434",
+          "iata": "UA4434",
+          "icao": "UAL4434",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A67858"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C101",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Ronald Reagan Washington National Airport",
+          "timezone": "America/New_York",
+          "iata": "DCA",
+          "icao": "KDCA",
+          "terminal": "2",
+          "gate": "B10",
+          "baggage": "4",
+          "scheduled": "2026-04-23T08:20:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "TAP Air Portugal",
+          "iata": "TP",
+          "icao": "TAP"
+        },
+        "flight": {
+          "number": "8500",
+          "iata": "TP8500",
+          "icao": "TAP8500",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "4434",
+            "flight_iata": "ua4434",
+            "flight_icao": "ual4434"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A67858"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A18",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "46",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1520",
+          "iata": "UA1520",
+          "icao": "UAL1520",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A8FC73"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A18",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "46",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "TAP Air Portugal",
+          "iata": "TP",
+          "icao": "TAP"
+        },
+        "flight": {
+          "number": "8576",
+          "iata": "TP8576",
+          "icao": "TAP8576",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1520",
+            "flight_iata": "ua1520",
+            "flight_icao": "ual1520"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A8FC73"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A18",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "46",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Azul",
+          "iata": "AD",
+          "icao": "AZU"
+        },
+        "flight": {
+          "number": "7069",
+          "iata": "AD7069",
+          "icao": "AZU7069",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1520",
+            "flight_iata": "ua1520",
+            "flight_icao": "ual1520"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A8FC73"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A18",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Orlando International",
+          "timezone": "America/New_York",
+          "iata": "MCO",
+          "icao": "KMCO",
+          "terminal": "B",
+          "gate": "46",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:58:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3138",
+          "iata": "AC3138",
+          "icao": "ACA3138",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "1520",
+            "flight_iata": "ua1520",
+            "flight_icao": "ual1520"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A8FC73"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A03",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Hartsfield-jackson Atlanta International",
+          "timezone": "America/New_York",
+          "iata": "ATL",
+          "icao": "KATL",
+          "terminal": "S",
+          "gate": "A20",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:34:00+00:00",
+          "delay": 24,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Delta Air Lines",
+          "iata": "DL",
+          "icao": "DAL"
+        },
+        "flight": {
+          "number": "1673",
+          "iata": "DL1673",
+          "icao": "DAL1673",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD3C78"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A03",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Hartsfield-jackson Atlanta International",
+          "timezone": "America/New_York",
+          "iata": "ATL",
+          "icao": "KATL",
+          "terminal": "S",
+          "gate": "A20",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:34:00+00:00",
+          "delay": 24,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Virgin Atlantic",
+          "iata": "VS",
+          "icao": "VIR"
+        },
+        "flight": {
+          "number": "4495",
+          "iata": "VS4495",
+          "icao": "VIR4495",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1673",
+            "flight_iata": "dl1673",
+            "flight_icao": "dal1673"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD3C78"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A03",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Hartsfield-jackson Atlanta International",
+          "timezone": "America/New_York",
+          "iata": "ATL",
+          "icao": "KATL",
+          "terminal": "S",
+          "gate": "A20",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:34:00+00:00",
+          "delay": 24,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "LATAM Airlines",
+          "iata": "LA",
+          "icao": "LAN"
+        },
+        "flight": {
+          "number": "6704",
+          "iata": "LA6704",
+          "icao": "LAN6704",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1673",
+            "flight_iata": "dl1673",
+            "flight_icao": "dal1673"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD3C78"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A03",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Hartsfield-jackson Atlanta International",
+          "timezone": "America/New_York",
+          "iata": "ATL",
+          "icao": "KATL",
+          "terminal": "S",
+          "gate": "A20",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:34:00+00:00",
+          "delay": 24,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Korean Air",
+          "iata": "KE",
+          "icao": "KAL"
+        },
+        "flight": {
+          "number": "5402",
+          "iata": "KE5402",
+          "icao": "KAL5402",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1673",
+            "flight_iata": "dl1673",
+            "flight_icao": "dal1673"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD3C78"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A03",
+          "delay": null,
+          "scheduled": "2026-04-23T07:00:00+00:00",
+          "estimated": "2026-04-23T07:00:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Hartsfield-jackson Atlanta International",
+          "timezone": "America/New_York",
+          "iata": "ATL",
+          "icao": "KATL",
+          "terminal": "S",
+          "gate": "A20",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:34:00+00:00",
+          "delay": 24,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Aeromexico",
+          "iata": "AM",
+          "icao": "AMX"
+        },
+        "flight": {
+          "number": "4224",
+          "iata": "AM4224",
+          "icao": "AMX4224",
+          "codeshared": {
+            "airline_name": "delta air lines",
+            "airline_iata": "dl",
+            "airline_icao": "dal",
+            "flight_number": "1673",
+            "flight_iata": "dl1673",
+            "flight_icao": "dal1673"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AD3C78"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": null,
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T06:59:00+00:00",
+          "estimated": "2026-04-23T06:59:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "El Salvador International",
+          "timezone": "America/El_Salvador",
+          "iata": "SAL",
+          "icao": "MSLP",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T09:32:00+00:00",
+          "delay": 10,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "SalamAir",
+          "iata": "OV",
+          "icao": "OMS"
+        },
+        "flight": {
+          "number": "4337",
+          "iata": "OV4337",
+          "icao": "OMS4337",
+          "codeshared": null
+        },
+        "aircraft": null,
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "B",
+          "gate": null,
+          "delay": null,
+          "scheduled": "2026-04-23T06:59:00+00:00",
+          "estimated": "2026-04-23T06:59:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "El Salvador International",
+          "timezone": "America/El_Salvador",
+          "iata": "SAL",
+          "icao": "MSLP",
+          "terminal": null,
+          "gate": null,
+          "baggage": null,
+          "scheduled": "2026-04-23T10:23:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Volaris El Salvador",
+          "iata": "N3",
+          "icao": "VOS"
+        },
+        "flight": {
+          "number": "4337",
+          "iata": "N34337",
+          "icao": "VOS4337",
+          "codeshared": null
+        },
+        "aircraft": null,
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C130",
+          "delay": null,
+          "scheduled": "2026-04-23T06:55:00+00:00",
+          "estimated": "2026-04-23T06:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Cincinnati/Northern Kentucky",
+          "timezone": "America/New_York",
+          "iata": "CVG",
+          "icao": "KCVG",
+          "terminal": null,
+          "gate": "A11",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:08:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "4472",
+          "iata": "UA4472",
+          "icao": "UAL4472",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A703C1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C130",
+          "delay": null,
+          "scheduled": "2026-04-23T06:55:00+00:00",
+          "estimated": "2026-04-23T06:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Cincinnati/Northern Kentucky",
+          "timezone": "America/New_York",
+          "iata": "CVG",
+          "icao": "KCVG",
+          "terminal": null,
+          "gate": "A11",
+          "baggage": null,
+          "scheduled": "2026-04-23T09:08:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "4846",
+          "iata": "AC4846",
+          "icao": "ACA4846",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "4472",
+            "flight_iata": "ua4472",
+            "flight_icao": "ual4472"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A703C1"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C84",
+          "delay": null,
+          "scheduled": "2026-04-23T06:55:00+00:00",
+          "estimated": "2026-04-23T06:55:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Charlotte Douglas",
+          "timezone": "America/New_York",
+          "iata": "CLT",
+          "icao": "KCLT",
+          "terminal": null,
+          "gate": "A23",
+          "baggage": "2",
+          "scheduled": "2026-04-23T09:03:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "3702",
+          "iata": "UA3702",
+          "icao": "UAL3702",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A9A97F"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C90",
+          "delay": null,
+          "scheduled": "2026-04-23T06:50:00+00:00",
+          "estimated": "2026-04-23T06:50:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Nashville International",
+          "timezone": "America/Chicago",
+          "iata": "BNA",
+          "icao": "KBNA",
+          "terminal": null,
+          "gate": "T6",
+          "baggage": "9",
+          "scheduled": "2026-04-23T08:19:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1428",
+          "iata": "UA1428",
+          "icao": "UAL1428",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A4455E"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A22",
+          "delay": null,
+          "scheduled": "2026-04-23T06:45:00+00:00",
+          "estimated": "2026-04-23T06:45:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Charleston, AFB Municipal",
+          "timezone": "America/New_York",
+          "iata": "CHS",
+          "icao": "KCHS",
+          "terminal": null,
+          "gate": "B1",
+          "baggage": null,
+          "scheduled": "2026-04-23T08:51:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "2355",
+          "iata": "UA2355",
+          "icao": "UAL2355",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AB618B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A22",
+          "delay": null,
+          "scheduled": "2026-04-23T06:45:00+00:00",
+          "estimated": "2026-04-23T06:45:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Charleston, AFB Municipal",
+          "timezone": "America/New_York",
+          "iata": "CHS",
+          "icao": "KCHS",
+          "terminal": null,
+          "gate": "B1",
+          "baggage": null,
+          "scheduled": "2026-04-23T08:51:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "Air Canada",
+          "iata": "AC",
+          "icao": "ACA"
+        },
+        "flight": {
+          "number": "3013",
+          "iata": "AC3013",
+          "icao": "ACA3013",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "2355",
+            "flight_iata": "ua2355",
+            "flight_icao": "ual2355"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "AB618B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "C",
+          "gate": "C109",
+          "delay": null,
+          "scheduled": "2026-04-23T06:45:00+00:00",
+          "estimated": "2026-04-23T06:45:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Southwest Florida International",
+          "timezone": "America/New_York",
+          "iata": "RSW",
+          "icao": "KRSW",
+          "terminal": null,
+          "gate": "C5",
+          "baggage": "2",
+          "scheduled": "2026-04-23T09:49:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "1115",
+          "iata": "UA1115",
+          "icao": "UAL1115",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "A5CC11"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A17",
+          "delay": null,
+          "scheduled": "2026-04-23T06:40:00+00:00",
+          "estimated": "2026-04-23T06:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Logan International",
+          "timezone": "America/New_York",
+          "iata": "BOS",
+          "icao": "KBOS",
+          "terminal": "B",
+          "gate": "B28",
+          "baggage": null,
+          "scheduled": "2026-04-23T07:53:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "United Airlines",
+          "iata": "UA",
+          "icao": "UAL"
+        },
+        "flight": {
+          "number": "408",
+          "iata": "UA408",
+          "icao": "UAL408",
+          "codeshared": null
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "ABA91B"
+        },
+        "live": null
+      },
+      {
+        "flight_date": "2026-04-23",
+        "flight_status": "scheduled",
+        "departure": {
+          "airport": "Newark Liberty International",
+          "timezone": "America/New_York",
+          "iata": "EWR",
+          "icao": "KEWR",
+          "terminal": "A",
+          "gate": "A17",
+          "delay": null,
+          "scheduled": "2026-04-23T06:40:00+00:00",
+          "estimated": "2026-04-23T06:40:00+00:00",
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "arrival": {
+          "airport": "Logan International",
+          "timezone": "America/New_York",
+          "iata": "BOS",
+          "icao": "KBOS",
+          "terminal": "B",
+          "gate": "B28",
+          "baggage": null,
+          "scheduled": "2026-04-23T07:53:00+00:00",
+          "delay": null,
+          "estimated": null,
+          "actual": null,
+          "estimated_runway": null,
+          "actual_runway": null
+        },
+        "airline": {
+          "name": "TAP Air Portugal",
+          "iata": "TP",
+          "icao": "TAP"
+        },
+        "flight": {
+          "number": "8512",
+          "iata": "TP8512",
+          "icao": "TAP8512",
+          "codeshared": {
+            "airline_name": "united airlines",
+            "airline_iata": "ua",
+            "airline_icao": "ual",
+            "flight_number": "408",
+            "flight_iata": "ua408",
+            "flight_icao": "ual408"
+          }
+        },
+        "aircraft": {
+          "registration": null,
+          "iata": null,
+          "icao": null,
+          "icao24": "ABA91B"
+        },
+        "live": null
+      }
+    ]
+  }
+}
