@@ -37,7 +37,7 @@
         <section class="page-head page-head--row">
             <div>
                 <h1 class="page-title">View Wait Times</h1>
-                <p class="page-subtitle">See current estimates for TSA wait times by terminal.</p>
+                <p class="page-subtitle">See current TSA and customs wait times by terminal, gate, and lane.</p>
                 <p class="page-meta">Last updated <time id="last-updated" datetime="">—</time></p>
             </div>
             <div class="page-head-actions">
@@ -61,9 +61,42 @@
         </section>
 
         <section class="waits-list" id="wait-grid" role="list"></section>
+
+        <section class="summary-strip" style="margin-top: 28px;">
+            <div class="summary-item" style="width: 100%;">
+                <p class="summary-k">Plan Ahead</p>
+                <p class="page-subtitle">Estimate your wait time based on past data.</p>
+
+                <form id="predict-form" style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 18px;">
+                    <input id="predict-date" type="date" required />
+                    <input id="predict-time" type="time" required />
+
+                    <select id="predict-terminal">
+                        <option value="">Any Terminal</option>
+                        <option value="A">Terminal A</option>
+                        <option value="B">Terminal B</option>
+                        <option value="C">Terminal C</option>
+                    </select>
+
+                    <select id="predict-lane">
+                        <option value="">Any Lane</option>
+                        <option value="Regular">Regular</option>
+                        <option value="PreCheck">PreCheck</option>
+                        <option value="US Passports">US Passports</option>
+                        <option value="Visitors">Visitors With Visas</option>
+                    </select>
+
+                    <input id="predict-gate" placeholder="Gate optional, ex: 40-49" />
+
+                    <button class="btn btn-ghost" type="submit">Predict Wait</button>
+                </form>
+
+                <p class="summary-v" id="prediction-result" style="margin-top: 18px;">—</p>
+            </div>
+        </section>
     </main>
 
-    <script src="app.js?v=mock1"></script>
+    <script src="waits-sheet.js?v=1"></script>
 </body>
 </html>
 
