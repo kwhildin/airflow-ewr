@@ -305,8 +305,19 @@ function renderCurrentWaits() {
 
     grid.innerHTML = terminalHTML;
 
-    updateSummary(currentRows, newestDate);
-}
+function updateSummary(rows, newestDate) {
+    const updated = document.getElementById("last-updated");
+
+    if (updated && newestDate) {
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        updated.textContent = newestDate.toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+            timeZoneName: "short"
+        }) + ` (${userTimeZone})`;
+    }
+}}
 
 function updateSummary(rows, newestDate) {
     if (!rows.length) return;
