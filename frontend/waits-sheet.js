@@ -1,33 +1,83 @@
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+const SHEET_NAME = "External";
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
 let WAIT_ROWS = [];
 
 function parseCSV(text) {
-    const lines = text.trim().split("\n");
-    const headers = lines[0].split(",").map(h => h.replaceAll('"', "").trim());
+    const rows = [];
+    let row = [];
+    let cell = "";
+    let inQuotes = false;
 
-    return lines.slice(1).map(line => {
-        const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
-        const row = {};
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+            cell += '"';
+            i++;
+        } else if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+            row.push(cell);
+            cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+            if (char === "\r" && next === "\n") i++;
+            row.push(cell);
+            if (row.some(x => String(x).trim() !== "")) rows.push(row);
+            row = [];
+            cell = "";
+        } else {
+            cell += char;
+        }
+    }
+
+    row.push(cell);
+    if (row.some(x => String(x).trim() !== "")) rows.push(row);
+
+    const headers = rows.shift().map(h => h.trim());
+
+    return rows.map(r => {
+        const obj = {};
         headers.forEach((header, i) => {
-            row[header] = (values[i] || "").replaceAll('"', "").trim();
+            obj[header] = (r[i] || "").trim();
         });
-        return row;
+        return obj;
     });
 }
 
 function getWait(row) {
-    return Number(row["Wait Time (minute)"] || row["Wait Time"] || 0);
+    const raw = row["Wait Time (minute)"] || row["Wait Time"] || "";
+    const n = Number(String(raw).replace(/[^\d.]/g, ""));
+    return Number.isFinite(n) ? n : null;
 }
 
 function getDate(row) {
-    const dateText = row["Timestamp"] || row["Date"] || row["Source Update"] || "";
-    const d = new Date(dateText);
-    return isNaN(d) ? null : d;
+    const raw = row["Date Time"] || row["Timestamp"] || row["Date"] || "";
+    if (!raw) return null;
+
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function getMinutesOfDay(date) {
+function getTerminal(row) {
+    return String(row["Terminal"] || "").replace("Terminal", "").trim().toUpperCase();
+}
+
+function getGate(row) {
+    return String(row["Gate"] || "All Gates").trim();
+}
+
+function getLane(row) {
+    return String(row["Lane"] || "Unknown Lane").trim();
+}
+
+function getType(row) {
+    return String(row["Type"] || "Security").trim();
+}
+
+function minutesOfDay(date) {
     return date.getHours() * 60 + date.getMinutes();
 }
 
@@ -37,127 +87,223 @@ function waitLevel(minutes) {
     return "Busy";
 }
 
+function escapeHTML(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+}
+
 function renderCurrentWaits() {
     const grid = document.getElementById("wait-grid");
+    if (!grid) return;
 
-    if (!WAIT_ROWS.length) {
-        grid.innerHTML = "<p>No wait time data found.</p>";
+    const usableRows = WAIT_ROWS.filter(row => getWait(row) !== null && getDate(row));
+
+    if (!usableRows.length) {
+        grid.innerHTML = `
+            <article class="wait-row">
+                <div>
+                    <p class="wait-row-terminal">Could not load current wait times</p>
+                    <p class="wait-row-name">Check that the Google Sheet is public and the tab is named External.</p>
+                </div>
+            </article>
+        `;
         return;
     }
 
-    const latestRows = WAIT_ROWS.slice(-10);
+    usableRows.sort((a, b) => getDate(a) - getDate(b));
 
-    grid.innerHTML = latestRows.map(row => {
-        const type = row["Type"] || "Security";
-        const terminal = row["Terminal"] || "—";
-        const gate = row["Gate"] || "All Gates";
-        const lane = row["Lane"] || "—";
+    const newestDate = getDate(usableRows[usableRows.length - 1]);
+
+    const currentRows = usableRows.filter(row => {
+        const d = getDate(row);
+        return d && d.getTime() === newestDate.getTime();
+    });
+
+    grid.innerHTML = currentRows.map(row => {
+        const type = getType(row);
+        const terminal = getTerminal(row);
+        const gate = getGate(row);
+        const lane = getLane(row);
         const wait = getWait(row);
         const level = waitLevel(wait);
 
         return `
             <article class="wait-row" role="listitem">
                 <div>
-                    <p class="wait-row-terminal">Terminal ${terminal}</p>
-                    <p class="wait-row-name">${type} • ${gate}</p>
+                    <p class="wait-row-terminal">Terminal ${escapeHTML(terminal)}</p>
+                    <p class="wait-row-name">${escapeHTML(type)} • ${escapeHTML(gate)}</p>
                 </div>
 
                 <div>
-                    <p class="wait-row-minutes">${wait}<span>min</span></p>
-                    <p class="wait-row-lanes">${lane}</p>
+                    <p class="wait-row-minutes">${escapeHTML(wait)}<span>min</span></p>
+                    <p class="wait-row-lanes">${escapeHTML(lane)}</p>
                 </div>
 
                 <div class="wait-row-right">
-                    <span class="badge">${level}</span>
+                    <span class="badge">${escapeHTML(level)}</span>
                 </div>
             </article>
         `;
     }).join("");
 
-    const waits = latestRows.map(getWait);
-    const fastest = latestRows.reduce((a, b) => getWait(a) < getWait(b) ? a : b);
-    const slowest = latestRows.reduce((a, b) => getWait(a) > getWait(b) ? a : b);
+    updateSummary(currentRows, newestDate);
+}
+
+function updateSummary(rows, newestDate) {
+    if (!rows.length) return;
+
+    const fastest = rows.reduce((a, b) => getWait(a) <= getWait(b) ? a : b);
+    const slowest = rows.reduce((a, b) => getWait(a) >= getWait(b) ? a : b);
+
+    const waits = rows.map(getWait).filter(n => n !== null);
     const avg = Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
 
     document.getElementById("summary-fastest").textContent =
-        `Terminal ${fastest["Terminal"]}, ${fastest["Gate"]}: ${getWait(fastest)} min`;
+        `Terminal ${getTerminal(fastest)}, ${getGate(fastest)}: ${getWait(fastest)} min`;
 
     document.getElementById("summary-slowest").textContent =
-        `Terminal ${slowest["Terminal"]}, ${slowest["Gate"]}: ${getWait(slowest)} min`;
+        `Terminal ${getTerminal(slowest)}, ${getGate(slowest)}: ${getWait(slowest)} min`;
 
     document.getElementById("summary-congestion").textContent = waitLevel(avg);
 
-    document.getElementById("last-updated").textContent = new Date().toLocaleString();
+    const updated = document.getElementById("last-updated");
+    if (updated) {
+        updated.textContent = newestDate.toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+    }
 }
 
 function predictWait(event) {
     event.preventDefault();
 
-    const date = document.getElementById("predict-date").value;
-    const time = document.getElementById("predict-time").value;
-    const terminal = document.getElementById("predict-terminal").value;
-    const lane = document.getElementById("predict-lane").value.toLowerCase();
-    const gate = document.getElementById("predict-gate").value.toLowerCase();
+    const dateValue = document.getElementById("predict-date").value;
+    const timeValue = document.getElementById("predict-time").value;
+    const terminalValue = document.getElementById("predict-terminal").value.trim().toUpperCase();
+    const laneValue = document.getElementById("predict-lane").value.trim().toLowerCase();
+    const gateValue = document.getElementById("predict-gate").value.trim().toLowerCase();
 
-    const targetDate = new Date(`${date}T${time}`);
+    const targetDate = new Date(`${dateValue}T${timeValue}`);
     const targetDay = targetDate.getDay();
-    const targetMinutes = getMinutesOfDay(targetDate);
+    const targetMinute = minutesOfDay(targetDate);
 
-    let matches = WAIT_ROWS.filter(row => {
+    let candidates = WAIT_ROWS.filter(row => {
         const rowDate = getDate(row);
-        if (!rowDate) return false;
+        const wait = getWait(row);
 
-        const sameDay = rowDate.getDay() === targetDay;
-        const closeTime = Math.abs(getMinutesOfDay(rowDate) - targetMinutes) <= 60;
+        if (!rowDate || wait === null) return false;
 
-        const terminalMatch = !terminal || row["Terminal"] === terminal;
-        const laneMatch = !lane || (row["Lane"] || "").toLowerCase().includes(lane);
-        const gateMatch = !gate || (row["Gate"] || "").toLowerCase().includes(gate);
+        const rowTerminal = getTerminal(row);
+        const rowLane = getLane(row).toLowerCase();
+        const rowGate = getGate(row).toLowerCase();
 
-        return sameDay && closeTime && terminalMatch && laneMatch && gateMatch;
+        const terminalMatch = !terminalValue || rowTerminal === terminalValue;
+        const laneMatch = !laneValue || rowLane.includes(laneValue);
+        const gateMatch = !gateValue || rowGate.includes(gateValue);
+
+        return terminalMatch && laneMatch && gateMatch;
     });
 
-    if (!matches.length && gate) {
-        matches = WAIT_ROWS.filter(row => {
+    if (!candidates.length && gateValue) {
+        candidates = WAIT_ROWS.filter(row => {
             const rowDate = getDate(row);
-            if (!rowDate) return false;
+            const wait = getWait(row);
 
-            const sameDay = rowDate.getDay() === targetDay;
-            const closeTime = Math.abs(getMinutesOfDay(rowDate) - targetMinutes) <= 60;
-            const terminalMatch = !terminal || row["Terminal"] === terminal;
-            const laneMatch = !lane || (row["Lane"] || "").toLowerCase().includes(lane);
+            if (!rowDate || wait === null) return false;
 
-            return sameDay && closeTime && terminalMatch && laneMatch;
+            const rowTerminal = getTerminal(row);
+            const rowLane = getLane(row).toLowerCase();
+
+            const terminalMatch = !terminalValue || rowTerminal === terminalValue;
+            const laneMatch = !laneValue || rowLane.includes(laneValue);
+
+            return terminalMatch && laneMatch;
         });
     }
 
     const result = document.getElementById("prediction-result");
 
-    if (!matches.length) {
-        result.textContent = "Not enough matching data yet. Try removing the gate or lane filter.";
+    if (!candidates.length) {
+        result.textContent = "No historical records found for that terminal/lane yet. Try Any Terminal or Any Lane.";
         return;
     }
 
-    const waits = matches.map(getWait);
-    const average = Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
+    let weightedSum = 0;
+    let totalWeight = 0;
+    const waits = [];
+
+    candidates.forEach(row => {
+        const rowDate = getDate(row);
+        const wait = getWait(row);
+
+        const sameDay = rowDate.getDay() === targetDay;
+        const timeDiff = Math.abs(minutesOfDay(rowDate) - targetMinute);
+
+        let weight = 1;
+
+        if (sameDay) weight += 4;
+        if (timeDiff <= 30) weight += 5;
+        else if (timeDiff <= 60) weight += 4;
+        else if (timeDiff <= 120) weight += 3;
+        else if (timeDiff <= 180) weight += 2;
+        else if (timeDiff <= 240) weight += 1;
+
+        weightedSum += wait * weight;
+        totalWeight += weight;
+        waits.push(wait);
+    });
+
+    const estimate = Math.round(weightedSum / totalWeight);
     const min = Math.min(...waits);
     const max = Math.max(...waits);
 
-    result.textContent = `Estimated wait: ${average} min. Based on ${matches.length} similar past records. Range: ${min}-${max} min.`;
+    result.textContent =
+        `Estimated wait: ${estimate} min. Based on ${candidates.length} past records. Historical range: ${min}-${max} min.`;
 }
 
 async function loadSheet() {
-    const response = await fetch(SHEET_URL);
-    const text = await response.text();
+    const grid = document.getElementById("wait-grid");
 
-    WAIT_ROWS = parseCSV(text).filter(row => getWait(row) >= 0);
+    try {
+        const response = await fetch(SHEET_URL);
 
-    renderCurrentWaits();
+        if (!response.ok) {
+            throw new Error("Sheet request failed.");
+        }
+
+        const text = await response.text();
+
+        WAIT_ROWS = parseCSV(text).filter(row => getWait(row) !== null);
+
+        renderCurrentWaits();
+    } catch (error) {
+        console.error(error);
+
+        if (grid) {
+            grid.innerHTML = `
+                <article class="wait-row">
+                    <div>
+                        <p class="wait-row-terminal">Could not load Google Sheet data</p>
+                        <p class="wait-row-name">Make sure the sheet is shared as anyone with the link can view.</p>
+                    </div>
+                </article>
+            `;
+        }
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSheet();
 
-    document.getElementById("refresh-btn").addEventListener("click", loadSheet);
-    document.getElementById("predict-form").addEventListener("submit", predictWait);
+    const refreshButton = document.getElementById("refresh-btn");
+    if (refreshButton) {
+        refreshButton.addEventListener("click", loadSheet);
+    }
+
+    const predictForm = document.getElementById("predict-form");
+    if (predictForm) {
+        predictForm.addEventListener("submit", predictWait);
+    }
 });
