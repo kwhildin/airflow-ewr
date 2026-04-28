@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirFlow — Airport Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style-premium.css?v=p1" />
+</head>
+<body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="index.html" aria-label="AirFlow home">
+                <img class="brand-logo" src="assets/airflow-logo.png" alt="AirFlow" width="160" height="42" decoding="async" />
+            </a>
+
+            <nav class="topnav" aria-label="Primary">
+                <a class="topnav-link" href="index.html">Home</a>
+                <a class="topnav-link" href="plan.html">Plan My Trip</a>
+                <a class="topnav-link" href="waits.html">Wait Times</a>
+                <a class="topnav-link is-active" href="airport-map.html">Airport Map</a>
+                <a class="topnav-link" href="about.html">About</a>
+            </nav>
+
+            <nav class="topnav topnav--right" aria-label="Account">
+                <a class="topnav-link" href="saved.html">Saved</a>
+                <a class="topnav-link" href="profile.html">Profile</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page">
+        <section class="page-head page-head--row">
+            <div>
+                <h1 class="page-title">Airport Map</h1>
+                <p class="page-subtitle">Explore airport terminals, gates, restaurants, restrooms, and services.</p>
+            </div>
+        </section>
+
+        <section class="summary-strip" style="margin-bottom: 28px;">
+            <div class="summary-item" style="width: 100%;">
+                <p class="summary-k">Map of</p>
+
+                <div style="display:flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 12px;">
+                    <select id="airport-select" style="font-family: Outfit, sans-serif; font-size: 18px; padding: 12px 16px; border-radius: 14px; border: 1px solid #cbd5e1;">
+                        <option value="EWR">Newark Liberty International Airport (EWR)</option>
+                        <option value="JFK" disabled>John F. Kennedy International Airport (JFK) — Coming Soon</option>
+                        <option value="LGA" disabled>LaGuardia Airport (LGA) — Coming Soon</option>
+                        <option value="ATL" disabled>Hartsfield-Jackson Atlanta Airport (ATL) — Coming Soon</option>
+                        <option value="ORD" disabled>Chicago O'Hare International Airport (ORD) — Coming Soon</option>
+                        <option value="LAX" disabled>Los Angeles International Airport (LAX) — Coming Soon</option>
+                        <option value="DFW" disabled>Dallas Fort Worth International Airport (DFW) — Coming Soon</option>
+                        <option value="MIA" disabled>Miami International Airport (MIA) — Coming Soon</option>
+                    </select>
+
+                    <a
+                        class="btn btn-ghost"
+                        href="https://maps.newarkairport.com/?lang=en"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Open Full Map
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section style="
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(148,163,184,0.25);
+            border-radius: 28px;
+            padding: 18px;
+            box-shadow: 0 12px 28px rgba(15,23,42,0.06);
+            overflow: hidden;
+        ">
+            <iframe
+                title="Newark Airport Interactive Map"
+                src="https://maps.newarkairport.com/?lang=en"
+                style="width: 100%; height: 720px; border: 0; border-radius: 20px; background: white;"
+                loading="lazy"
+            ></iframe>
+        </section>
+    </main>
+</body>
+</html>
