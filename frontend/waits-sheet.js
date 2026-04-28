@@ -1,4 +1,4 @@
-const JS_VERSION = "210-working-time-grouped";
+const JS_VERSION = "211-force-column-mapping-time-fixed";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -10,31 +10,41 @@ let WAIT_ROWS = [];
 
 /* ---------- HELPERS ---------- */
 
-function cellValue(cell, header) {
+const EXPECTED_HEADERS = [
+    "Date",
+    "Time",
+    "Type",
+    "Terminal",
+    "Gate",
+    "Lane",
+    "Wait Time",
+    "Status",
+    "Source Update Time",
+    "Source URL"
+];
+
+function cellValue(cell) {
     if (!cell) return "";
-
-    // For Date and Time, use the visible sheet value like 4/28/2026 and 1:10.
-    if (["Date", "Time"].includes(header)) {
-        if (cell.f !== undefined && cell.f !== null) return String(cell.f);
-        if (cell.v !== undefined && cell.v !== null) return String(cell.v);
-    }
-
     if (cell.f !== undefined && cell.f !== null) return String(cell.f);
     if (cell.v !== undefined && cell.v !== null) return String(cell.v);
-
     return "";
 }
 
 function rowsFromGoogleTable(table) {
-    const headers = table.cols.map(col => col.label || col.id);
+    return table.rows
+        .map(row => {
+            const obj = {};
 
-    return table.rows.map(row => {
-        const obj = {};
-        headers.forEach((header, i) => {
-            obj[header] = cellValue(row.c[i], header).trim();
+            EXPECTED_HEADERS.forEach((header, i) => {
+                obj[header] = cellValue(row.c[i]).trim();
+            });
+
+            return obj;
+        })
+        .filter(row => {
+            // Removes the header row if Google reads it as data
+            return row["Date"] !== "Date" && row["Time"] !== "Time";
         });
-        return obj;
-    });
 }
 
 function parseGoogleDateParts(text) {
@@ -51,50 +61,64 @@ function parseGoogleDateParts(text) {
     };
 }
 
+function parseTimeParts(text) {
+    if (!text) return { hour: 0, minute: 0, second: 0 };
+
+    const googleTime = parseGoogleDateParts(text);
+    if (googleTime) {
+        return {
+            hour: googleTime.hour,
+            minute: googleTime.minute,
+            second: googleTime.second
+        };
+    }
+
+    const timeText = String(text).trim();
+
+    const match = timeText.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
+    if (!match) return { hour: 0, minute: 0, second: 0 };
+
+    let hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const second = Number(match[3] || 0);
+    const ampm = match[4];
+
+    if (ampm) {
+        if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+        if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+    }
+
+    return { hour, minute, second };
+}
+
 function getDate(row) {
     const dateRaw = row["Date"] || "";
     const timeRaw = row["Time"] || "";
+
+    const googleDate = parseGoogleDateParts(dateRaw);
+    const timeParts = parseTimeParts(timeRaw);
+
+    if (googleDate) {
+        return new Date(
+            googleDate.year,
+            googleDate.month,
+            googleDate.day,
+            timeParts.hour,
+            timeParts.minute,
+            timeParts.second
+        );
+    }
 
     if (dateRaw && timeRaw) {
         const combined = new Date(`${dateRaw} ${timeRaw}`);
         if (!Number.isNaN(combined.getTime())) return combined;
     }
 
-    const dateTimeRaw =
-        row["Date Time"] ||
-        row["Timestamp"] ||
-        row["Logged At"] ||
-        "";
-
-    const googleDateTime = parseGoogleDateParts(dateTimeRaw);
-
-    if (googleDateTime) {
-        return new Date(
-            googleDateTime.year,
-            googleDateTime.month,
-            googleDateTime.day,
-            googleDateTime.hour,
-            googleDateTime.minute,
-            googleDateTime.second
-        );
-    }
-
-    if (dateTimeRaw) {
-        const d = new Date(dateTimeRaw);
-        if (!Number.isNaN(d.getTime())) return d;
-    }
-
     return null;
 }
 
 function getWait(row) {
-    const raw =
-        row["Wait Time (min)"] ||
-        row["Wait Time (minute)"] ||
-        row["Wait Time (minutes)"] ||
-        row["Wait Time"] ||
-        "";
-
+    const raw = row["Wait Time"] || "";
     const n = Number(String(raw).replace(/[^\d.]/g, ""));
     return Number.isFinite(n) ? n : null;
 }
@@ -119,6 +143,15 @@ function minutesOfDay(date) {
     return date.getHours() * 60 + date.getMinutes();
 }
 
+function displayKey(row) {
+    return [
+        getType(row).toLowerCase(),
+        getTerminal(row),
+        getGate(row).toLowerCase(),
+        getLane(row).toLowerCase()
+    ].join("|");
+}
+
 function minuteKey(date) {
     return [
         date.getFullYear(),
@@ -127,15 +160,6 @@ function minuteKey(date) {
         date.getHours(),
         date.getMinutes()
     ].join("-");
-}
-
-function displayKey(row) {
-    return [
-        getType(row).toLowerCase(),
-        getTerminal(row),
-        getGate(row).toLowerCase(),
-        getLane(row).toLowerCase()
-    ].join("|");
 }
 
 function historicalKey(row) {
@@ -238,7 +262,7 @@ function renderCurrentWaits() {
             <article class="wait-row">
                 <div>
                     <p class="wait-row-terminal">No usable wait-time rows found</p>
-                    <p class="wait-row-name">The sheet loaded, but the data could not be read.</p>
+                    <p class="wait-row-name">The sheet loaded, but the Date/Time could not be read.</p>
                 </div>
             </article>
         `;
@@ -351,8 +375,11 @@ function updateLastUpdated(dateToShow) {
     }
 
     updated.textContent = dateToShow.toLocaleString(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
         timeZoneName: "short"
     });
 }
@@ -490,6 +517,7 @@ window.handleSheetData = function(response) {
     WAIT_ROWS = rowsFromGoogleTable(response.table).filter(row => getWait(row) !== null);
 
     console.log("Loaded rows:", WAIT_ROWS.length);
+    console.log("Newest readable date:", WAIT_ROWS.map(getDate).filter(Boolean).sort((a, b) => b - a)[0]);
     console.log("First row:", WAIT_ROWS[0]);
 
     renderCurrentWaits();
