@@ -1,4 +1,4 @@
-const JS_VERSION = "202-grouped-by-terminal";
+const JS_VERSION = "203-grouped-deduped-timefix";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -10,10 +10,17 @@ let WAIT_ROWS = [];
 
 /* ---------- HELPERS ---------- */
 
-function cellValue(cell) {
+function cellValue(cell, header) {
     if (!cell) return "";
+
+    const isDateColumn = ["Date Time", "Timestamp", "Date", "Source Update Time"].includes(header);
+
+    // For dates, use the raw value first because the formatted value may drop the time.
+    if (isDateColumn && cell.v !== undefined && cell.v !== null) return String(cell.v);
+
     if (cell.f !== undefined && cell.f !== null) return String(cell.f);
     if (cell.v !== undefined && cell.v !== null) return String(cell.v);
+
     return "";
 }
 
@@ -23,7 +30,7 @@ function rowsFromGoogleTable(table) {
     return table.rows.map(row => {
         const obj = {};
         headers.forEach((header, i) => {
-            obj[header] = cellValue(row.c[i]).trim();
+            obj[header] = cellValue(row.c[i], header).trim();
         });
         return obj;
     });
@@ -36,7 +43,13 @@ function getWait(row) {
 }
 
 function getDate(row) {
-    const raw = row["Date Time"] || row["Timestamp"] || row["Date"] || "";
+    const raw =
+        row["Date Time"] ||
+        row["Timestamp"] ||
+        row["Source Update Time"] ||
+        row["Date"] ||
+        "";
+
     if (!raw) return null;
 
     const text = String(raw).trim();
@@ -76,6 +89,16 @@ function minutesOfDay(date) {
     return date.getHours() * 60 + date.getMinutes();
 }
 
+function minuteKey(date) {
+    return [
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+    ].join("-");
+}
+
 function waitLevel(minutes) {
     if (minutes <= 10) return "Light";
     if (minutes <= 20) return "Moderate";
@@ -88,26 +111,25 @@ function escapeHTML(value) {
     return div.innerHTML;
 }
 
+// Removes duplicate lanes. If the same lane appears twice, keeps the later one.
 function dedupeRows(rows) {
-    const seen = new Set();
+    const map = new Map();
 
-    return rows.filter(row => {
+    rows.forEach(row => {
         const date = getDate(row);
 
         const key = [
-            date ? date.getTime() : "",
+            date ? minuteKey(date) : "",
             getType(row).toLowerCase(),
             getTerminal(row),
             getGate(row).toLowerCase(),
-            getLane(row).toLowerCase(),
-            getWait(row)
+            getLane(row).toLowerCase()
         ].join("|");
 
-        if (seen.has(key)) return false;
-
-        seen.add(key);
-        return true;
+        map.set(key, row);
     });
+
+    return Array.from(map.values());
 }
 
 function sortTerminals(a, b) {
@@ -167,11 +189,11 @@ function renderCurrentWaits() {
     usableRows.sort((a, b) => getDate(a) - getDate(b));
 
     const newestDate = getDate(usableRows[usableRows.length - 1]);
-    const newestTime = newestDate.getTime();
+    const newestKey = minuteKey(newestDate);
 
     let currentRows = usableRows.filter(row => {
         const d = getDate(row);
-        return d && d.getTime() === newestTime;
+        return d && minuteKey(d) === newestKey;
     });
 
     currentRows = dedupeRows(currentRows);
