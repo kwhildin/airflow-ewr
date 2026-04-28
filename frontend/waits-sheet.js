@@ -1,4 +1,4 @@
-const JS_VERSION = "200-jsonp";
+ const JS_VERSION = "201-deduped";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -88,6 +88,30 @@ function escapeHTML(value) {
     return div.innerHTML;
 }
 
+function dedupeRows(rows) {
+    const seen = new Set();
+
+    return rows.filter(row => {
+        const date = getDate(row);
+
+        const key = [
+            date ? date.getTime() : "",
+            getType(row).toLowerCase(),
+            getTerminal(row),
+            getGate(row).toLowerCase(),
+            getLane(row).toLowerCase(),
+            getWait(row)
+        ].join("|");
+
+        if (seen.has(key)) {
+            return false;
+        }
+
+        seen.add(key);
+        return true;
+    });
+}
+
 /* ---------- CURRENT WAIT TIMES ---------- */
 
 function renderCurrentWaits() {
@@ -113,10 +137,12 @@ function renderCurrentWaits() {
     const newestDate = getDate(usableRows[usableRows.length - 1]);
     const newestTime = newestDate.getTime();
 
-    const currentRows = usableRows.filter(row => {
+    let currentRows = usableRows.filter(row => {
         const d = getDate(row);
         return d && d.getTime() === newestTime;
     });
+
+    currentRows = dedupeRows(currentRows);
 
     grid.innerHTML = currentRows.map(row => {
         const type = getType(row);
@@ -223,6 +249,8 @@ function predictWait(event) {
         });
     }
 
+    candidates = dedupeRows(candidates);
+
     const result = document.getElementById("prediction-result");
 
     if (!candidates.length) {
@@ -303,6 +331,7 @@ window.handleSheetData = function(response) {
     }
 
     WAIT_ROWS = rowsFromGoogleTable(response.table).filter(row => getWait(row) !== null);
+    WAIT_ROWS = dedupeRows(WAIT_ROWS);
 
     console.log("Loaded rows:", WAIT_ROWS.length);
     console.log("First row:", WAIT_ROWS[0]);
