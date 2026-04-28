@@ -1,47 +1,29 @@
+const JS_VERSION = "200-jsonp";
+console.log("Loaded waits-sheet.js", JS_VERSION);
+
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
 const SHEET_GID = "0";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+const SHEET_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&tqx=responseHandler:handleSheetData`;
 
 let WAIT_ROWS = [];
 
-function parseCSV(text) {
-    const rows = [];
-    let row = [];
-    let cell = "";
-    let inQuotes = false;
+/* ---------- HELPERS ---------- */
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
+function cellValue(cell) {
+    if (!cell) return "";
+    if (cell.f !== undefined && cell.f !== null) return String(cell.f);
+    if (cell.v !== undefined && cell.v !== null) return String(cell.v);
+    return "";
+}
 
-        if (char === '"' && inQuotes && next === '"') {
-            cell += '"';
-            i++;
-        } else if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === "," && !inQuotes) {
-            row.push(cell);
-            cell = "";
-        } else if ((char === "\n" || char === "\r") && !inQuotes) {
-            if (char === "\r" && next === "\n") i++;
-            row.push(cell);
-            if (row.some(x => String(x).trim() !== "")) rows.push(row);
-            row = [];
-            cell = "";
-        } else {
-            cell += char;
-        }
-    }
+function rowsFromGoogleTable(table) {
+    const headers = table.cols.map(col => col.label || col.id);
 
-    row.push(cell);
-    if (row.some(x => String(x).trim() !== "")) rows.push(row);
-
-    const headers = rows.shift().map(h => h.trim());
-
-    return rows.map(r => {
+    return table.rows.map(row => {
         const obj = {};
         headers.forEach((header, i) => {
-            obj[header] = (r[i] || "").trim();
+            obj[header] = cellValue(row.c[i]).trim();
         });
         return obj;
     });
@@ -57,7 +39,20 @@ function getDate(row) {
     const raw = row["Date Time"] || row["Timestamp"] || row["Date"] || "";
     if (!raw) return null;
 
-    const d = new Date(raw);
+    const text = String(raw).trim();
+
+    const googleDate = text.match(/Date\((\d+),(\d+),(\d+),?(\d+)?,?(\d+)?,?(\d+)?\)/);
+    if (googleDate) {
+        const year = Number(googleDate[1]);
+        const month = Number(googleDate[2]);
+        const day = Number(googleDate[3]);
+        const hour = Number(googleDate[4] || 0);
+        const minute = Number(googleDate[5] || 0);
+        const second = Number(googleDate[6] || 0);
+        return new Date(year, month, day, hour, minute, second);
+    }
+
+    const d = new Date(text);
     return Number.isNaN(d.getTime()) ? null : d;
 }
 
@@ -93,6 +88,8 @@ function escapeHTML(value) {
     return div.innerHTML;
 }
 
+/* ---------- CURRENT WAIT TIMES ---------- */
+
 function renderCurrentWaits() {
     const grid = document.getElementById("wait-grid");
     if (!grid) return;
@@ -103,8 +100,8 @@ function renderCurrentWaits() {
         grid.innerHTML = `
             <article class="wait-row">
                 <div>
-                    <p class="wait-row-terminal">Could not load current wait times</p>
-                    <p class="wait-row-name">Check that the Google Sheet is public and the tab is named External.</p>
+                    <p class="wait-row-terminal">No usable wait-time rows found</p>
+                    <p class="wait-row-name">The sheet loaded, but the data could not be read.</p>
                 </div>
             </article>
         `;
@@ -114,10 +111,11 @@ function renderCurrentWaits() {
     usableRows.sort((a, b) => getDate(a) - getDate(b));
 
     const newestDate = getDate(usableRows[usableRows.length - 1]);
+    const newestTime = newestDate.getTime();
 
     const currentRows = usableRows.filter(row => {
         const d = getDate(row);
-        return d && d.getTime() === newestDate.getTime();
+        return d && d.getTime() === newestTime;
     });
 
     grid.innerHTML = currentRows.map(row => {
@@ -175,6 +173,8 @@ function updateSummary(rows, newestDate) {
         });
     }
 }
+
+/* ---------- PREDICTION ---------- */
 
 function predictWait(event) {
     event.preventDefault();
@@ -263,36 +263,52 @@ function predictWait(event) {
         `Estimated wait: ${estimate} min. Based on ${candidates.length} past records. Historical range: ${min}-${max} min.`;
 }
 
-async function loadSheet() {
+/* ---------- GOOGLE SHEET LOAD ---------- */
+
+function showSheetError(message) {
     const grid = document.getElementById("wait-grid");
+    if (!grid) return;
 
-    try {
-        const response = await fetch(SHEET_URL);
-
-        if (!response.ok) {
-            throw new Error("Sheet request failed.");
-        }
-
-        const text = await response.text();
-
-        WAIT_ROWS = parseCSV(text).filter(row => getWait(row) !== null);
-
-        renderCurrentWaits();
-    } catch (error) {
-        console.error(error);
-
-        if (grid) {
-            grid.innerHTML = `
-                <article class="wait-row">
-                    <div>
-                        <p class="wait-row-terminal">Could not load Google Sheet data</p>
-                        <p class="wait-row-name">Make sure the sheet is shared as anyone with the link can view.</p>
-                    </div>
-                </article>
-            `;
-        }
-    }
+    grid.innerHTML = `
+        <article class="wait-row">
+            <div>
+                <p class="wait-row-terminal">Could not load Google Sheet data</p>
+                <p class="wait-row-name">${escapeHTML(message)}</p>
+            </div>
+        </article>
+    `;
 }
+
+function loadSheet() {
+    showSheetError("Loading wait-time data...");
+
+    const oldScript = document.getElementById("google-sheet-loader");
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement("script");
+    script.id = "google-sheet-loader";
+    script.src = `${SHEET_URL}&cache=${Date.now()}`;
+    script.onerror = () => {
+        showSheetError("The Google Sheet script could not load.");
+    };
+
+    document.body.appendChild(script);
+}
+
+window.handleSheetData = function(response) {
+    if (!response || response.status !== "ok") {
+        console.error("Google Sheets response error:", response);
+        showSheetError("Google returned an error while loading the sheet.");
+        return;
+    }
+
+    WAIT_ROWS = rowsFromGoogleTable(response.table).filter(row => getWait(row) !== null);
+
+    console.log("Loaded rows:", WAIT_ROWS.length);
+    console.log("First row:", WAIT_ROWS[0]);
+
+    renderCurrentWaits();
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSheet();
