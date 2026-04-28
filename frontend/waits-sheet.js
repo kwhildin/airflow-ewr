@@ -41,30 +41,49 @@ function getWait(row) {
 }
 
 function getDate(row) {
-    const raw =
-        row["Date Time"] ||
-        row["Timestamp"] ||
-        row["Source Update Time"] ||
-        row["Date"] ||
-        "";
+    const dateRaw = row["Date"] || "";
+    const timeRaw = row["Time"] || "";
 
-    if (!raw) return null;
+    function parseGoogleDateParts(text) {
+        const match = String(text).match(/Date\((\d+),(\d+),(\d+),?(\d+)?,?(\d+)?,?(\d+)?\)/);
+        if (!match) return null;
 
-    const text = String(raw).trim();
-
-    const googleDate = text.match(/Date\((\d+),(\d+),(\d+),?(\d+)?,?(\d+)?,?(\d+)?\)/);
-    if (googleDate) {
-        const year = Number(googleDate[1]);
-        const month = Number(googleDate[2]);
-        const day = Number(googleDate[3]);
-        const hour = Number(googleDate[4] || 0);
-        const minute = Number(googleDate[5] || 0);
-        const second = Number(googleDate[6] || 0);
-        return new Date(year, month, day, hour, minute, second);
+        return {
+            year: Number(match[1]),
+            month: Number(match[2]),
+            day: Number(match[3]),
+            hour: Number(match[4] || 0),
+            minute: Number(match[5] || 0),
+            second: Number(match[6] || 0)
+        };
     }
 
-    const d = new Date(text);
-    return Number.isNaN(d.getTime()) ? null : d;
+    const googleDate = parseGoogleDateParts(dateRaw);
+    const googleTime = parseGoogleDateParts(timeRaw);
+
+    if (googleDate) {
+        return new Date(
+            googleDate.year,
+            googleDate.month,
+            googleDate.day,
+            googleTime ? googleTime.hour : 0,
+            googleTime ? googleTime.minute : 0,
+            googleTime ? googleTime.second : 0
+        );
+    }
+
+    if (dateRaw && timeRaw) {
+        const combined = new Date(`${dateRaw} ${timeRaw}`);
+        if (!Number.isNaN(combined.getTime())) return combined;
+    }
+
+    const fallback = row["Date Time"] || row["Timestamp"] || "";
+    if (fallback) {
+        const d = new Date(fallback);
+        if (!Number.isNaN(d.getTime())) return d;
+    }
+
+    return null;
 }
 
 function getTerminal(row) {
