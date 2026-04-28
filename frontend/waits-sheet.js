@@ -326,17 +326,28 @@ function renderCurrentWaits() {
 
 function updateSummary(rows, newestDate) {
     const updated = document.getElementById("last-updated");
+    if (!updated) return;
 
-    if (updated && newestDate) {
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let dateToShow = newestDate;
 
-        updated.textContent = newestDate.toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short",
-            timeZoneName: "short"
-        }) + ` (${userTimeZone})`;
+    if (!dateToShow && rows && rows.length) {
+        dateToShow = rows
+            .map(getDate)
+            .filter(Boolean)
+            .sort((a, b) => b - a)[0];
     }
-}}
+
+    if (!dateToShow) {
+        updated.textContent = "—";
+        return;
+    }
+
+    updated.textContent = dateToShow.toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZoneName: "short"
+    });
+}
 
 function updateSummary(rows, newestDate) {
     if (!rows.length) return;
