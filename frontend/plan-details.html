@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirFlow — Flight Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style-premium.css?v=p1" />
+</head>
+<body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="index.html" aria-label="AirFlow home">
+                <img class="brand-logo" src="assets/airflow-logo.png" alt="AirFlow" width="160" height="42" decoding="async" />
+            </a>
+
+            <nav class="topnav" aria-label="Primary">
+                <a class="topnav-link" href="index.html">Home</a>
+                <a class="topnav-link is-active" href="plan.html">Plan My Trip</a>
+                <a class="topnav-link" href="waits.html">Wait Times</a>
+                <a class="topnav-link" href="airport-map.html">Airport Map</a>
+                <a class="topnav-link" href="about.html">About</a>
+            </nav>
+
+            <nav class="topnav topnav--right" aria-label="Account">
+                <a class="topnav-link" href="saved.html">Saved</a>
+                <a class="topnav-link" href="profile.html">Profile</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page">
+        <a class="back-link" href="plan.html">← Back to results</a>
+
+        <section class="card card--padded plan-detail-head" aria-label="Selected flight">
+            <div class="plan-detail-head-top">
+                <div class="plan-detail-summary">
+                    <p class="plan-detail-summary-title" id="pd-summary-title">—</p>
+                    <p class="plan-detail-summary-route" id="pd-summary-route">—</p>
+                    <p class="plan-detail-summary-meta" id="pd-summary-meta">—</p>
+                </div>
+                <div class="plan-detail-head-actions">
+                    <button class="btn btn-primary" id="pd-save-btn" type="button">Save plan</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card card--padded plan-detail-card" aria-label="Departing address">
+            <h2 class="section-title">Enter your starting address</h2>
+            <p class="muted" style="margin-top:0">Calculate a traffic-aware drive estimate.</p>
+
+            <div class="pd-address-row">
+                <label class="field plan-detail-address">
+                    <span class="field-label">Starting address</span>
+                    <div id="pd-origin-control"></div>
+                    <input class="field-input is-hidden" id="pd-origin" type="text" placeholder="Start typing your address…" autocomplete="off" />
+                </label>
+                <button class="btn btn-primary pd-calc-btn" id="pd-calc-drive" type="button">Calculate drive time</button>
+            </div>
+            <p class="muted" id="pd-ac-status" style="margin-top:0.35rem"></p>
+            <p class="planner-drive-status" id="pd-drive-status" aria-live="polite"></p>
+        </section>
+
+        <section class="pd-leave-focus" aria-label="Leave time">
+            <div class="planner-hero" aria-label="Leave by estimates" style="margin-top: 1rem;">
+                <div class="planner-hero-head">
+                    <p class="planner-hero-label">Leave by</p>
+                    <span class="planner-hero-badge" id="pd-reco-badge">Enter your address to continue</span>
+                </div>
+                <div class="planner-hero-times" aria-label="Leave time options">
+                    <div class="planner-hero-timeitem">
+                        <span>Safe</span>
+                        <strong id="pd-leave-very">—</strong>
+                        <em class="pd-leave-desc">Extra buffer</em>
+                    </div>
+                    <div class="planner-hero-timeitem planner-hero-timeitem--main">
+                        <span>Recommended</span>
+                        <strong id="pd-leave-rec">—</strong>
+                        <em class="pd-leave-desc">Best balance</em>
+                    </div>
+                    <div class="planner-hero-timeitem">
+                        <span>Tight</span>
+                        <strong id="pd-leave-risky">—</strong>
+                        <em class="pd-leave-desc">Minimal buffer</em>
+                    </div>
+                </div>
+                <p class="planner-hero-note is-hidden" id="pd-boarding-wrap">
+                    Boarding starts at <strong id="pd-boarding">—</strong>
+                </p>
+                <p class="planner-hero-sub" id="pd-support">Enter your address to see your leave time.</p>
+            </div>
+        </section>
+
+        <section class="card card--padded" aria-label="Timing breakdown" style="margin-top:1rem;">
+            <h2 class="section-title">Timing breakdown</h2>
+            <div class="planner-metrics planner-metrics--compact" style="margin-bottom:0">
+                    <div class="planner-metric planner-metric--drive">
+                        <span>Drive</span>
+                        <strong id="pd-drive">—</strong><em>min</em>
+                        <small class="planner-metric-sub" id="pd-drive-source"></small>
+                    </div>
+                    <div class="planner-metric">
+                        <span>Security</span>
+                        <strong id="pd-security">—</strong><em>min</em>
+                        <small class="planner-metric-sub" id="pd-security-source">Terminal estimate</small>
+                    </div>
+                    <div class="planner-metric">
+                        <span>Walk</span>
+                        <strong id="pd-walk">12</strong><em>min</em>
+                        <small class="planner-metric-sub">Placeholder</small>
+                    </div>
+                    <div class="planner-metric">
+                        <span>Buffer</span>
+                        <strong id="pd-buffer">—</strong><em>min</em>
+                        <small class="planner-metric-sub">Cushion + add-ons</small>
+                    </div>
+                    <div class="planner-metric planner-metric--total">
+                        <span>Total</span>
+                        <strong id="pd-total">—</strong><em>min</em>
+                    </div>
+            </div>
+        </section>
+
+        <details class="card card--padded pd-advanced" aria-label="Advanced options" style="margin-top:1rem;">
+            <summary class="pd-advanced-summary">Advanced options</summary>
+            <div class="plan-detail-options" style="margin-top:0.75rem">
+                <label class="field">
+                    <span class="field-label">Arrival cushion (min)</span>
+                    <input class="field-input" id="pd-cushion" type="number" min="0" max="180" value="15" />
+                </label>
+                <label class="planner-toggle">
+                    <input type="checkbox" id="pd-precheck" />
+                    <span>TSA PreCheck</span>
+                </label>
+                <label class="planner-toggle">
+                    <input type="checkbox" id="pd-bags" />
+                    <span>Checked bag</span>
+                </label>
+                <label class="planner-toggle">
+                    <input type="checkbox" id="pd-park" />
+                    <span>Parking</span>
+                </label>
+            </div>
+            <p class="muted" id="pd-options-note" style="margin-top:0.65rem">Security time uses your selected flight terminal.</p>
+        </details>
+    </main>
+
+    <script src="saved-flights.js"></script>
+    <script src="app.js?v=maps2"></script>
+    <script src="plan-details.js?v=pd1"></script>
+</body>
+</html>
+

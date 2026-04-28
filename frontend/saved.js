@@ -37,6 +37,110 @@ function urgencyForLeaveIn(leaveInMin) {
     return { level: "neutral", label: "On track", warn: "" };
 }
 
+function buildPlanDetailsUrlFromPlan(plan) {
+    const f = plan?.flight || {};
+    const params = new URLSearchParams({
+        airline: f.airline || "",
+        flight_number: f.flight_number || "",
+        destination_airport: f.destination_airport || "",
+        destination_city: f.destination_city || "",
+        scheduled_departure: f.scheduled_departure || "",
+        terminal: f.terminal || "",
+        gate: f.gate || "",
+        status: f.status || f.flight_status || "",
+        terminal_wait: f.terminal_wait == null ? "" : String(f.terminal_wait),
+    });
+    return `plan-details.html?${params.toString()}`;
+}
+
+function getSavedPlans() {
+    try {
+        const raw = localStorage.getItem("airflow_saved_plans_v1");
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+function setSavedPlans(list) {
+    localStorage.setItem("airflow_saved_plans_v1", JSON.stringify(list));
+}
+
+function removeSavedPlan(id) {
+    const next = getSavedPlans().filter((p) => p?.id !== id);
+    setSavedPlans(next);
+}
+
+function renderSavedPlansList() {
+    const container = document.getElementById("saved-plans-list");
+    const countEl = document.getElementById("saved-plans-count");
+    if (!container) return;
+
+    const plans = getSavedPlans();
+    if (countEl) countEl.textContent = `${plans.length}`;
+
+    if (!plans.length) {
+        container.innerHTML =
+            `<li class="saved-empty" style="list-style:none;">
+                <div class="saved-empty-inner">
+                    <p class="saved-empty-title">No saved plans yet</p>
+                    <p class="saved-empty-copy">Pick a flight on Plan My Trip, then Save this plan to keep it here.</p>
+                    <a class="btn btn-primary" href="plan.html">Plan My Trip</a>
+                </div>
+             </li>`;
+        return;
+    }
+
+    container.innerHTML = plans
+        .map((p) => {
+            const f = p.flight || {};
+            const dest = f.destination_airport || f.destination_city || "—";
+            const flightNo = f.flight_number || "—";
+            const airline = f.airline || "—";
+            const departs = formatDateTime(f.scheduled_departure);
+            const planUrl = buildPlanDetailsUrlFromPlan(p);
+            const id = encodeURIComponent(p.id || "");
+
+            return `
+            <li class="flight-result-item-wrap">
+                <details class="saved-card">
+                    <summary class="saved-card-summary">
+                        <div class="saved-card-left">
+                            <p class="saved-flight">${escapeHtml(flightNo)}</p>
+                            <p class="saved-dest">${escapeHtml(dest)}</p>
+                            <p class="saved-meta">${escapeHtml(airline)} · Departs ${escapeHtml(departs)}</p>
+                        </div>
+                        <div class="saved-card-right">
+                            <span class="saved-primary"><strong>Saved plan</strong></span>
+                            <span class="saved-status">Plan</span>
+                        </div>
+                    </summary>
+                    <div class="saved-card-body">
+                        <div class="saved-actions">
+                            <a class="btn btn-primary" href="${planUrl.replace(/"/g, "&quot;")}">Open plan</a>
+                            <button type="button" class="btn btn-ghost" data-plan-id="${id}" aria-label="Remove saved plan" title="Remove saved plan">Remove</button>
+                        </div>
+                    </div>
+                </details>
+            </li>`;
+        })
+        .join("");
+
+    container.querySelectorAll("[data-plan-id]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = decodeURIComponent(btn.getAttribute("data-plan-id") || "");
+            if (id) {
+                removeSavedPlan(id);
+                renderSavedPlansList();
+            }
+        });
+    });
+}
+
 function renderSavedList() {
     const container = document.getElementById("saved-list");
     const countEl = document.getElementById("saved-count");
@@ -164,3 +268,4 @@ function renderSavedList() {
 }
 
 renderSavedList();
+renderSavedPlansList();

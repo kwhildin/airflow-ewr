@@ -123,11 +123,57 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
+function isPlannerDevDebugEnabled() {
+    try {
+        const qs = new URLSearchParams(window.location.search);
+        return qs.get("debug") === "1";
+    } catch {
+        return false;
+    }
+}
+
 function formatDateTime(value) {
     if (!value) return "—";
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return value;
     return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
+function formatTimeOnly(value) {
+    if (!value) return "—";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+function isoLocalDate(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+function todayIsoLocalDate() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+function getSelectedDepartureDate() {
+    const el = document.getElementById("departure-date-input");
+    const v = (el?.value || "").trim();
+    return v || todayIsoLocalDate();
+}
+
+function filterFlightsForSelectedDate(rows) {
+    const sel = getSelectedDepartureDate();
+    if (!sel) return rows;
+    return (rows || []).filter((f) => isoLocalDate(f.scheduled_departure) === sel);
 }
 
 function formatTimeToDeparture(iso) {
@@ -290,12 +336,18 @@ async function searchFlights(params) {
     const query = new URLSearchParams();
     if (params.airline) query.set("airline", params.airline);
     if (params.destination) query.set("destination", params.destination);
-    const res = await fetch(`${API_BASE}/api/flights/search?${query.toString()}`);
+    if (params.force_refresh) query.set("force_refresh", "true");
+    const url = `${API_BASE}/api/flights/search?${query.toString()}`;
+    console.log("[plan route search] request url", url);
+    const res = await fetch(url);
     if (!res.ok) {
         const msg = await res.text();
         throw new Error(msg || "Search failed");
     }
-    return res.json();
+    const payload = await res.json();
+    console.log("[plan route search] raw response", payload);
+    console.log("[plan route search] parsed results count", (payload?.results || []).length);
+    return payload;
 }
 
 function enrichFlight(f) {
@@ -462,6 +514,15 @@ function loadExternalScript(src) {
     });
 }
 
+function airflowSetMapsDiag(patch) {
+    try {
+        const cur = (globalThis.__airflow_maps_diag && typeof globalThis.__airflow_maps_diag === "object") ? globalThis.__airflow_maps_diag : {};
+        globalThis.__airflow_maps_diag = { ...cur, ...patch, at: Date.now() };
+    } catch {
+        /* ignore */
+    }
+}
+
 /**
  * Loads Maps JavaScript API (Places) using the key from the backend.
  * Returns true if `google.maps.places` is available after this call.
@@ -470,6 +531,7 @@ async function ensureGoogleMapsPlaces() {
     if (globalThis.google?.maps?.places) return true;
     if (!googleMapsScriptPromise) {
         googleMapsScriptPromise = (async () => {
+            airflowSetMapsDiag({ stage: "begin", ok: null, reason: "" });
             try {
                 const res = await fetch(`${API_BASE}/api/config/google-maps`);
                 if (!res.ok) return false;
@@ -479,20 +541,53 @@ async function ensureGoogleMapsPlaces() {
                     apiKey: typeof cfg.api_key === "string" ? cfg.api_key : "",
                 };
                 if (!cfg.enabled || !cfg.api_key) return false;
+
+                // Google Maps JS API error path will often call this.
+                globalThis.gm_authFailure = () => {
+                    airflowSetMapsDiag({ stage: "gm_authFailure", ok: false, reason: "gm_authFailure (key blocked for browser JS)" });
+                };
+
+                const cbName = "__airflowMapsLoaded";
+                let cbResolve;
+                globalThis[cbName] = () => {
+                    try { cbResolve?.(); } catch { /* ignore */ }
+                };
+                const cbPromise = new Promise((r) => { cbResolve = r; });
+
                 const q = new URLSearchParams({
                     key: cfg.api_key,
                     libraries: "places",
-                    v: "weekly",
+                    // Places widgets (PlaceAutocompleteElement) require the newer JS surface.
+                    // "beta" is recommended by Google for the new widgets/docs.
+                    v: "beta",
                     loading: "async",
+                    callback: cbName,
                 });
-                await loadExternalScript(`https://maps.googleapis.com/maps/api/js?${q.toString()}`);
-                return Boolean(globalThis.google?.maps?.places);
+                const src = `https://maps.googleapis.com/maps/api/js?${q.toString()}`;
+                airflowSetMapsDiag({ stage: "loading_script", src });
+                await loadExternalScript(src);
+
+                // Wait briefly for callback; if it never fires, we still might have google loaded.
+                await Promise.race([
+                    cbPromise,
+                    new Promise((r) => setTimeout(r, 6000)),
+                ]);
+
+                const ok = Boolean(globalThis.google?.maps?.places);
+                airflowSetMapsDiag({ stage: "loaded", ok, reason: ok ? "" : "places_not_present_after_load" });
+                return ok;
             } catch {
+                airflowSetMapsDiag({ stage: "exception", ok: false, reason: "exception_loading_maps_script" });
                 return false;
             }
         })();
     }
-    return googleMapsScriptPromise;
+    // If loading fails (often due to key restrictions / billing / blocked script),
+    // allow a later retry rather than caching a permanent "false".
+    return googleMapsScriptPromise.then((ok) => {
+        if (!ok) googleMapsScriptPromise = null;
+        return ok;
+    });
 }
 
 function getPlannerOrigin(detailsEl, panel) {
@@ -567,17 +662,19 @@ function resolvePlannerDrive(detailsEl, panel) {
 function updatePlannerDriveFeedback(panel, detailsEl, driveInfo) {
     const statusEl = panel.querySelector('[data-role="driveStatus"]');
     const dbg = panel.querySelector('[data-role="driveDebug"]');
-    if (dbg) {
-        dbg.textContent = `debug: source=${driveInfo.source} · ${driveInfo.debugMinutes} min`;
-    }
+    const devDetails = panel.querySelector('[data-role="devDetails"]');
+    if (dbg) dbg.textContent = `source=${driveInfo.source} · ${driveInfo.debugMinutes} min`;
+    if (devDetails) devDetails.classList.toggle("is-hidden", !isPlannerDevDebugEnabled());
     if (!statusEl) return;
     const ui = detailsEl?.dataset?.plannerDriveStatus;
     if (ui === "calculating") {
         statusEl.textContent = "Calculating drive time...";
     } else if (ui === "ok") {
-        statusEl.textContent = "Drive time updated from Google Routes";
+        const minutes = driveInfo?.source === "google" ? driveInfo.debugMinutes : null;
+        statusEl.textContent =
+            typeof minutes === "number" && Number.isFinite(minutes) ? `Drive time calculated: ${minutes} min` : "Drive time calculated.";
     } else if (ui === "error") {
-        statusEl.textContent = "Could not calculate drive time — using placeholder";
+        statusEl.textContent = "Could not calculate drive time. Using placeholder estimate.";
     } else {
         statusEl.textContent = "";
     }
@@ -585,19 +682,25 @@ function updatePlannerDriveFeedback(panel, detailsEl, driveInfo) {
 
 function updatePlannerBadge(panel, driveInfo) {
     const badge = panel.querySelector('[data-role="plannerBadge"]');
+    const support = panel.querySelector('[data-role="plannerSupport"]');
     if (!badge) return;
     if (driveInfo.badgeMode === "no_origin") {
         badge.textContent = state.googleMapsClient.enabled
             ? "Add a starting address for drive time"
             : "Configure GOOGLE_MAPS_API_KEY for drive time";
+        if (support) support.textContent = "Using placeholder drive estimate until an address is entered.";
     } else if (driveInfo.badgeMode === "loading") {
         badge.textContent = "Updating traffic-aware drive…";
+        if (support) support.textContent = "Using placeholder drive estimate until an address is entered.";
     } else if (driveInfo.badgeMode === "pending") {
         badge.textContent = "Estimating traffic-aware drive…";
+        if (support) support.textContent = "Using placeholder drive estimate until an address is entered.";
     } else if (driveInfo.badgeMode === "error") {
         badge.textContent = "Drive estimate unavailable";
+        if (support) support.textContent = "Using placeholder drive estimate until an address is entered.";
     } else {
         badge.textContent = "Traffic-aware drive (planned departure)";
+        if (support) support.textContent = "Based on Google traffic estimate, security, walk, and buffer.";
     }
 }
 
@@ -758,7 +861,7 @@ function renderDepartedFlightRowHtml(f) {
     const dest = f.destination_airport || f.destination_city || "—";
     const flightNo = f.flight_number || "—";
     const airline = f.airline || "—";
-    const departs = formatDateTime(f.scheduled_departure);
+    const departs = formatTimeOnly(f.scheduled_departure);
     const termShort = f.terminal || "—";
     const ttd = "Departed";
     const statusText = "Departed";
@@ -766,13 +869,14 @@ function renderDepartedFlightRowHtml(f) {
     const saved = typeof isFlightSaved === "function" && isFlightSaved(f);
     const heartLabel = saved ? "Remove from saved" : "Save flight";
     const fullUrl = buildFlightPageUrl(f);
+    const planUrl = buildPlanDetailsUrl(f);
     const key = encodeURIComponent(flightStorageKey(f));
 
     return `
             <li class="flight-result-item-wrap">
                 <details class="flight-result-item" data-flight-key="${key}" data-departed="1">
                     <summary class="flight-result-summary">
-                        <div class="flight-result-preview">
+                        <div class="flight-result-preview" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
                             <div class="flight-result-preview-cell">
                                 <span class="flight-result-preview-label">Flight</span>
                                 <span class="flight-result-preview-value">${escapeHtml(flightNo)}</span>
@@ -798,13 +902,14 @@ function renderDepartedFlightRowHtml(f) {
                                 <span class="flight-result-preview-value">${escapeHtml(termShort)}</span>
                             </div>
                         </div>
+                        <div class="flight-result-preview-actions">
+                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
+                        </div>
                     </summary>
                     <div class="flight-result-body flight-result-body--departed">
-                        <p class="planner-departed-msg" role="status">This flight has already departed</p>
-                        <section class="planner-secondary" aria-label="Flight details">
-                            <h3 class="planner-secondary-title">Flight details</h3>
+                        <p class="planner-departed-msg" role="status">Quick Look</p>
+                        <section class="planner-secondary" aria-label="Quick look details">
                             <div class="planner-details-grid">
-                                <p><strong>Destination</strong><span>${escapeHtml(dest)}</span></p>
                                 <p><strong>Departure</strong><span>${escapeHtml(formatDateTime(f.scheduled_departure))}</span></p>
                                 <p><strong>Terminal</strong><span>${escapeHtml(f._terminalLabel || f.terminal || "—")}</span></p>
                                 <p><strong>Gate</strong><span>${escapeHtml(f.gate || "—")}</span></p>
@@ -815,7 +920,7 @@ function renderDepartedFlightRowHtml(f) {
                             <button type="button" class="btn-heart ${saved ? "is-saved" : ""}" data-flight-key="${key}" aria-label="${heartLabel}" title="${heartLabel}">
                                 <span aria-hidden="true">${saved ? "♥" : "♡"}</span> ${saved ? "Saved" : "Save"}
                             </button>
-                            <a class="btn btn-ghost btn-open-page" href="${fullUrl.replace(/"/g, "&quot;")}">Open full page</a>
+                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
                         </div>
                     </div>
                 </details>
@@ -828,7 +933,7 @@ function renderFlightRowHtml(f) {
     const dest = f.destination_airport || f.destination_city || "—";
     const flightNo = f.flight_number || "—";
     const airline = f.airline || "—";
-    const departs = formatDateTime(f.scheduled_departure);
+    const departs = formatTimeOnly(f.scheduled_departure);
     const termShort = f.terminal || "—";
     const depIsoRaw = f.scheduled_departure || "";
     const depMsForStatus = new Date(depIsoRaw).getTime();
@@ -854,13 +959,14 @@ function renderFlightRowHtml(f) {
     const saved = typeof isFlightSaved === "function" && isFlightSaved(f);
     const heartLabel = saved ? "Remove from saved" : "Save flight";
     const fullUrl = buildFlightPageUrl(f);
+    const planUrl = buildPlanDetailsUrl(f);
     const key = encodeURIComponent(flightStorageKey(f));
 
     return `
             <li class="flight-result-item-wrap">
                 <details class="flight-result-item" data-flight-key="${key}">
                     <summary class="flight-result-summary">
-                        <div class="flight-result-preview">
+                        <div class="flight-result-preview" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
                             <div class="flight-result-preview-cell">
                                 <span class="flight-result-preview-label">Flight</span>
                                 <span class="flight-result-preview-value">${escapeHtml(flightNo)}</span>
@@ -886,129 +992,61 @@ function renderFlightRowHtml(f) {
                                 <span class="flight-result-preview-value">${escapeHtml(termShort)}</span>
                             </div>
                         </div>
+                        <div class="flight-result-preview-actions">
+                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
+                        </div>
                     </summary>
                     <div class="flight-result-body">
-                        <section class="planner-top" aria-label="Flight summary">
-                            <div class="planner-top-main">
-                                <p class="planner-top-flight">${escapeHtml(flightNo)}</p>
-                                <p class="planner-top-sub">${escapeHtml(airline)} · ${escapeHtml(dest)}</p>
-                            </div>
-                            <div class="planner-top-meta">
-                                <div class="planner-top-item">
-                                    <span class="planner-top-k">Departs</span>
-                                    <span class="planner-top-v" data-role="departsIso">${escapeHtml(departs)}</span>
-                                </div>
-                                <div class="planner-top-item">
-                                    <span class="planner-top-k">Terminal</span>
-                                    <span class="planner-top-v">${escapeHtml(f._terminalLabel || f.terminal || "—")}</span>
-                                </div>
-                                <div class="planner-top-item">
-                                    <span class="planner-top-k">Status</span>
-                                    <span class="planner-top-v" data-role="statusText">${escapeHtml(statusText)}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <div class="planner-alert is-hidden" data-role="flightAlert" role="status" aria-live="polite"></div>
-
-                        <section class="planner-hero" aria-label="Recommended leave time" data-role="plannerReco">
-                            <div class="planner-hero-head">
-                                <p class="planner-hero-label">Recommended leave time</p>
-                                <span class="planner-hero-badge" data-role="plannerBadge">Add a starting address for drive time</span>
-                            </div>
-                            <div class="planner-hero-times" aria-label="Leave time options">
-                                <div class="planner-hero-timeitem">
-                                    <span>Safe</span>
-                                    <strong data-role="leaveSafe">${escapeHtml(initialLeaveSafe || "—")}</strong>
-                                </div>
-                                <div class="planner-hero-timeitem planner-hero-timeitem--main">
-                                    <span>Recommended</span>
-                                    <strong data-role="leaveRec">${escapeHtml(initialLeaveRec || "—")}</strong>
-                                </div>
-                                <div class="planner-hero-timeitem">
-                                    <span>Tight</span>
-                                    <strong data-role="leaveTight">${escapeHtml(initialLeaveTight || "—")}</strong>
-                                </div>
-                            </div>
-                            <p class="planner-hero-note ${initialBoarding ? "" : "is-hidden"}" data-role="boardingWrap">
-                                Boarding starts at <strong data-role="boardingTime">${escapeHtml(initialBoarding || "")}</strong>
-                            </p>
-                            <p class="planner-hero-sub">Planned to reach the gate before boarding begins.</p>
-                        </section>
-
-                        <section class="planner-metrics" aria-label="Timing breakdown" data-role="plannerMetrics">
-                            <div class="planner-metric"><span>Drive</span><strong data-role="drive">${driveDisplay}</strong><em>min</em></div>
-                            <div class="planner-metric"><span>Security</span><strong data-role="security">${secBase}</strong><em>min</em></div>
-                            <div class="planner-metric"><span>Walk</span><strong data-role="walk">${walkBase}</strong><em>min</em></div>
-                            <div class="planner-metric"><span>Buffer</span><strong data-role="buffer">${cushion}</strong><em>min</em></div>
-                            <div class="planner-metric planner-metric--total"><span>Total</span><strong data-role="totalAll">${totalToGate + PLAN_PASS0_DRIVE_GUESS_MIN + cushion}</strong><em>min</em></div>
-                        </section>
-
-                        <section class="planner-card" aria-label="Customize this plan" data-role="plannerCustomize">
-                            <div class="planner-card-head">
-                                <h3 class="planner-card-title">Customize this plan</h3>
-                                <p class="planner-card-sub">Adjust assumptions and we’ll update the leave time.</p>
-                            </div>
-                            <p class="planner-drive-status" data-role="driveStatus" aria-live="polite"></p>
-                            <p class="planner-debug" data-role="driveDebug"></p>
-                            <div class="planner-form">
-                                <label class="field planner-form-field planner-form-field--full">
-                                    <span class="field-label">Starting address</span>
-                                    <input class="field-input" type="text" placeholder="Start typing your address…" data-role="origin" autocomplete="off" />
-                                </label>
-                                <label class="field planner-form-field">
-                                    <span class="field-label">Arrival cushion (min)</span>
-                                    <input class="field-input" type="number" min="0" max="180" value="${cushion}" data-role="cushion" />
-                                </label>
-                                <label class="planner-toggle">
-                                    <input type="checkbox" data-role="precheck" />
-                                    <span>TSA PreCheck</span>
-                                </label>
-                                <label class="planner-toggle">
-                                    <input type="checkbox" data-role="bags" />
-                                    <span>Checked bag</span>
-                                </label>
-                            </div>
-                        </section>
-
-                        <section class="planner-secondary" aria-label="Flight details">
-                            <h3 class="planner-secondary-title">Flight details</h3>
+                        <p class="planner-departed-msg" role="status">Quick Look</p>
+                        <section class="planner-secondary" aria-label="Quick look details">
                             <div class="planner-details-grid">
-                                <p><strong>Destination</strong><span>${escapeHtml(dest)}</span></p>
-                                <p><strong>Departure</strong><span>${escapeHtml(formatDateTime(f.scheduled_departure))}</span></p>
-                                <p class="${initialBoarding ? "" : "is-hidden"}" data-role="boardingField"><strong>Boarding time</strong><span data-role="boardingTime">${escapeHtml(
-                                    initialBoarding || "",
-                                )}</span></p>
-                                <p><strong>Time to departure</strong><span>${escapeHtml(ttd)}</span></p>
+                                <p><strong>Departure</strong><span>${escapeHtml(formatTimeOnly(f.scheduled_departure))}</span></p>
+                                <p class="${initialBoarding ? "" : "is-hidden"}"><strong>Boarding time</strong><span>${escapeHtml(initialBoarding || "")}</span></p>
                                 <p><strong>Terminal</strong><span>${escapeHtml(f._terminalLabel || f.terminal || "—")}</span></p>
                                 <p><strong>Gate</strong><span>${escapeHtml(f.gate || "—")}</span></p>
-                                <p><strong>Status</strong><span data-role="statusText">${escapeHtml(statusText)}</span></p>
+                                <p><strong>Status</strong><span>${escapeHtml(statusText)}</span></p>
                             </div>
                         </section>
-
-                        <details class="planner-how">
-                            <summary class="planner-how-summary">How this estimate works</summary>
-                            <div class="planner-how-body">
-                                <p><strong>Drive</strong> uses Google Routes with traffic for the time you’d leave (two quick passes). <strong>Walk</strong> is still a simple placeholder.</p>
-                                <p><strong>Security</strong> uses the current terminal estimate (PreCheck reduces it).</p>
-                                <p><strong>Buffer</strong> is your cushion plus a small placeholder add-on for checked bags.</p>
-                            </div>
-                        </details>
 
                         <div class="flight-result-actions planner-actions">
                             <button type="button" class="btn-heart ${saved ? "is-saved" : ""}" data-flight-key="${key}" aria-label="${heartLabel}" title="${heartLabel}">
                                 <span aria-hidden="true">${saved ? "♥" : "♡"}</span> ${saved ? "Saved" : "Save"}
                             </button>
-                            <a class="btn btn-ghost btn-open-page" href="${fullUrl.replace(/"/g, "&quot;")}">Open full page</a>
+                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
                         </div>
                     </div>
                 </details>
             </li>`;
 }
 
+function buildPlanDetailsUrl(f) {
+    const terminalLabel = f._terminalLabel || normalizeTerminalLabel(f.terminal) || "";
+    const params = new URLSearchParams({
+        airline: f.airline || "",
+        flight_number: f.flight_number || "",
+        destination_airport: f.destination_airport || "",
+        destination_city: f.destination_city || "",
+        scheduled_departure: f.scheduled_departure || "",
+        terminal: f.terminal || "",
+        terminal_label: terminalLabel,
+        gate: f.gate || "",
+        status: f.flight_status || "",
+        terminal_wait: f._securityMinutes == null ? "" : String(f._securityMinutes),
+    });
+    return `plan-details.html?${params.toString()}`;
+}
+
 function bindFlightResultActions() {
     const list = document.getElementById("flight-results-list");
     if (!list) return;
+    list.querySelectorAll('[data-role="chooseBtn"]').forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // don't toggle quick look when choosing
+            const href = btn.getAttribute("data-href") || "";
+            if (href) window.location.href = href;
+        });
+    });
     list.querySelectorAll(".btn-heart").forEach((btn) => {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -1085,6 +1123,9 @@ function recomputePlanner(panel) {
         n.textContent = driveInfo.display;
         if (driveInfo.error) n.setAttribute("title", driveInfo.error);
         else n.removeAttribute("title");
+    });
+    panel.querySelectorAll('[data-role="driveSource"]').forEach((n) => {
+        n.textContent = driveInfo.source === "google" ? "Google Routes" : "";
     });
     updatePlannerBadge(panel, driveInfo);
     if (detailsEl) updatePlannerDriveFeedback(panel, detailsEl, driveInfo);
@@ -1208,7 +1249,6 @@ function renderFlightResultsList() {
 
     list.innerHTML = filtered.map((f) => renderFlightRowHtml(f)).join("");
     bindFlightResultActions();
-    bindPlannerControls();
 }
 
 function renderFlightResults(payload, results) {
@@ -1392,6 +1432,9 @@ function initTripPlanner() {
     attachAutocomplete("airline-input", "airline-suggestions", AIRLINE_SUGGESTIONS);
     attachAutocomplete("destination-input", "destination-suggestions", DESTINATION_SUGGESTIONS);
 
+    const dateInput = document.getElementById("departure-date-input");
+    if (dateInput && !dateInput.value) dateInput.value = todayIsoLocalDate();
+
     renderRecentSearches();
 
     document.getElementById("recent-searches-list")?.addEventListener("click", (e) => {
@@ -1412,6 +1455,8 @@ function initTripPlanner() {
             setMode("route");
             document.getElementById("airline-input").value = entry.airline || "";
             document.getElementById("destination-input").value = entry.destination || "";
+            const di = document.getElementById("departure-date-input");
+            if (di) di.value = entry.date || di.value || todayIsoLocalDate();
             if (typeof formRoute.requestSubmit === "function") formRoute.requestSubmit();
             else formRoute.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
         }
@@ -1450,16 +1495,17 @@ function initTripPlanner() {
         hideTripError();
         const airline = document.getElementById("airline-input").value.trim();
         const destination = document.getElementById("destination-input").value.trim();
+        const date = getSelectedDepartureDate();
         searchFlights({ airline, destination })
             .then((payload) => {
-                const rows = payload.results || [];
+                const rows = filterFlightsForSelectedDate(payload.results || []);
                 if (!rows.length) {
                     showTripError("No matching EWR departures found.");
                     document.getElementById("flight-results-wrap")?.classList.add("is-hidden");
                     document.getElementById("flight-results-toolbar")?.classList.add("is-hidden");
                     return;
                 }
-                pushRecentSearch({ mode: "route", airline, destination });
+                pushRecentSearch({ mode: "route", airline, destination, date });
                 renderFlightResults(payload, rows);
             })
             .catch((err) => {
@@ -1503,19 +1549,24 @@ function initTripPlanner() {
     if (refreshLive) {
         refreshLive.addEventListener("click", () => {
             hideTripError();
-            fetch(`${API_BASE}/api/flights/refresh`)
-                .then(async (res) => {
-                    if (!res.ok) {
-                        const msg = await res.text();
-                        throw new Error(msg || "Refresh failed");
-                    }
-                    return res.json();
-                })
+            const airline = document.getElementById("airline-input")?.value?.trim() || "";
+            const destination = document.getElementById("destination-input")?.value?.trim() || "";
+            const date = getSelectedDepartureDate();
+            if (!airline && !destination) {
+                showTripError("Enter an airline and/or destination before refreshing live data.");
+                return;
+            }
+            searchFlights({ airline, destination, force_refresh: true })
                 .then((payload) => {
-                    const meta = document.getElementById("flight-search-meta");
-                    if (meta) {
-                        setFlightSearchMeta({ source: "live", cached_at: payload.cached_at });
+                    const rows = filterFlightsForSelectedDate(payload.results || []);
+                    if (!rows.length) {
+                        showTripError("No matching EWR departures found.");
+                        document.getElementById("flight-results-wrap")?.classList.add("is-hidden");
+                        document.getElementById("flight-results-toolbar")?.classList.add("is-hidden");
+                        return;
                     }
+                    pushRecentSearch({ mode: "route", airline, destination, date });
+                    renderFlightResults(payload, rows);
                 })
                 .catch((err) => {
                     showTripError(`Live refresh failed: ${err.message}`);

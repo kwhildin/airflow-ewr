@@ -1,5 +1,18 @@
+# Python
 venv/
 __pycache__/
 *.pyc
-data/*.csv
+
+# Env files (IMPORTANT)
 .env
+
+# Cache/data
+data/
+*.json
+
+# Node (if frontend uses it)
+node_modules/
+dist/
+
+# OS
+.DS_Store

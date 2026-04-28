@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from google_routes import compute_drive_route
+from flightview_fids_scraper import fetch_ewr_departures
 from wait_time_model import predictor
 
 app = FastAPI()
@@ -34,6 +35,11 @@ ENV_FILE = PROJECT_ROOT / ".env"
 
 # Always load project root .env, even if uvicorn starts elsewhere.
 load_dotenv(dotenv_path=ENV_FILE, override=True)
+
+# Flight data source switch (read after .env load):
+# - flightview (default): official tracker widget (HTML parsing)
+# - aviationstack: legacy behavior
+FLIGHT_DATA_SOURCE = (os.getenv("FLIGHT_DATA_SOURCE") or "flightview").strip().lower()
 
 
 def _read_api_key_from_env_file() -> str | None:
@@ -444,6 +450,34 @@ def _get_raw_flights(force_refresh: bool) -> tuple[dict[str, Any], str, str]:
     return live_payload, "live", cached_at
 
 
+def _filter_normalized_flights(
+    flights: list[dict[str, Any]],
+    airline: str | None,
+    destination: str | None,
+    flight_number: str | None = None,
+) -> list[dict[str, Any]]:
+    results = flights
+
+    if flight_number:
+        q = flight_number.strip().upper().replace(" ", "")
+        results = [f for f in results if q and q in str(f.get("flight_number") or "").upper().replace(" ", "")]
+
+    if airline:
+        aq = airline.strip().lower()
+        results = [f for f in results if aq and aq in str(f.get("airline") or "").lower()]
+
+    if destination:
+        dq = destination.strip()
+        if len(dq) == 3 and dq.isalpha():
+            want = dq.upper()
+            results = [f for f in results if str(f.get("destination_airport") or "").upper() == want]
+        else:
+            want = dq.lower()
+            results = [f for f in results if want in str(f.get("destination_city") or "").lower()]
+
+    return results
+
+
 @app.get("/api/flights/search")
 def search_flights(
     flight_number: str | None = Query(default=None),
@@ -451,6 +485,64 @@ def search_flights(
     destination: str | None = Query(default=None),
     force_refresh: bool = Query(default=False),
 ):
+    if FLIGHT_DATA_SOURCE == "flightview":
+        payload = fetch_ewr_departures(force_refresh=force_refresh)
+        flights = payload.get("results") or []
+        raw_count = int(payload.get("raw_count") or 0)
+        cache_live = str(payload.get("cache") or "live")
+        cached_at = str(payload.get("cached_at") or _now_utc().isoformat())
+
+        if not isinstance(flights, list):
+            raise HTTPException(status_code=502, detail="Invalid FlightView payload format")
+
+        total_before = len(flights)
+        rows_after_flight = (
+            _filter_normalized_flights(flights, airline=None, destination=None, flight_number=flight_number)
+            if flight_number
+            else list(flights)
+        )
+        after_flight_n = len(rows_after_flight)
+        rows_after_airline = (
+            _filter_normalized_flights(rows_after_flight, airline=airline, destination=None, flight_number=None)
+            if airline
+            else rows_after_flight
+        )
+        after_airline_n = len(rows_after_airline)
+        rows_after_dest = (
+            _filter_normalized_flights(rows_after_airline, airline=None, destination=destination, flight_number=None)
+            if destination
+            else rows_after_airline
+        )
+        after_dest_n = len(rows_after_dest)
+
+        # Departed/upcoming is UI-driven, but log the split + what "default upcoming only" would be.
+        upcoming_n = 0
+        departed_n = 0
+        now_ms = datetime.now().timestamp() * 1000
+        for f in rows_after_dest:
+            t = f.get("scheduled_departure") or ""
+            try:
+                ms = datetime.fromisoformat(str(t).replace("Z", "+00:00")).timestamp() * 1000
+            except Exception:
+                ms = None
+            if ms is not None and ms < now_ms:
+                departed_n += 1
+            else:
+                upcoming_n += 1
+
+        filtered = rows_after_dest
+        print(
+            f"[flights] source=official_ewr html_rows={raw_count} parsed_rows={total_before} "
+            f"after_flight_number={after_flight_n} after_airline={after_airline_n} after_destination={after_dest_n} "
+            f"upcoming={upcoming_n} departed={departed_n} cache={cache_live}",
+        )
+        return {
+            "source": f"official_ewr_{cache_live}",
+            "cached_at": cached_at,
+            "results": filtered,
+        }
+
+    # Default: Aviationstack
     payload, source, cached_at = _get_raw_flights(force_refresh=force_refresh)
     flights = payload.get("data") or []
 
@@ -464,23 +556,33 @@ def search_flights(
         flight_number=flight_number,
     )
 
-    return {
-        "source": source,
-        "cached_at": cached_at,
-        "results": filtered,
-    }
+    print(
+        f"[flights] source=aviationstack raw_results={len(flights)} normalized_results={len(filtered)} cache={source}",
+    )
+    return {"source": source, "cached_at": cached_at, "results": filtered}
 
 
 @app.get("/api/flights/refresh")
 def refresh_flights_cache():
+    if FLIGHT_DATA_SOURCE == "flightview":
+        payload = fetch_ewr_departures(force_refresh=True)
+        flights = payload.get("results") or []
+        raw_count = int(payload.get("raw_count") or 0)
+        cached_at = str(payload.get("cached_at") or _now_utc().isoformat())
+        print(
+            f"[flights-refresh] source=official_ewr raw_results={raw_count} normalized_results={len(flights)} cache=live",
+        )
+        return {
+            "message": "Live FlightView FIDS data fetched and cache overwritten.",
+            "cached_at": cached_at,
+            "count": len(flights) if isinstance(flights, list) else 0,
+        }
+
     payload, cached_at = _call_aviationstack()
     flights = payload.get("data") or []
     count = len(flights) if isinstance(flights, list) else 0
-    return {
-        "message": "Live Aviationstack data fetched and cache overwritten.",
-        "cached_at": cached_at,
-        "count": count,
-    }
+    print(f"[flights-refresh] source=aviationstack raw_results={count} normalized_results={count} cache=live")
+    return {"message": "Live Aviationstack data fetched and cache overwritten.", "cached_at": cached_at, "count": count}
 
 
 @app.post("/api/plan")

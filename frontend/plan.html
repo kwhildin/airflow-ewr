@@ -6,7 +6,7 @@
     <title>AirFlow — Plan My Trip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style-premium.css?v=p1" />
 </head>
 <body>
@@ -23,6 +23,7 @@
                 <a class="topnav-link" href="index.html">Home</a>
                 <a class="topnav-link is-active" href="plan.html">Plan My Trip</a>
                 <a class="topnav-link" href="waits.html">Wait Times</a>
+                <a class="topnav-link" href="airport-map.html">Airport Map</a>
                 <a class="topnav-link" href="about.html">About</a>
             </nav>
 
@@ -71,6 +72,12 @@
                         <ul id="destination-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
                     </label>
                 </div>
+                <div class="plan-input-row plan-input-row--single plan-input-row--date">
+                    <label class="field">
+                        <span class="field-label">Departure date</span>
+                        <input type="date" id="departure-date-input" class="field-input" />
+                    </label>
+                </div>
                 <div class="plan-primary-action">
                     <button type="submit" class="btn btn-primary btn-wide">Search</button>
                 </div>
@@ -80,11 +87,6 @@
             </form>
 
             <p id="trip-error" class="trip-error is-hidden" role="alert"></p>
-            <div class="plan-helper">
-                <p class="fineprint">
-                    Drive time uses Google Routes (traffic-aware for your planned departure). Set <code>GOOGLE_MAPS_API_KEY</code> in <code>.env</code> for the backend; optional <code>GOOGLE_MAPS_JS_API_KEY</code> enables address autocomplete in the browser.
-                </p>
-            </div>
         </section>
 
         <section class="subgrid">
@@ -109,6 +111,7 @@
 
         <section id="flight-results-wrap" class="results is-hidden" aria-label="Search results">
             <h2 class="section-title">Results</h2>
+            <p class="muted" style="margin-top:-0.35rem;margin-bottom:0.65rem">Choose your flight to build your plan</p>
             <div id="flight-results-toolbar" class="flight-results-toolbar plan-results-toolbar is-hidden" aria-label="Result options">
                 <label class="plan-filter-departed">
                     <input type="checkbox" id="flight-filter-show-departed" />
