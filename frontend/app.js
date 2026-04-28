@@ -4,7 +4,9 @@ const MOCK_CHECKPOINTS = [
     { terminal: "Terminal C", name: "Checkpoint C1", minutes: 9, lanes: "Standard + TSA PreCheck®" },
 ];
 
-const API_BASE = window.location.port === "8080" ? "http://127.0.0.1:8000" : "";
+const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : "https://airflow-ewr.onrender.com";
 
 const RECENT_SEARCHES_KEY = "airflow_recent_searches";
 const RECENT_SEARCHES_MAX = 8;
