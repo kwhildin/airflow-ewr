@@ -399,12 +399,22 @@ def _clean_result(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _extract_flight_number(item: dict[str, Any]) -> str:
+    flight = item.get("flight") or {}
+    return str(flight.get("iata") or flight.get("number") or "").strip().upper().replace(" ", "")
+
+
 def _filter_flights(
     flights: list[dict[str, Any]],
     airline: str | None,
     destination: str | None,
+    flight_number: str | None = None,
 ) -> list[dict[str, Any]]:
     results = flights
+
+    if flight_number:
+        flight_q = flight_number.strip().upper().replace(" ", "")
+        results = [f for f in results if flight_q in _extract_flight_number(f)]
 
     if airline:
         airline_q = airline.strip().lower()
@@ -436,16 +446,24 @@ def _get_raw_flights(force_refresh: bool) -> tuple[dict[str, Any], str, str]:
 
 @app.get("/api/flights/search")
 def search_flights(
+    flight_number: str | None = Query(default=None),
     airline: str | None = Query(default=None),
     destination: str | None = Query(default=None),
     force_refresh: bool = Query(default=False),
 ):
     payload, source, cached_at = _get_raw_flights(force_refresh=force_refresh)
     flights = payload.get("data") or []
+
     if not isinstance(flights, list):
         raise HTTPException(status_code=502, detail="Invalid Aviationstack payload format")
 
-    filtered = _filter_flights(flights, airline=airline, destination=destination)
+    filtered = _filter_flights(
+        flights,
+        airline=airline,
+        destination=destination,
+        flight_number=flight_number,
+    )
+
     return {
         "source": source,
         "cached_at": cached_at,
