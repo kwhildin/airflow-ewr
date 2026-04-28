@@ -1,4 +1,4 @@
-const JS_VERSION = "204-latest-each-gate";
+const JS_VERSION = "208-time-fixed-no-summary";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -13,9 +13,12 @@ let WAIT_ROWS = [];
 function cellValue(cell, header) {
     if (!cell) return "";
 
-    const isDateColumn = ["Date Time", "Timestamp", "Date", "Source Update Time"].includes(header);
+    const rawFirstColumns = ["Date", "Time", "Date Time", "Timestamp"];
 
-    if (isDateColumn && cell.v !== undefined && cell.v !== null) return String(cell.v);
+    if (rawFirstColumns.includes(header) && cell.v !== undefined && cell.v !== null) {
+        return String(cell.v);
+    }
+
     if (cell.f !== undefined && cell.f !== null) return String(cell.f);
     if (cell.v !== undefined && cell.v !== null) return String(cell.v);
 
@@ -34,41 +37,67 @@ function rowsFromGoogleTable(table) {
     });
 }
 
-function getWait(row) {
-    const raw = row["Wait Time (minute)"] || row["Wait Time"] || "";
-    const n = Number(String(raw).replace(/[^\d.]/g, ""));
-    return Number.isFinite(n) ? n : null;
+function parseGoogleDateParts(text) {
+    const match = String(text).match(/Date\((\d+),(\d+),(\d+),?(\d+)?,?(\d+)?,?(\d+)?\)/);
+    if (!match) return null;
+
+    return {
+        year: Number(match[1]),
+        month: Number(match[2]),
+        day: Number(match[3]),
+        hour: Number(match[4] || 0),
+        minute: Number(match[5] || 0),
+        second: Number(match[6] || 0)
+    };
+}
+
+function parseTimeParts(text) {
+    if (!text) return { hour: 0, minute: 0, second: 0 };
+
+    const googleTime = parseGoogleDateParts(text);
+    if (googleTime) {
+        return {
+            hour: googleTime.hour,
+            minute: googleTime.minute,
+            second: googleTime.second
+        };
+    }
+
+    const timeText = String(text).trim();
+
+    const timeMatch = timeText.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
+    if (timeMatch) {
+        let hour = Number(timeMatch[1]);
+        const minute = Number(timeMatch[2]);
+        const second = Number(timeMatch[3] || 0);
+        const ampm = timeMatch[4];
+
+        if (ampm) {
+            if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+            if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+        }
+
+        return { hour, minute, second };
+    }
+
+    return { hour: 0, minute: 0, second: 0 };
 }
 
 function getDate(row) {
     const dateRaw = row["Date"] || "";
     const timeRaw = row["Time"] || "";
 
-    function parseGoogleDateParts(text) {
-        const match = String(text).match(/Date\((\d+),(\d+),(\d+),?(\d+)?,?(\d+)?,?(\d+)?\)/);
-        if (!match) return null;
-
-        return {
-            year: Number(match[1]),
-            month: Number(match[2]),
-            day: Number(match[3]),
-            hour: Number(match[4] || 0),
-            minute: Number(match[5] || 0),
-            second: Number(match[6] || 0)
-        };
-    }
-
     const googleDate = parseGoogleDateParts(dateRaw);
-    const googleTime = parseGoogleDateParts(timeRaw);
+    const timeParts = parseTimeParts(timeRaw);
 
     if (googleDate) {
         return new Date(
             googleDate.year,
             googleDate.month,
             googleDate.day,
-            googleTime ? googleTime.hour : 0,
-            googleTime ? googleTime.minute : 0,
-            googleTime ? googleTime.second : 0
+            timeParts.hour,
+            timeParts.minute,
+            timeParts.second
         );
     }
 
@@ -77,13 +106,38 @@ function getDate(row) {
         if (!Number.isNaN(combined.getTime())) return combined;
     }
 
-    const fallback = row["Date Time"] || row["Timestamp"] || "";
-    if (fallback) {
-        const d = new Date(fallback);
+    const dateTimeRaw = row["Date Time"] || row["Timestamp"] || "";
+    const googleDateTime = parseGoogleDateParts(dateTimeRaw);
+
+    if (googleDateTime) {
+        return new Date(
+            googleDateTime.year,
+            googleDateTime.month,
+            googleDateTime.day,
+            googleDateTime.hour,
+            googleDateTime.minute,
+            googleDateTime.second
+        );
+    }
+
+    if (dateTimeRaw) {
+        const d = new Date(dateTimeRaw);
         if (!Number.isNaN(d.getTime())) return d;
     }
 
     return null;
+}
+
+function getWait(row) {
+    const raw =
+        row["Wait Time (min)"] ||
+        row["Wait Time (minute)"] ||
+        row["Wait Time (minutes)"] ||
+        row["Wait Time"] ||
+        "";
+
+    const n = Number(String(raw).replace(/[^\d.]/g, ""));
+    return Number.isFinite(n) ? n : null;
 }
 
 function getTerminal(row) {
@@ -106,25 +160,6 @@ function minutesOfDay(date) {
     return date.getHours() * 60 + date.getMinutes();
 }
 
-function minuteKey(date) {
-    return [
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes()
-    ].join("-");
-}
-
-function displayKey(row) {
-    return [
-        getType(row).toLowerCase(),
-        getTerminal(row),
-        getGate(row).toLowerCase(),
-        getLane(row).toLowerCase()
-    ].join("|");
-}
-
 function waitLevel(minutes) {
     if (minutes <= 10) return "Light";
     if (minutes <= 20) return "Moderate";
@@ -137,18 +172,20 @@ function escapeHTML(value) {
     return div.innerHTML;
 }
 
+function displayKey(row) {
+    return [
+        getType(row).toLowerCase(),
+        getTerminal(row),
+        getGate(row).toLowerCase(),
+        getLane(row).toLowerCase()
+    ].join("|");
+}
+
 function dedupeRows(rows) {
     const map = new Map();
 
     rows.forEach(row => {
-        const date = getDate(row);
-
-        const key = [
-            date ? minuteKey(date) : "",
-            displayKey(row)
-        ].join("|");
-
-        map.set(key, row);
+        map.set(displayKey(row), row);
     });
 
     return Array.from(map.values());
@@ -169,7 +206,7 @@ function latestRowsForEachCheckpoint(rows) {
 
         const existingDate = getDate(existing);
 
-        if (rowDate && existingDate && rowDate > existingDate) {
+        if (rowDate && existingDate && rowDate >= existingDate) {
             map.set(key, row);
         }
     });
@@ -324,6 +361,9 @@ function renderCurrentWaits() {
 
     grid.innerHTML = terminalHTML;
 
+    updateSummary(currentRows, newestDate);
+}
+
 function updateSummary(rows, newestDate) {
     const updated = document.getElementById("last-updated");
     if (!updated) return;
@@ -347,32 +387,6 @@ function updateSummary(rows, newestDate) {
         timeStyle: "short",
         timeZoneName: "short"
     });
-}
-
-function updateSummary(rows, newestDate) {
-    if (!rows.length) return;
-
-    const fastest = rows.reduce((a, b) => getWait(a) <= getWait(b) ? a : b);
-    const slowest = rows.reduce((a, b) => getWait(a) >= getWait(b) ? a : b);
-
-    const waits = rows.map(getWait).filter(n => n !== null);
-    const avg = Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
-
-    document.getElementById("summary-fastest").textContent =
-        `Terminal ${getTerminal(fastest)}, ${getGate(fastest)}: ${getWait(fastest)} min`;
-
-    document.getElementById("summary-slowest").textContent =
-        `Terminal ${getTerminal(slowest)}, ${getGate(slowest)}: ${getWait(slowest)} min`;
-
-    document.getElementById("summary-congestion").textContent = waitLevel(avg);
-
-    const updated = document.getElementById("last-updated");
-    if (updated) {
-        updated.textContent = newestDate.toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short"
-        });
-    }
 }
 
 /* ---------- PREDICTION ---------- */
