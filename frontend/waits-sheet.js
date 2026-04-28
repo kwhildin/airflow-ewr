@@ -1,4 +1,4 @@
-const JS_VERSION = "203-grouped-deduped-timefix";
+const JS_VERSION = "204-latest-each-gate";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -15,9 +15,7 @@ function cellValue(cell, header) {
 
     const isDateColumn = ["Date Time", "Timestamp", "Date", "Source Update Time"].includes(header);
 
-    // For dates, use the raw value first because the formatted value may drop the time.
     if (isDateColumn && cell.v !== undefined && cell.v !== null) return String(cell.v);
-
     if (cell.f !== undefined && cell.f !== null) return String(cell.f);
     if (cell.v !== undefined && cell.v !== null) return String(cell.v);
 
@@ -99,6 +97,15 @@ function minuteKey(date) {
     ].join("-");
 }
 
+function displayKey(row) {
+    return [
+        getType(row).toLowerCase(),
+        getTerminal(row),
+        getGate(row).toLowerCase(),
+        getLane(row).toLowerCase()
+    ].join("|");
+}
+
 function waitLevel(minutes) {
     if (minutes <= 10) return "Light";
     if (minutes <= 20) return "Moderate";
@@ -111,7 +118,6 @@ function escapeHTML(value) {
     return div.innerHTML;
 }
 
-// Removes duplicate lanes. If the same lane appears twice, keeps the later one.
 function dedupeRows(rows) {
     const map = new Map();
 
@@ -120,13 +126,33 @@ function dedupeRows(rows) {
 
         const key = [
             date ? minuteKey(date) : "",
-            getType(row).toLowerCase(),
-            getTerminal(row),
-            getGate(row).toLowerCase(),
-            getLane(row).toLowerCase()
+            displayKey(row)
         ].join("|");
 
         map.set(key, row);
+    });
+
+    return Array.from(map.values());
+}
+
+function latestRowsForEachCheckpoint(rows) {
+    const map = new Map();
+
+    rows.forEach(row => {
+        const key = displayKey(row);
+        const rowDate = getDate(row);
+        const existing = map.get(key);
+
+        if (!existing) {
+            map.set(key, row);
+            return;
+        }
+
+        const existingDate = getDate(existing);
+
+        if (rowDate && existingDate && rowDate > existingDate) {
+            map.set(key, row);
+        }
     });
 
     return Array.from(map.values());
@@ -189,13 +215,8 @@ function renderCurrentWaits() {
     usableRows.sort((a, b) => getDate(a) - getDate(b));
 
     const newestDate = getDate(usableRows[usableRows.length - 1]);
-    const newestKey = minuteKey(newestDate);
 
-    let currentRows = usableRows.filter(row => {
-        const d = getDate(row);
-        return d && minuteKey(d) === newestKey;
-    });
-
+    let currentRows = latestRowsForEachCheckpoint(usableRows);
     currentRows = dedupeRows(currentRows);
 
     const grouped = {};
