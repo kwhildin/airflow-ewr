@@ -1,4 +1,4 @@
-const JS_VERSION = "208-time-fixed-no-summary";
+const JS_VERSION = "210-working-time-grouped";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -13,10 +13,10 @@ let WAIT_ROWS = [];
 function cellValue(cell, header) {
     if (!cell) return "";
 
-    const rawFirstColumns = ["Date", "Time", "Date Time", "Timestamp"];
-
-    if (rawFirstColumns.includes(header) && cell.v !== undefined && cell.v !== null) {
-        return String(cell.v);
+    // For Date and Time, use the visible sheet value like 4/28/2026 and 1:10.
+    if (["Date", "Time"].includes(header)) {
+        if (cell.f !== undefined && cell.f !== null) return String(cell.f);
+        if (cell.v !== undefined && cell.v !== null) return String(cell.v);
     }
 
     if (cell.f !== undefined && cell.f !== null) return String(cell.f);
@@ -51,62 +51,21 @@ function parseGoogleDateParts(text) {
     };
 }
 
-function parseTimeParts(text) {
-    if (!text) return { hour: 0, minute: 0, second: 0 };
-
-    const googleTime = parseGoogleDateParts(text);
-    if (googleTime) {
-        return {
-            hour: googleTime.hour,
-            minute: googleTime.minute,
-            second: googleTime.second
-        };
-    }
-
-    const timeText = String(text).trim();
-
-    const timeMatch = timeText.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
-    if (timeMatch) {
-        let hour = Number(timeMatch[1]);
-        const minute = Number(timeMatch[2]);
-        const second = Number(timeMatch[3] || 0);
-        const ampm = timeMatch[4];
-
-        if (ampm) {
-            if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
-            if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
-        }
-
-        return { hour, minute, second };
-    }
-
-    return { hour: 0, minute: 0, second: 0 };
-}
-
 function getDate(row) {
     const dateRaw = row["Date"] || "";
     const timeRaw = row["Time"] || "";
-
-    const googleDate = parseGoogleDateParts(dateRaw);
-    const timeParts = parseTimeParts(timeRaw);
-
-    if (googleDate) {
-        return new Date(
-            googleDate.year,
-            googleDate.month,
-            googleDate.day,
-            timeParts.hour,
-            timeParts.minute,
-            timeParts.second
-        );
-    }
 
     if (dateRaw && timeRaw) {
         const combined = new Date(`${dateRaw} ${timeRaw}`);
         if (!Number.isNaN(combined.getTime())) return combined;
     }
 
-    const dateTimeRaw = row["Date Time"] || row["Timestamp"] || "";
+    const dateTimeRaw =
+        row["Date Time"] ||
+        row["Timestamp"] ||
+        row["Logged At"] ||
+        "";
+
     const googleDateTime = parseGoogleDateParts(dateTimeRaw);
 
     if (googleDateTime) {
@@ -160,16 +119,14 @@ function minutesOfDay(date) {
     return date.getHours() * 60 + date.getMinutes();
 }
 
-function waitLevel(minutes) {
-    if (minutes <= 10) return "Light";
-    if (minutes <= 20) return "Moderate";
-    return "Busy";
-}
-
-function escapeHTML(value) {
-    const div = document.createElement("div");
-    div.textContent = value == null ? "" : String(value);
-    return div.innerHTML;
+function minuteKey(date) {
+    return [
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+    ].join("-");
 }
 
 function displayKey(row) {
@@ -181,11 +138,19 @@ function displayKey(row) {
     ].join("|");
 }
 
-function dedupeRows(rows) {
+function historicalKey(row) {
+    const d = getDate(row);
+    return [
+        d ? minuteKey(d) : "",
+        displayKey(row)
+    ].join("|");
+}
+
+function dedupeHistoricalRows(rows) {
     const map = new Map();
 
     rows.forEach(row => {
-        map.set(displayKey(row), row);
+        map.set(historicalKey(row), row);
     });
 
     return Array.from(map.values());
@@ -212,6 +177,18 @@ function latestRowsForEachCheckpoint(rows) {
     });
 
     return Array.from(map.values());
+}
+
+function waitLevel(minutes) {
+    if (minutes <= 10) return "Light";
+    if (minutes <= 20) return "Moderate";
+    return "Busy";
+}
+
+function escapeHTML(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
 }
 
 function sortTerminals(a, b) {
@@ -265,6 +242,7 @@ function renderCurrentWaits() {
                 </div>
             </article>
         `;
+        updateLastUpdated(null);
         return;
     }
 
@@ -273,7 +251,6 @@ function renderCurrentWaits() {
     const newestDate = getDate(usableRows[usableRows.length - 1]);
 
     let currentRows = latestRowsForEachCheckpoint(usableRows);
-    currentRows = dedupeRows(currentRows);
 
     const grouped = {};
 
@@ -361,21 +338,12 @@ function renderCurrentWaits() {
 
     grid.innerHTML = terminalHTML;
 
-    updateSummary(currentRows, newestDate);
+    updateLastUpdated(newestDate);
 }
 
-function updateSummary(rows, newestDate) {
+function updateLastUpdated(dateToShow) {
     const updated = document.getElementById("last-updated");
     if (!updated) return;
-
-    let dateToShow = newestDate;
-
-    if (!dateToShow && rows && rows.length) {
-        dateToShow = rows
-            .map(getDate)
-            .filter(Boolean)
-            .sort((a, b) => b - a)[0];
-    }
 
     if (!dateToShow) {
         updated.textContent = "—";
@@ -438,7 +406,7 @@ function predictWait(event) {
         });
     }
 
-    candidates = dedupeRows(candidates);
+    candidates = dedupeHistoricalRows(candidates);
 
     const result = document.getElementById("prediction-result");
 
@@ -520,7 +488,6 @@ window.handleSheetData = function(response) {
     }
 
     WAIT_ROWS = rowsFromGoogleTable(response.table).filter(row => getWait(row) !== null);
-    WAIT_ROWS = dedupeRows(WAIT_ROWS);
 
     console.log("Loaded rows:", WAIT_ROWS.length);
     console.log("First row:", WAIT_ROWS[0]);
