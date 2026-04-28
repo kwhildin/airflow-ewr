@@ -1,4 +1,4 @@
- const JS_VERSION = "201-deduped";
+const JS_VERSION = "202-grouped-by-terminal";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
@@ -103,13 +103,45 @@ function dedupeRows(rows) {
             getWait(row)
         ].join("|");
 
-        if (seen.has(key)) {
-            return false;
-        }
+        if (seen.has(key)) return false;
 
         seen.add(key);
         return true;
     });
+}
+
+function sortTerminals(a, b) {
+    const order = { A: 1, B: 2, C: 3 };
+    return (order[a] || 99) - (order[b] || 99);
+}
+
+function sortGates(a, b) {
+    if (a === "All Gates") return -1;
+    if (b === "All Gates") return 1;
+    if (a === "Customs") return 1;
+    if (b === "Customs") return -1;
+
+    const aNum = Number(String(a).match(/\d+/)?.[0] || 999);
+    const bNum = Number(String(b).match(/\d+/)?.[0] || 999);
+
+    return aNum - bNum;
+}
+
+function sortLanes(a, b) {
+    const laneOrder = {
+        precheck: 1,
+        regular: 2,
+        "us passports": 3,
+        visitors: 4
+    };
+
+    const aLane = getLane(a).toLowerCase();
+    const bLane = getLane(b).toLowerCase();
+
+    const aScore = Object.keys(laneOrder).find(k => aLane.includes(k));
+    const bScore = Object.keys(laneOrder).find(k => bLane.includes(k));
+
+    return (laneOrder[aScore] || 99) - (laneOrder[bScore] || 99);
 }
 
 /* ---------- CURRENT WAIT TIMES ---------- */
@@ -144,32 +176,91 @@ function renderCurrentWaits() {
 
     currentRows = dedupeRows(currentRows);
 
-    grid.innerHTML = currentRows.map(row => {
-        const type = getType(row);
-        const terminal = getTerminal(row);
-        const gate = getGate(row);
-        const lane = getLane(row);
-        const wait = getWait(row);
-        const level = waitLevel(wait);
+    const grouped = {};
 
-        return `
-            <article class="wait-row" role="listitem">
-                <div>
-                    <p class="wait-row-terminal">Terminal ${escapeHTML(terminal)}</p>
-                    <p class="wait-row-name">${escapeHTML(type)} • ${escapeHTML(gate)}</p>
-                </div>
+    currentRows.forEach(row => {
+        const terminal = getTerminal(row) || "Other";
+        const gate = getGate(row) || "All Gates";
 
-                <div>
-                    <p class="wait-row-minutes">${escapeHTML(wait)}<span>min</span></p>
-                    <p class="wait-row-lanes">${escapeHTML(lane)}</p>
-                </div>
+        if (!grouped[terminal]) grouped[terminal] = {};
+        if (!grouped[terminal][gate]) grouped[terminal][gate] = [];
 
-                <div class="wait-row-right">
-                    <span class="badge">${escapeHTML(level)}</span>
-                </div>
-            </article>
-        `;
-    }).join("");
+        grouped[terminal][gate].push(row);
+    });
+
+    const terminalHTML = Object.keys(grouped)
+        .sort(sortTerminals)
+        .map(terminal => {
+            const gates = grouped[terminal];
+
+            const gateHTML = Object.keys(gates)
+                .sort(sortGates)
+                .map(gate => {
+                    const rows = gates[gate].sort(sortLanes);
+
+                    const laneHTML = rows.map(row => {
+                        const type = getType(row);
+                        const lane = getLane(row);
+                        const wait = getWait(row);
+                        const level = waitLevel(wait);
+
+                        return `
+                            <article class="wait-row" role="listitem" style="margin-top: 10px;">
+                                <div>
+                                    <p class="wait-row-terminal">${escapeHTML(lane)}</p>
+                                    <p class="wait-row-name">${escapeHTML(type)}</p>
+                                </div>
+
+                                <div>
+                                    <p class="wait-row-minutes">${escapeHTML(wait)}<span>min</span></p>
+                                    <p class="wait-row-lanes">${escapeHTML(level)} wait</p>
+                                </div>
+
+                                <div class="wait-row-right">
+                                    <span class="badge">${escapeHTML(level)}</span>
+                                </div>
+                            </article>
+                        `;
+                    }).join("");
+
+                    return `
+                        <div style="margin-top: 18px;">
+                            <p style="
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: #64748b;
+                                margin: 0 0 8px 0;
+                            ">
+                                Gate / Checkpoint: ${escapeHTML(gate)}
+                            </p>
+                            ${laneHTML}
+                        </div>
+                    `;
+                }).join("");
+
+            return `
+                <section style="
+                    background: rgba(255,255,255,0.78);
+                    border: 1px solid rgba(148,163,184,0.25);
+                    border-radius: 28px;
+                    padding: 24px;
+                    margin-bottom: 26px;
+                    box-shadow: 0 12px 28px rgba(15,23,42,0.06);
+                ">
+                    <h2 style="
+                        font-size: 34px;
+                        line-height: 1.1;
+                        margin: 0 0 18px 0;
+                        color: #0f172a;
+                    ">
+                        Terminal ${escapeHTML(terminal)}
+                    </h2>
+                    ${gateHTML}
+                </section>
+            `;
+        }).join("");
+
+    grid.innerHTML = terminalHTML;
 
     updateSummary(currentRows, newestDate);
 }
