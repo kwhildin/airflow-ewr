@@ -4,11 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AirFlow — EWR Security Wait Times</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style-premium.css?v=p1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style-premium.css?v=p2">
+
+    <style>
+        /* Homepage app screenshot preview */
+        .hero-phone-image-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+            max-height: 700px;
+        }
+
+        .hero-phone-image {
+            width: 420px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 30px 60px rgba(15, 23, 42, 0.18));
+            transform: translateY(-8px);
+        }
+
+        @media (max-width: 1100px) {
+            .hero-phone-image {
+                width: 360px;
+            }
+
+            .hero-phone-image-wrap {
+                max-height: 620px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="bg-glow" aria-hidden="true"></div>
@@ -38,89 +72,43 @@
         <section class="hero hero--home hero--landing">
             <div class="hero-copy">
                 <p class="kicker">AirFlow</p>
+
                 <h1 class="hero-title">Know your line before you arrive.</h1>
+
                 <p class="hero-lede">
                     Built iPhone-first for travelers on the go — with the same tools available on desktop
                     when you’re planning from your laptop.
                 </p>
+
                 <div class="hero-actions">
                     <a class="btn btn-primary" href="plan.html">Plan My Trip</a>
                     <a class="btn btn-ghost" href="waits.html">View Wait Times</a>
                 </div>
+
                 <div class="hero-store">
-                    <a class="store-badge" href="#" aria-label="Download on the App Store (coming soon)" role="button">
+                    <a class="store-badge" href="#" aria-label="Download on the App Store coming soon" role="button">
                         <span class="store-badge-top">Download on the</span>
                         <span class="store-badge-bottom">App Store</span>
                     </a>
-                    <a class="store-badge store-badge--alt" href="#" aria-label="Get it on Google Play (coming soon)" role="button">
+
+                    <a class="store-badge store-badge--alt" href="#" aria-label="Get it on Google Play coming soon" role="button">
                         <span class="store-badge-top">Get it on</span>
                         <span class="store-badge-bottom">Google Play</span>
                     </a>
+
                     <p class="hero-note">No install needed on desktop — just use the web.</p>
                 </div>
             </div>
-<div class="hero-art hero-art--phone" aria-hidden="true">
-  <style>
-    .hero-art--phone {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      width: 100%;
-    }
 
-    .iphone-preview {
-      position: relative;
-      width: min(430px, 100%);
-      aspect-ratio: 832 / 1792;
-      margin: 0 auto;
-    }
-
-    /* this is the APP SCREEN inside the phone */
-    .iphone-preview-screen {
-      position: absolute;
-      top: 3.2%;
-      left: 5.1%;
-      width: 89.8%;
-      height: 93.2%;
-      object-fit: cover;
-      object-position: center top;
-      border-radius: 42px;
-      z-index: 1;
-
-      /* adjust these two numbers if you want slightly more/less showing */
-      transform: scale(0.93) translateY(10px);
-      transform-origin: top center;
-    }
-
-    /* this is the transparent iPhone PNG frame */
-    .iphone-preview-frame {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      z-index: 2;
-      pointer-events: none;
-      display: block;
-    }
-  </style>
-
-  <div class="iphone-preview">
-    <!-- YOUR SCREENSHOT / APP IMAGE -->
-    <img
-      class="iphone-preview-screen"
-      src="assets/app-screen.png"
-      alt="AirFlow app preview"
-    />
-
-    <!-- YOUR TRANSPARENT IPHONE FRAME PNG -->
-    <img
-      class="iphone-preview-frame"
-      src="assets/iphone16-frame.png"
-      alt=""
-    />
-  </div>
-</div>
+            <div class="hero-art hero-art--phone" aria-hidden="true">
+                <div class="hero-phone-image-wrap">
+                    <img
+                        src="assets/app-screen.png"
+                        alt="AirFlow app preview"
+                        class="hero-phone-image"
+                    />
+                </div>
+            </div>
         </section>
 
         <section class="features">
@@ -135,6 +123,7 @@
                 <h2 class="feature-title">Real-time estimates</h2>
                 <p class="feature-copy">Powered by live data and historical patterns.</p>
             </article>
+
             <article class="feature card">
                 <div class="feature-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
@@ -146,6 +135,7 @@
                 <h2 class="feature-title">Plan with confidence</h2>
                 <p class="feature-copy">See total time to gate: security plus walk time.</p>
             </article>
+
             <article class="feature card">
                 <div class="feature-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
@@ -165,6 +155,7 @@
                     AirFlow keeps EWR simple so you can focus on your trip, not the line.
                 </p>
             </div>
+
             <div class="split-right card card--padded">
                 <p class="mini-kicker">EWR</p>
                 <p class="ewr-title">Newark Liberty International Airport</p>
@@ -173,4 +164,3 @@
     </main>
 </body>
 </html>
-
