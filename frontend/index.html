@@ -60,55 +60,378 @@
                 </div>
             </div>
             <div class="hero-art hero-art--phone" aria-hidden="true">
-                <div class="phone-mock">
-                    <div class="phone-notch"></div>
-                    <div class="phone-screen">
-                        <div class="phone-topbar">
-                            <div class="phone-chip">EWR</div>
-                            <div class="phone-chip phone-chip--ghost">Live</div>
-                        </div>
-                        <div class="phone-map phone-map--ewr">
-                            <div class="phone-map-pin phone-map-pin--a">A</div>
-                            <div class="phone-map-pin phone-map-pin--b">B</div>
-                            <div class="phone-map-pin phone-map-pin--c">C</div>
-                            <div class="phone-map-route"></div>
-                        </div>
-                        <div class="phone-sheet">
-                            <div class="phone-sheet-grab" aria-hidden="true"></div>
-                            <div class="phone-sheet-head">
-                                <div class="phone-sheet-title">Today’s airport plan</div>
-                                <div class="phone-sheet-pill">On time</div>
-                            </div>
-                            <div class="phone-sheet-steps" role="list">
-                                <div class="phone-step phone-step--blue" role="listitem">
-                                    <div class="phone-step-dot" aria-hidden="true"></div>
-                                    <div class="phone-step-main">
-                                        <div class="phone-step-k">Leave by</div>
-                                        <div class="phone-step-v">2:51 PM</div>
-                                    </div>
-                                    <div class="phone-step-meta">58 min</div>
-                                </div>
-                                <div class="phone-step phone-step--orange" role="listitem">
-                                    <div class="phone-step-dot" aria-hidden="true"></div>
-                                    <div class="phone-step-main">
-                                        <div class="phone-step-k">Security</div>
-                                        <div class="phone-step-v">3:49 PM</div>
-                                    </div>
-                                    <div class="phone-step-meta">9 min</div>
-                                </div>
-                                <div class="phone-step phone-step--blue" role="listitem">
-                                    <div class="phone-step-dot" aria-hidden="true"></div>
-                                    <div class="phone-step-main">
-                                        <div class="phone-step-k">Arrive at gate</div>
-                                        <div class="phone-step-v">4:10 PM</div>
-                                    </div>
-                                    <div class="phone-step-meta">Target</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <style>
+        .af-phone {
+            position: relative;
+            width: 430px;
+            height: 760px;
+            background: #1f293f;
+            border-radius: 58px;
+            padding: 16px;
+            box-shadow: 0 34px 80px rgba(15, 23, 42, 0.22);
+        }
+
+        .af-phone::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 28px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.32);
+            z-index: 10;
+        }
+
+        .af-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 44px;
+            background: #f5f8fd;
+        }
+
+        .af-app-top {
+            position: absolute;
+            top: 30px;
+            left: 24px;
+            right: 24px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .af-app-logo {
+            width: 122px;
+            height: auto;
+            display: block;
+        }
+
+        .af-pills {
+            display: flex;
+            gap: 10px;
+        }
+
+        .af-pill {
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            color: #1f3f79;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        .af-map {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 35%, rgba(43, 103, 190, 0.10), transparent 32%),
+                radial-gradient(circle at 70% 35%, rgba(255, 126, 37, 0.08), transparent 30%),
+                linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%);
+        }
+
+        .af-map svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .af-map-label {
+            position: absolute;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            border-radius: 999px;
+            padding: 8px 13px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #13203b;
+        }
+
+        .af-map-label.gate {
+            top: 190px;
+            left: 62px;
+        }
+
+        .af-map-label.parking {
+            top: 468px;
+            left: 165px;
+            background: #0b3c74;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 14px;
+            line-height: 1.15;
+        }
+
+        .af-map-text {
+            position: absolute;
+            z-index: 3;
+            color: #2f3b52;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+
+        .af-terminal {
+            top: 255px;
+            left: 145px;
+            font-size: 20px;
+        }
+
+        .af-airtrain {
+            top: 210px;
+            right: 38px;
+            font-size: 16px;
+        }
+
+        .af-parking {
+            top: 332px;
+            right: 42px;
+            font-size: 16px;
+        }
+
+        .af-airport {
+            top: 330px;
+            left: 30px;
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .af-pin {
+            position: absolute;
+            z-index: 4;
+            width: 24px;
+            height: 24px;
+            background: #1e63db;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(30, 99, 219, 0.28);
+        }
+
+        .af-pin.start {
+            top: 525px;
+            left: 205px;
+        }
+
+        .af-pin.end {
+            top: 224px;
+            left: 132px;
+        }
+
+        .af-bottom-sheet {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 6;
+            background: rgba(255, 255, 255, 0.97);
+            border-top-left-radius: 34px;
+            border-top-right-radius: 34px;
+            padding: 16px 24px 24px;
+            box-shadow: 0 -14px 34px rgba(15, 23, 42, 0.12);
+        }
+
+        .af-handle {
+            width: 54px;
+            height: 6px;
+            border-radius: 999px;
+            background: #d8deea;
+            margin: 0 auto 16px;
+        }
+
+        .af-route-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .af-route-head h3 {
+            margin: 0;
+            color: #0f172a;
+            font-size: 22px;
+            line-height: 1.15;
+        }
+
+        .af-time {
+            flex-shrink: 0;
+            background: #eaf1ff;
+            color: #1557b7;
+            font-size: 20px;
+            font-weight: 900;
+            padding: 12px 16px;
+            border-radius: 18px;
+        }
+
+        .af-step {
+            display: grid;
+            grid-template-columns: 30px 38px 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+            border-top: 1px solid rgba(148, 163, 184, 0.22);
+        }
+
+        .af-step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #1557b7;
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .af-step-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #eef4ff;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+        }
+
+        .af-step-title {
+            margin: 0;
+            font-size: 15px;
+            color: #17233f;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .af-step-sub {
+            margin: 3px 0 0;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.2;
+        }
+
+        .af-step-time {
+            color: #64748b;
+            font-weight: 700;
+            font-size: 13px;
+        }
+    </style>
+
+    <div class="af-phone">
+        <div class="af-screen">
+            <div class="af-app-top">
+                <img src="assets/airflow-logo-transparent.png" alt="AirFlow" class="af-app-logo" />
+
+                <div class="af-pills">
+                    <span class="af-pill">EWR</span>
+                    <span class="af-pill">LIVE</span>
                 </div>
             </div>
+
+            <div class="af-map">
+                <svg viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M430 185 C340 145 270 130 200 170 C140 205 95 215 20 205" fill="none" stroke="#dce6f4" stroke-width="6" opacity="0.7"/>
+                    <path d="M410 355 C325 310 260 325 220 388 C182 450 202 525 255 590" fill="none" stroke="#dde7f3" stroke-width="12" opacity="0.75"/>
+                    <path d="M10 530 C85 500 145 522 210 590 C260 645 330 655 420 610" fill="none" stroke="#dce6f4" stroke-width="9" opacity="0.65"/>
+
+                    <path d="M55 260 L120 225 L190 230 L225 260 L205 305 L140 320 L80 300 Z" fill="#dbe6f5" opacity="0.9"/>
+                    <path d="M70 300 L100 345 L165 350 L215 328 L240 365 L210 420 L135 410 L82 365 Z" fill="#d4e2f2" opacity="0.65"/>
+
+                    <rect x="292" y="205" width="56" height="38" rx="9" fill="#e5ebf5"/>
+                    <rect x="318" y="325" width="72" height="48" rx="10" fill="#e5ebf5"/>
+                    <rect x="165" y="512" width="88" height="55" rx="14" fill="#dce7f7"/>
+                    <rect x="30" y="390" width="78" height="48" rx="13" fill="#dce7f7"/>
+
+                    <path d="M82 250 C150 185 265 190 332 270 C300 340 260 380 190 390 C112 378 75 330 82 250Z" fill="#dff3e6" opacity="0.42"/>
+                    <path d="M140 470 C205 430 290 455 325 525 C285 610 195 625 130 560Z" fill="#e1f5e8" opacity="0.38"/>
+
+                    <path d="M220 532 C220 490 184 462 196 405 C204 360 254 355 246 305 C240 270 190 270 165 245 C150 230 140 225 132 225"
+                          fill="none"
+                          stroke="#1d63dd"
+                          stroke-width="7"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"/>
+
+                    <path d="M132 225 C150 230 172 236 194 252"
+                          fill="none"
+                          stroke="#1d63dd"
+                          stroke-width="7"
+                          stroke-linecap="round"
+                          stroke-dasharray="12 12"/>
+
+                    <circle cx="220" cy="532" r="17" fill="#1d63dd" stroke="white" stroke-width="6"/>
+                    <circle cx="132" cy="225" r="10" fill="#1d63dd" stroke="white" stroke-width="5"/>
+                </svg>
+
+                <div class="af-map-label gate">Gate A6</div>
+                <div class="af-map-label parking">🚌 Parking P6<br>Shuttle</div>
+
+                <div class="af-map-text af-terminal">Terminal A</div>
+                <div class="af-map-text af-airtrain">🚆 P3 AirTrain<br>Station</div>
+                <div class="af-map-text af-parking">Ⓟ P4 Daily<br>Parking</div>
+                <div class="af-map-text af-airport">Newark Liberty<br>International Airport</div>
+
+                <div class="af-pin end"></div>
+                <div class="af-pin start"></div>
+            </div>
+
+            <div class="af-bottom-sheet">
+                <div class="af-handle"></div>
+
+                <div class="af-route-head">
+                    <h3>Parking P6 Shuttle → Gate A6</h3>
+                    <div class="af-time">16 min</div>
+                </div>
+
+                <div class="af-step">
+                    <div class="af-step-num">1</div>
+                    <div class="af-step-icon">🚌</div>
+                    <div>
+                        <p class="af-step-title">Start at Parking P6 Shuttle</p>
+                        <p class="af-step-sub">Walk to shuttle stop</p>
+                    </div>
+                    <div class="af-step-time">2 min</div>
+                </div>
+
+                <div class="af-step">
+                    <div class="af-step-num">2</div>
+                    <div class="af-step-icon">🚆</div>
+                    <div>
+                        <p class="af-step-title">Take shuttle / AirTrain</p>
+                        <p class="af-step-sub">Board toward Terminal A</p>
+                    </div>
+                    <div class="af-step-time">6 min</div>
+                </div>
+
+                <div class="af-step">
+                    <div class="af-step-num">3</div>
+                    <div class="af-step-icon">🛡️</div>
+                    <div>
+                        <p class="af-step-title">Proceed through security</p>
+                        <p class="af-step-sub">Estimated TSA wait included</p>
+                    </div>
+                    <div class="af-step-time">4 min</div>
+                </div>
+
+                <div class="af-step">
+                    <div class="af-step-num">4</div>
+                    <div class="af-step-icon">🚶</div>
+                    <div>
+                        <p class="af-step-title">Walk to Gate A6</p>
+                        <p class="af-step-sub">Follow signs to gate</p>
+                    </div>
+                    <div class="af-step-time">4 min</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
         </section>
 
         <section class="features">
