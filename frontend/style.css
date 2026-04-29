@@ -2054,3 +2054,51 @@ select.field-input {
         align-items: flex-start;
     }
 }
+.partners-section {
+    margin-top: 38px;
+}
+
+.partners-head {
+    max-width: 820px;
+    margin-bottom: 22px;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.partner-card {
+    padding: 26px;
+}
+
+.partner-kicker {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6d778b;
+}
+
+.partner-card h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    line-height: 1.2;
+    color: #111827;
+}
+
+.partner-card p {
+    margin: 0;
+    color: #6d778b;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+}
