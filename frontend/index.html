@@ -8,16 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style-premium.css?v=p4">
+    <link rel="stylesheet" href="style-premium.css?v=p5">
 
     <style>
         /* Smaller horizontal App Store / Google Play badges */
         .af-store-badges {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 14px;
             align-items: center;
             margin-top: 28px;
+            max-width: 470px;
         }
 
         .af-store-badge {
@@ -73,14 +74,15 @@
         }
 
         .hero-note {
+            flex-basis: 100%;
             width: 100%;
-            margin-top: 4px;
+            margin: 2px 0 0;
             font-size: 17px;
             font-weight: 700;
             color: #6d778b;
         }
 
-        /* Single phone image only — removes the extra outer phone */
+        /* Single phone image only */
         .hero-art--phone {
             display: flex;
             justify-content: center;
@@ -119,7 +121,7 @@
             }
 
             .af-store-badges {
-                flex-wrap: wrap;
+                max-width: 100%;
             }
         }
     </style>
@@ -235,4 +237,6 @@
                 <p class="feature-copy">Save flights and get alerts when things change.</p>
             </article>
         </section>
-
+    </main>
+</body>
+</html>
