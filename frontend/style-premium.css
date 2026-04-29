@@ -466,7 +466,7 @@ details.saved-card[open] > summary.saved-card-summary::after{
 }
 
 .brand { display: inline-flex; align-items: center; text-decoration: none; }
-.brand-logo { height: auto; width: 168px; }
+.brand-logo { height: auto; width: 220px; }
 
 .topnav {
   display: flex;
@@ -1658,6 +1658,19 @@ details.pd-advanced[open] > summary.pd-advanced-summary::after{
   padding: 0.55rem 0.65rem;
   display: grid;
   gap: 0.12rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background var(--ease);
+}
+.planner-hero-timeitem:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15,23,42,0.08);
+  border-color: rgba(35, 74, 159, 0.18);
+}
+.planner-hero-timeitem:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(35, 74, 159, 0.14), 0 14px 30px rgba(15,23,42,0.08);
+  border-color: rgba(35, 74, 159, 0.28);
 }
 .planner-hero-timeitem span{
   font-size: 0.72rem;

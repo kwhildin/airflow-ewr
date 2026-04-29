@@ -105,6 +105,20 @@ function pdComputeAddOnsMinutes({ bags, park }) {
     return bagExtra + parkExtra;
 }
 
+function pdDriveCalculatedLabel(minutes) {
+    const m = Number(minutes);
+    if (!Number.isFinite(m) || m < 1) return "Calculated Drive Time: — mins";
+    return `Calculated Drive Time: ${Math.round(m)} mins`;
+}
+
+function pdLeaveChoiceFromEl(el) {
+    if (!(el instanceof Element)) return null;
+    if (el.querySelector("#pd-leave-very")) return "very";
+    if (el.querySelector("#pd-leave-rec")) return "rec";
+    if (el.querySelector("#pd-leave-risky")) return "risky";
+    return null;
+}
+
 async function pdEnsurePlacesAutocomplete(inputEl, onPlace) {
     if (!inputEl) return;
     const statusEl = document.getElementById("pd-ac-status");
@@ -256,6 +270,7 @@ function pdInit() {
         driveSource: "placeholder",
         waits: [],
         securityBaseMin: null,
+        leaveChoice: "rec", // "very" | "rec" | "risky"
     };
 
     const saved = pdFindPlan(id);
@@ -323,28 +338,45 @@ function pdInit() {
         if (leaveRecEl) leaveRecEl.textContent = pdFmtTime(times.recMs);
         if (leaveRiskyEl) leaveRiskyEl.textContent = pdFmtTime(times.riskyMs);
 
-        const leaveMs = times.recMs;
-        const arriveMs = leaveMs + driveMin * 60000;
-        const addOnsStartMs = arriveMs;
+        const leaveMs =
+            state.leaveChoice === "very" ? times.veryMs : state.leaveChoice === "risky" ? times.riskyMs : times.recMs;
+
+        // Timeline should reflect the *selected leave time* all the way through arrival.
+        // Otherwise Safe/Tight deltas “disappear” and gate arrival looks identical.
+        const driveArriveMs = leaveMs + driveMin * 60000;
+        const addOnsStartMs = driveArriveMs;
         const securityStartMs = addOnsStartMs + addOnsMin * 60000;
         const walkStartMs = securityStartMs + securityMin * 60000;
-        const gateMs = times.gateTargetMs || times.boardingMs;
+        const gateArriveMs = walkStartMs + walkMin * 60000;
         const boardingMs = times.boardingMs;
 
         if (tlLeaveEl) tlLeaveEl.textContent = pdFmtTime(leaveMs);
         if (tlAddOnsEl) tlAddOnsEl.textContent = pdFmtTime(addOnsStartMs);
         if (tlSecurityEl) tlSecurityEl.textContent = pdFmtTime(securityStartMs);
         if (tlWalkEl) tlWalkEl.textContent = pdFmtTime(walkStartMs);
-        if (tlGateEl) tlGateEl.textContent = pdFmtTime(gateMs);
+        if (tlGateEl) tlGateEl.textContent = pdFmtTime(gateArriveMs);
         if (tlBoardingEl) tlBoardingEl.textContent = pdFmtTime(boardingMs);
         const hasAddress = Boolean((originEl?.value || "").trim() || state.origin.placeId);
         const hasGoogle = state.driveMin != null;
-        if (badgeEl) badgeEl.textContent = hasGoogle ? "Drive time calculated" : (hasAddress ? "Ready to calculate" : "Enter your address to continue");
+        if (badgeEl) {
+            badgeEl.textContent = hasGoogle
+                ? pdDriveCalculatedLabel(state.driveMin)
+                : (hasAddress ? "Ready to calculate" : "Enter your address to continue");
+        }
         if (supportEl) {
             supportEl.textContent = hasGoogle
                 ? "Based on Google traffic estimate, security, walk, and buffer."
                 : "Enter your address to continue.";
         }
+    }
+
+    function applyLeaveChoice(next) {
+        const choice = next === "very" || next === "risky" ? next : "rec";
+        state.leaveChoice = choice;
+
+        const items = document.querySelectorAll(".planner-hero-times .planner-hero-timeitem");
+        items.forEach((item) => item.classList.toggle("planner-hero-timeitem--main", pdLeaveChoiceFromEl(item) === choice));
+        recomputeUi();
     }
 
     function setDriveStatus(text) {
@@ -383,7 +415,7 @@ function pdInit() {
             });
             state.driveMin = m;
             state.driveSource = "google";
-            setDriveStatus("Drive time calculated");
+            setDriveStatus(pdDriveCalculatedLabel(m));
         } catch {
             state.driveMin = null;
             state.driveSource = "placeholder";
@@ -411,6 +443,26 @@ function pdInit() {
         void recalcDrive();
     });
 
+    // Leave time selection: clicking Safe/Recommended/Tight highlights the choice and drives the timeline below.
+    const timeItems = document.querySelectorAll(".planner-hero-times .planner-hero-timeitem");
+    timeItems.forEach((item) => {
+        const choice = pdLeaveChoiceFromEl(item);
+        if (!choice) return;
+        item.setAttribute("role", "button");
+        item.setAttribute("tabindex", "0");
+        item.setAttribute("aria-label", `Select ${choice === "very" ? "Safe" : choice === "risky" ? "Tight" : "Recommended"} leave time`);
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            applyLeaveChoice(choice);
+        });
+        item.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                applyLeaveChoice(choice);
+            }
+        });
+    });
+
     [cushionEl, precheckEl, bagsEl, parkEl].forEach((el) => {
         el?.addEventListener("input", () => recomputeUi());
         el?.addEventListener("change", () => recomputeUi());
@@ -434,6 +486,7 @@ function pdInit() {
     });
 
     void refreshWaits();
+    applyLeaveChoice(state.leaveChoice);
     recomputeUi();
 }
 

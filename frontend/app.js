@@ -1438,7 +1438,8 @@ function initTripPlanner() {
     renderRecentSearches();
 
     document.getElementById("recent-searches-list")?.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-recent]");
+        const target = e.target instanceof Element ? e.target : null;
+        const btn = target?.closest?.("[data-recent]");
         if (!btn) return;
         let entry;
         try {
@@ -1460,6 +1461,32 @@ function initTripPlanner() {
             if (typeof formRoute.requestSubmit === "function") formRoute.requestSubmit();
             else formRoute.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
         }
+    });
+
+    // Popular route chips (e.g. "EWR → SFO") should populate the Route search inputs.
+    // These are anchors in the markup, so prevent navigation when used as a button.
+    document.addEventListener("click", (e) => {
+        const el = e.target.closest?.("[data-popular]");
+        if (!el) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        const raw = String(el.getAttribute("data-popular") || "").trim();
+        const parts = raw.split("→").map((s) => s.trim()).filter(Boolean);
+        const dest = parts.length >= 2 ? parts[parts.length - 1] : raw;
+
+        hideTripError();
+        setMode("route");
+        const ai = document.getElementById("airline-input");
+        const di = document.getElementById("destination-input");
+        const dateEl = document.getElementById("departure-date-input");
+        if (ai) ai.value = "";
+        if (di) di.value = dest || "";
+        if (dateEl && !dateEl.value) dateEl.value = todayIsoLocalDate();
+
+        // Kick off the search immediately for a "one tap" flow.
+        if (typeof formRoute.requestSubmit === "function") formRoute.requestSubmit();
+        else formRoute.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
     });
 
     formFlight.addEventListener("submit", (e) => {
