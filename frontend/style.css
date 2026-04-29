@@ -646,6 +646,12 @@ body {
     color: #92400e;
 }
 
+.badge.clear {
+    border-color: rgba(34, 197, 94, 0.32);
+    background: rgba(34, 197, 94, 0.12);
+    color: #166534;
+}
+
 .badge.heavy {
     border-color: rgba(239, 68, 68, 0.35);
     background: rgba(239, 68, 68, 0.1);

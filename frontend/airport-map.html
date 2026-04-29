@@ -70,7 +70,7 @@
             </div>
         </section>
 
-        <section style="
+        <section class="airport-map-frame" style="
             background: rgba(255,255,255,0.78);
             border: 1px solid rgba(148,163,184,0.25);
             border-radius: 28px;
@@ -78,6 +78,11 @@
             box-shadow: 0 12px 28px rgba(15,23,42,0.06);
             overflow: hidden;
         ">
+            <div class="map-overlay is-hidden" id="map-directions-overlay" aria-live="polite">
+                <p class="map-overlay-kicker">Directions</p>
+                <p class="map-overlay-route" id="map-overlay-route">—</p>
+                <p class="map-overlay-sub" id="map-overlay-sub">Use the airport map search to start navigation.</p>
+            </div>
             <iframe
                 title="Newark Airport Interactive Map"
                 src="https://maps.newarkairport.com/?lang=en"
@@ -86,5 +91,7 @@
             ></iframe>
         </section>
     </main>
+
+    <script src="airport-map.js?v=am1"></script>
 </body>
 </html>

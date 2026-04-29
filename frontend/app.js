@@ -103,6 +103,7 @@ let googleMapsScriptPromise = null;
 const plannerDriveTimers = new WeakMap();
 
 function levelForMinutes(m) {
+    if (m <= 5) return { label: "Clear", className: "clear" };
     if (m <= 10) return { label: "Light", className: "" };
     if (m <= 15) return { label: "Moderate", className: "busy" };
     return { label: "Busy", className: "heavy" };
@@ -292,7 +293,7 @@ async function initializeWaitOverview(outlookMinutes = 0) {
 
         const fastest = [...checkpoints].sort((a, b) => a.minutes - b.minutes)[0];
         const slowest = [...checkpoints].sort((a, b) => b.minutes - a.minutes)[0];
-        const congestion = predicted <= 10 ? "Light" : predicted <= 15 ? "Moderate" : "Busy";
+        const congestion = predicted <= 5 ? "Clear" : predicted <= 10 ? "Light" : predicted <= 15 ? "Moderate" : "Busy";
         const sf = document.getElementById("summary-fastest");
         const ss = document.getElementById("summary-slowest");
         const sc = document.getElementById("summary-congestion");
@@ -316,6 +317,36 @@ function showTripError(message) {
 
 function hideTripError() {
     document.getElementById("trip-error").classList.add("is-hidden");
+}
+
+function scrollToElementWithOffset(el, offset = 92) {
+    if (!el) return;
+    requestAnimationFrame(() => {
+        try {
+            const top = el.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        } catch {
+            try {
+                el.scrollIntoView({ block: "start" });
+            } catch {
+                el.scrollIntoView();
+            }
+        }
+    });
+}
+
+function scrollToResults() {
+    const wrap = document.getElementById("flight-results-wrap");
+    if (!wrap) return;
+    // Prefer scrolling to the "Results" heading area, not the very top of the section container.
+    const heading = wrap.querySelector(".section-title") || wrap;
+    scrollToElementWithOffset(heading, 92);
+}
+
+function scrollToTripError() {
+    const err = document.getElementById("trip-error");
+    if (!err) return;
+    scrollToElementWithOffset(err, 92);
 }
 
 function setMode(mode) {
@@ -1495,6 +1526,7 @@ function initTripPlanner() {
         const flightInput = normalizeFlightNumber(document.getElementById("flight-input").value);
         if (!flightInput) {
             showTripError("Enter a flight number, for example UA1234.");
+            scrollToTripError();
             return;
         }
 
@@ -1507,13 +1539,16 @@ function initTripPlanner() {
                     showTripError("No matching EWR departure found.");
                     document.getElementById("flight-results-wrap")?.classList.add("is-hidden");
                     document.getElementById("flight-results-toolbar")?.classList.add("is-hidden");
+                    scrollToTripError();
                     return;
                 }
                 pushRecentSearch({ mode: "flight", flight: flightInput });
                 renderFlightResults(payload, filtered);
+                scrollToResults();
             })
             .catch((err) => {
                 showTripError(`Flight search failed: ${err.message}`);
+                scrollToTripError();
             });
     });
 
@@ -1530,13 +1565,16 @@ function initTripPlanner() {
                     showTripError("No matching EWR departures found.");
                     document.getElementById("flight-results-wrap")?.classList.add("is-hidden");
                     document.getElementById("flight-results-toolbar")?.classList.add("is-hidden");
+                    scrollToTripError();
                     return;
                 }
                 pushRecentSearch({ mode: "route", airline, destination, date });
                 renderFlightResults(payload, rows);
+                scrollToResults();
             })
             .catch((err) => {
                 showTripError(`Flight search failed: ${err.message}`);
+                scrollToTripError();
             });
     });
 
@@ -1590,13 +1628,16 @@ function initTripPlanner() {
                         showTripError("No matching EWR departures found.");
                         document.getElementById("flight-results-wrap")?.classList.add("is-hidden");
                         document.getElementById("flight-results-toolbar")?.classList.add("is-hidden");
+                        scrollToTripError();
                         return;
                     }
                     pushRecentSearch({ mode: "route", airline, destination, date });
                     renderFlightResults(payload, rows);
+                    scrollToResults();
                 })
                 .catch((err) => {
                     showTripError(`Live refresh failed: ${err.message}`);
+                    scrollToTripError();
                 });
         });
     }

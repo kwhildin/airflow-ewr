@@ -99,9 +99,16 @@ function pdComputeLeaveTimes({ depMs, driveMin, securityMin, walkMin, bufferMin 
     };
 }
 
-function pdComputeAddOnsMinutes({ bags, park }) {
+function pdComputeAddOnsMinutes({ bags, park, parking_lot_id }) {
     const bagExtra = bags ? 15 : 0;
-    const parkExtra = park ? 12 : 0;
+    const lotExtraById = {
+        p1_short_term_a: 6,
+        p2_short_term_b: 6,
+        p3_short_term_c: 6,
+        p4_daily: 12,
+        p6_economy: 18,
+    };
+    const parkExtra = park ? (lotExtraById[String(parking_lot_id || "")] ?? 12) : 0;
     return bagExtra + parkExtra;
 }
 
@@ -117,6 +124,27 @@ function pdLeaveChoiceFromEl(el) {
     if (el.querySelector("#pd-leave-rec")) return "rec";
     if (el.querySelector("#pd-leave-risky")) return "risky";
     return null;
+}
+
+function pdParkingLotName(id) {
+    const map = {
+        p1_short_term_a: "P1 Short-Term (Terminal A)",
+        p2_short_term_b: "P2 Short-Term (Terminal B)",
+        p3_short_term_c: "P3 Short-Term (Terminal C)",
+        p4_daily: "P4 Daily Parking Garage",
+        p6_economy: "P6 Economy Lot",
+    };
+    return map[String(id || "")] || "Parking lot";
+}
+
+function pdParkingLotShortCode(id) {
+    const raw = String(id || "");
+    if (raw.startsWith("p1_")) return "P1";
+    if (raw.startsWith("p2_")) return "P2";
+    if (raw.startsWith("p3_")) return "P3";
+    if (raw.startsWith("p4_")) return "P4";
+    if (raw.startsWith("p6_")) return "P6";
+    return "P4";
 }
 
 async function pdEnsurePlacesAutocomplete(inputEl, onPlace) {
@@ -230,22 +258,33 @@ function pdInit() {
     const driveEl = document.getElementById("pd-drive");
     const driveSourceEl = document.getElementById("pd-drive-source");
     const driveStatusEl = document.getElementById("pd-drive-status");
-    const saveBtn = document.getElementById("pd-save-btn");
     const calcBtn = document.getElementById("pd-calc-drive");
+
+    // Wizard UI (4-step checkout-style flow).
+    const stepsTrackEl = document.getElementById("pd-steps-track");
+    const stepsViewportEl = document.querySelector(".pd-steps-viewport");
+    const dotEls = Array.from(document.querySelectorAll(".pd-dot"));
+    const wizBackEl = document.getElementById("pd-wiz-back");
+    const wizNextEl = document.getElementById("pd-wiz-next");
+    const stepTimelineEl = document.getElementById("pd-step-timeline");
+    const saveTimelineEl = document.getElementById("pd-save-timeline");
 
     const cushionEl = document.getElementById("pd-cushion");
     const precheckEl = document.getElementById("pd-precheck");
+    const clearEl = document.getElementById("pd-clear");
     const bagsEl = document.getElementById("pd-bags");
     const parkEl = document.getElementById("pd-park");
+    const parkSelectedEl = document.getElementById("pd-park-selected");
 
     const securityEl = document.getElementById("pd-security");
-    const badgeEl = document.getElementById("pd-reco-badge");
     const supportEl = document.getElementById("pd-support");
 
     const boardingInlineEl = document.getElementById("pd-boarding-inline");
-    const leaveVeryEl = document.getElementById("pd-leave-very");
+    const leaveVerySafeEl = document.getElementById("pd-leave-very-safe");
+    const leaveSafeEl = document.getElementById("pd-leave-safe");
     const leaveRecEl = document.getElementById("pd-leave-rec");
-    const leaveRiskyEl = document.getElementById("pd-leave-risky");
+    const leaveTightEl = document.getElementById("pd-leave-tight");
+    const leaveVeryTightEl = document.getElementById("pd-leave-very-tight");
 
     const tlLeaveEl = document.getElementById("pd-tl-leave");
     const tlAddOnsEl = document.getElementById("pd-tl-addons");
@@ -253,11 +292,18 @@ function pdInit() {
     const tlWalkEl = document.getElementById("pd-tl-walk");
     const tlGateEl = document.getElementById("pd-tl-gate");
     const tlBoardingEl = document.getElementById("pd-tl-boarding");
+    const dirRouteEl = document.getElementById("pd-dir-route");
+    const openAirportMapEl = document.getElementById("pd-open-airport-map");
 
     const addOnsWrapEl = document.getElementById("pd-addons-wrap");
     const addOnsTitleEl = document.getElementById("pd-addons-title");
     const addOnsSubEl = document.getElementById("pd-addons-sub");
     const addOnsMinEl = document.getElementById("pd-addons-min");
+
+    // Parking lot picker modal
+    const parkModalEl = document.getElementById("pd-park-modal");
+    const parkListEl = document.getElementById("pd-park-list");
+    const parkConfirmEl = document.getElementById("pd-park-confirm");
 
     const depMs = new Date(flight.scheduled_departure).getTime();
     const validDep = !Number.isNaN(depMs);
@@ -270,7 +316,10 @@ function pdInit() {
         driveSource: "placeholder",
         waits: [],
         securityBaseMin: null,
-        leaveChoice: "rec", // "very" | "rec" | "risky"
+        leaveChoice: "rec", // very_safe | safe | rec | tight | very_tight
+        wizardStepIndex: 0, // 0..3
+        timelineVisible: false,
+        parkingLotId: "",
     };
 
     const saved = pdFindPlan(id);
@@ -280,24 +329,216 @@ function pdInit() {
         if (originEl && state.origin.address) originEl.value = state.origin.address;
         if (cushionEl && typeof saved.cushion === "number") cushionEl.value = String(saved.cushion);
         if (precheckEl) precheckEl.checked = Boolean(saved.precheck);
+        if (clearEl) clearEl.checked = Boolean(saved.clear);
         if (bagsEl) bagsEl.checked = Boolean(saved.bags);
         if (parkEl) parkEl.checked = Boolean(saved.park);
-        if (saveBtn) saveBtn.textContent = "Saved";
+        state.parkingLotId = String(saved.parkingLotId || "");
+    }
+
+    function hasAddress() {
+        return Boolean((originEl?.value || "").trim() || state.origin.placeId);
+    }
+
+    function isStepComplete(idx) {
+        if (idx === 0) return hasAddress() && state.driveMin != null;
+        if (idx === 1) return !Boolean(parkEl?.checked) || Boolean(state.parkingLotId);
+        if (idx === 2) return true; // leave option defaults to Recommended
+        if (idx === 3) return state.timelineVisible;
+        return false;
+    }
+
+    function maxReachableStep() {
+        // Keep the flow gated like checkout: you can’t proceed until drive time is calculated.
+        return isStepComplete(0) ? 3 : 0;
+    }
+
+    function setWizardStep(idx) {
+        const next = Math.max(0, Math.min(3, Number(idx) || 0));
+        const maxStep = maxReachableStep();
+        state.wizardStepIndex = Math.min(next, maxStep);
+        renderWizard();
+    }
+
+    function createTimeline() {
+        state.timelineVisible = true;
+        renderWizard();
+        // Keep existing timeline values consistent with the current selection.
+        recomputeUi();
+    }
+
+    function renderWizard() {
+        // Track swipe: prefer scroll-snap scrolling to avoid transform text blurriness.
+        if (stepsViewportEl instanceof HTMLElement) {
+            const w = stepsViewportEl.clientWidth || 0;
+            if (w > 0) {
+                stepsViewportEl.scrollTo({ left: state.wizardStepIndex * w, behavior: "smooth" });
+            }
+        } else if (stepsTrackEl) {
+            // Fallback: old transform method.
+            stepsTrackEl.style.transform = `translateX(-${state.wizardStepIndex * 100}%)`;
+        }
+
+        const maxStep = maxReachableStep();
+
+        // Dots
+        dotEls.forEach((dot, i) => {
+            const isCurrent = i === state.wizardStepIndex;
+            const complete = isStepComplete(i);
+            const disabled = i > maxStep;
+            dot.classList.toggle("is-current", isCurrent);
+            dot.classList.toggle("is-complete", complete && !isCurrent);
+            dot.classList.toggle("is-disabled", disabled);
+            dot.disabled = disabled;
+            dot.setAttribute("aria-selected", String(isCurrent));
+        });
+
+        // Buttons
+        if (wizBackEl) wizBackEl.disabled = state.wizardStepIndex <= 0;
+
+        if (wizNextEl) {
+            if (state.wizardStepIndex === 2) {
+                wizNextEl.textContent = "Generate timeline";
+                wizNextEl.disabled = false;
+            } else if (state.wizardStepIndex >= 3) {
+                // No bottom-right action on the last step.
+                wizNextEl.classList.add("is-hidden");
+            } else {
+                wizNextEl.classList.remove("is-hidden");
+                wizNextEl.textContent = "Next";
+                wizNextEl.disabled = false;
+            }
+        }
+
+        // Step 4 inner content: show/hide timeline.
+        if (stepTimelineEl) stepTimelineEl.classList.toggle("is-hidden", !state.timelineVisible);
+    }
+
+    function enforceSecurityOptionExclusivity(source) {
+        if (!precheckEl || !clearEl) return;
+        if (source === "precheck" && precheckEl.checked) clearEl.checked = false;
+        if (source === "clear" && clearEl.checked) precheckEl.checked = false;
+        // If both are ever true (e.g. via saved data), prefer the user's most recent action;
+        // otherwise default to PreCheck off.
+        if (precheckEl.checked && clearEl.checked) clearEl.checked = false;
+    }
+
+    function recommendedParkingLotId() {
+        const t = pdNormalizeTerminalLetter(flight.terminal);
+        if (t.includes("A")) return "p1_short_term_a";
+        if (t.includes("B")) return "p2_short_term_b";
+        if (t.includes("C")) return "p3_short_term_c";
+        return "p4_daily";
+    }
+
+    function buildParkingLots() {
+        const recId = recommendedParkingLotId();
+        return [
+            { id: "p1_short_term_a", name: "P1 Short-Term (Terminal A)", sub: "Closest for Terminal A (garage)", recommended: recId === "p1_short_term_a" },
+            { id: "p2_short_term_b", name: "P2 Short-Term (Terminal B)", sub: "Closest for Terminal B (garage)", recommended: recId === "p2_short_term_b" },
+            { id: "p3_short_term_c", name: "P3 Short-Term (Terminal C)", sub: "Closest for Terminal C (garage)", recommended: recId === "p3_short_term_c" },
+            { id: "p4_daily", name: "P4 Daily Parking Garage", sub: "Good for multi-day trips (AirTrain/shuttle connection)", recommended: recId === "p4_daily" },
+            { id: "p6_economy", name: "P6 Economy Lot", sub: "Cheapest on-airport option (free shuttle)", recommended: recId === "p6_economy" },
+        ];
+    }
+
+    function closeParkModal() {
+        parkModalEl?.classList.add("is-hidden");
+        parkModalEl?.setAttribute("aria-hidden", "true");
+    }
+
+    function openParkModal() {
+        if (!parkModalEl || !parkListEl) return;
+        const lots = buildParkingLots();
+        let pending = state.parkingLotId || "";
+        parkConfirmEl && (parkConfirmEl.disabled = !pending);
+
+        parkListEl.innerHTML = lots
+            .map((lot) => {
+                const cls = ["pd-park-item", lot.recommended ? "is-recommended" : "", pending === lot.id ? "is-selected" : ""]
+                    .filter(Boolean)
+                    .join(" ");
+                const badge = lot.recommended ? `<span class="pd-park-badge">Recommended</span>` : "";
+                return `
+                    <button type="button" class="${cls}" data-lot-id="${encodeURIComponent(lot.id)}">
+                        <div class="pd-park-top">
+                            <span class="pd-park-name">${lot.name}</span>
+                            ${badge}
+                        </div>
+                        <div class="pd-park-sub">${lot.sub}</div>
+                    </button>
+                `;
+            })
+            .join("");
+
+        parkListEl.querySelectorAll("[data-lot-id]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                pending = decodeURIComponent(btn.getAttribute("data-lot-id") || "");
+                parkListEl.querySelectorAll(".pd-park-item").forEach((x) => x.classList.remove("is-selected"));
+                btn.classList.add("is-selected");
+                if (parkConfirmEl) parkConfirmEl.disabled = !pending;
+            });
+        });
+
+        parkModalEl.classList.remove("is-hidden");
+        parkModalEl.removeAttribute("aria-hidden");
+
+        // Wire close/cancel actions
+        parkModalEl.querySelectorAll("[data-action='close']").forEach((el) => {
+            el.addEventListener("click", () => {
+                // Closing behaves like cancel if no prior selection.
+                if (!state.parkingLotId && parkEl) parkEl.checked = false;
+                closeParkModal();
+                recomputeUi();
+                renderWizard();
+            });
+        });
+        parkModalEl.querySelectorAll("[data-action='cancel']").forEach((el) => {
+            el.addEventListener("click", () => {
+                if (!state.parkingLotId && parkEl) parkEl.checked = false;
+                closeParkModal();
+                recomputeUi();
+                renderWizard();
+            });
+        });
+        parkConfirmEl?.addEventListener("click", () => {
+            if (!pending) return;
+            state.parkingLotId = pending;
+            closeParkModal();
+            recomputeUi();
+            renderWizard();
+        });
     }
 
     function recomputeUi() {
+        // Make exclusivity robust: enforce on every recompute (covers any event ordering).
+        enforceSecurityOptionExclusivity("none");
+
         const cushion = Number(cushionEl?.value || 15);
         const precheck = Boolean(precheckEl?.checked);
+        const hasClear = Boolean(clearEl?.checked);
         const bags = Boolean(bagsEl?.checked);
         const park = Boolean(parkEl?.checked);
+
+        const hasGoogle = state.driveMin != null;
+
+        // Address step: enable calculate only when it can run.
+        if (calcBtn) calcBtn.disabled = !hasAddress() || !validDep;
+
+        // "Literally cannot select both": disable the other option when one is selected.
+        if (precheckEl && clearEl) {
+            clearEl.disabled = precheck;
+            precheckEl.disabled = hasClear;
+        }
 
         const walkMin = 12;
         const driveMin = state.driveMin != null ? state.driveMin : 42;
         const gateBufferMin = Math.max(0, Number(cushion || 0));
-        const addOnsMin = pdComputeAddOnsMinutes({ bags, park });
+        const addOnsMin = pdComputeAddOnsMinutes({ bags, park, parking_lot_id: state.parkingLotId });
 
         const secBase = state.securityBaseMin != null ? state.securityBaseMin : 18;
-        const securityMin = precheck ? Math.max(3, Math.round(secBase * 0.65)) : secBase;
+        let securityMin = secBase;
+        if (precheck) securityMin = Math.max(3, Math.round(secBase * 0.65));
+        else if (hasClear) securityMin = Math.max(3, Math.round(secBase * 0.8));
 
         if (driveEl) driveEl.textContent = state.driveMin != null ? String(state.driveMin) : "—";
         if (driveSourceEl) driveSourceEl.textContent = state.driveMin != null ? "Google Routes" : "";
@@ -316,11 +557,89 @@ function pdInit() {
             }
         }
 
+        // Timeline layout: alternate left/right based on VISIBLE steps (add-ons can be hidden).
+        // Presentation-only; does not affect any timing or calculations.
+        (function applyTimelineAlternation() {
+            const items = Array.from(document.querySelectorAll(".pd-timeline-item"));
+            const visible = items.filter((el) => !(el instanceof HTMLElement) ? false : !el.classList.contains("is-hidden"));
+            for (const el of items) {
+                if (el instanceof HTMLElement) {
+                    el.classList.remove("is-left", "is-right");
+                }
+            }
+            visible.forEach((el, idx) => {
+                if (!(el instanceof HTMLElement)) return;
+                el.classList.add(idx % 2 === 0 ? "is-left" : "is-right");
+            });
+        })();
+
+        (function updateAirportDirectionsCta() {
+            const termLetter = pdNormalizeTerminalLetter(flight.terminal);
+            const gateRaw = String(flight.gate || "").trim();
+            const gate = gateRaw || "—";
+
+            const parkChosen = Boolean(parkEl?.checked);
+            const lotId = parkChosen ? (state.parkingLotId || recommendedParkingLotId()) : "";
+            const fromLabel = parkChosen
+                ? pdParkingLotName(lotId)
+                : (termLetter ? `Terminal ${termLetter} security` : "Security");
+
+            const fromParam = parkChosen
+                ? pdParkingLotShortCode(lotId)
+                : (termLetter ? `Security-${termLetter}` : "Security");
+
+            const toParam = gateRaw ? gateRaw.replace(/\s+/g, "") : "";
+            const terminalParam = termLetter || "";
+
+            if (dirRouteEl) {
+                const toLabel = gateRaw ? `Gate ${gate}` : "Gate —";
+                dirRouteEl.textContent = `${fromLabel} \u2192 ${toLabel}`;
+            }
+
+            if (openAirportMapEl instanceof HTMLAnchorElement) {
+                const canLink = Boolean(terminalParam) && Boolean(toParam);
+                openAirportMapEl.classList.toggle("is-disabled", !canLink);
+                openAirportMapEl.setAttribute("aria-disabled", canLink ? "false" : "true");
+                openAirportMapEl.tabIndex = canLink ? 0 : -1;
+                openAirportMapEl.href = canLink
+                    ? `airport-map.html?from=${encodeURIComponent(fromParam)}&to=${encodeURIComponent(toParam)}&terminal=${encodeURIComponent(terminalParam)}`
+                    : "airport-map.html";
+            }
+        })();
+
+        if (parkSelectedEl) {
+            const show = park && Boolean(state.parkingLotId);
+            parkSelectedEl.classList.toggle("is-hidden", !show);
+            if (show) parkSelectedEl.textContent = `Parking lot: ${pdParkingLotName(state.parkingLotId)}`;
+        }
+
 
         if (!validDep) {
-            if (leaveVeryEl) leaveVeryEl.textContent = "—";
+            renderWizard();
+            if (leaveVerySafeEl) leaveVerySafeEl.textContent = "—";
+            if (leaveSafeEl) leaveSafeEl.textContent = "—";
             if (leaveRecEl) leaveRecEl.textContent = "—";
-            if (leaveRiskyEl) leaveRiskyEl.textContent = "—";
+            if (leaveTightEl) leaveTightEl.textContent = "—";
+            if (leaveVeryTightEl) leaveVeryTightEl.textContent = "—";
+            if (boardingInlineEl) boardingInlineEl.textContent = "";
+            if (tlLeaveEl) tlLeaveEl.textContent = "—";
+            if (tlAddOnsEl) tlAddOnsEl.textContent = "—";
+            if (tlSecurityEl) tlSecurityEl.textContent = "—";
+            if (tlWalkEl) tlWalkEl.textContent = "—";
+            if (tlGateEl) tlGateEl.textContent = "—";
+            if (tlBoardingEl) tlBoardingEl.textContent = "—";
+            return;
+        }
+
+        // If the user hasn't calculated drive time yet, don't compute the later steps.
+        // Keep the UI focused on the current step (address + calculate).
+        if (!hasGoogle) {
+            renderWizard();
+            if (leaveVerySafeEl) leaveVerySafeEl.textContent = "—";
+            if (leaveSafeEl) leaveSafeEl.textContent = "—";
+            if (leaveRecEl) leaveRecEl.textContent = "—";
+            if (leaveTightEl) leaveTightEl.textContent = "—";
+            if (leaveVeryTightEl) leaveVeryTightEl.textContent = "—";
             if (boardingInlineEl) boardingInlineEl.textContent = "";
             if (tlLeaveEl) tlLeaveEl.textContent = "—";
             if (tlAddOnsEl) tlAddOnsEl.textContent = "—";
@@ -334,12 +653,22 @@ function pdInit() {
         const times = pdComputeLeaveTimes({ depMs, driveMin: driveMin + addOnsMin, securityMin, walkMin, bufferMin: gateBufferMin });
         if (boardingInlineEl) boardingInlineEl.innerHTML = `Boarding starts at <strong>${pdFmtTime(times.boardingMs)}</strong>`;
 
-        if (leaveVeryEl) leaveVeryEl.textContent = pdFmtTime(times.veryMs);
-        if (leaveRecEl) leaveRecEl.textContent = pdFmtTime(times.recMs);
-        if (leaveRiskyEl) leaveRiskyEl.textContent = pdFmtTime(times.riskyMs);
+        const base = times.recMs;
+        const options = {
+            very_safe: base - 20 * 60000,
+            safe: base - 10 * 60000,
+            rec: base,
+            tight: base + 10 * 60000,
+            very_tight: base + 20 * 60000,
+        };
 
-        const leaveMs =
-            state.leaveChoice === "very" ? times.veryMs : state.leaveChoice === "risky" ? times.riskyMs : times.recMs;
+        if (leaveVerySafeEl) leaveVerySafeEl.textContent = pdFmtTime(options.very_safe);
+        if (leaveSafeEl) leaveSafeEl.textContent = pdFmtTime(options.safe);
+        if (leaveRecEl) leaveRecEl.textContent = pdFmtTime(options.rec);
+        if (leaveTightEl) leaveTightEl.textContent = pdFmtTime(options.tight);
+        if (leaveVeryTightEl) leaveVeryTightEl.textContent = pdFmtTime(options.very_tight);
+
+        const leaveMs = options[state.leaveChoice] != null ? options[state.leaveChoice] : options.rec;
 
         // Timeline should reflect the *selected leave time* all the way through arrival.
         // Otherwise Safe/Tight deltas “disappear” and gate arrival looks identical.
@@ -356,26 +685,22 @@ function pdInit() {
         if (tlWalkEl) tlWalkEl.textContent = pdFmtTime(walkStartMs);
         if (tlGateEl) tlGateEl.textContent = pdFmtTime(gateArriveMs);
         if (tlBoardingEl) tlBoardingEl.textContent = pdFmtTime(boardingMs);
-        const hasAddress = Boolean((originEl?.value || "").trim() || state.origin.placeId);
-        const hasGoogle = state.driveMin != null;
-        if (badgeEl) {
-            badgeEl.textContent = hasGoogle
-                ? pdDriveCalculatedLabel(state.driveMin)
-                : (hasAddress ? "Ready to calculate" : "Enter your address to continue");
-        }
         if (supportEl) {
             supportEl.textContent = hasGoogle
-                ? "Based on Google traffic estimate, security, walk, and buffer."
-                : "Enter your address to continue.";
+                ? "Pick a buffer level. You can change this later."
+                : "Submit your address to continue.";
         }
+
+        renderWizard();
     }
 
     function applyLeaveChoice(next) {
-        const choice = next === "very" || next === "risky" ? next : "rec";
+        const allowed = new Set(["very_safe", "safe", "rec", "tight", "very_tight"]);
+        const choice = allowed.has(String(next)) ? String(next) : "rec";
         state.leaveChoice = choice;
 
-        const items = document.querySelectorAll(".planner-hero-times .planner-hero-timeitem");
-        items.forEach((item) => item.classList.toggle("planner-hero-timeitem--main", pdLeaveChoiceFromEl(item) === choice));
+        const items = document.querySelectorAll(".pd-leave-option");
+        items.forEach((item) => item.classList.toggle("is-selected", item.getAttribute("data-choice") === choice));
         recomputeUi();
     }
 
@@ -402,11 +727,11 @@ function pdInit() {
             state.driveMin = null;
             setDriveStatus("");
             recomputeUi();
-            return;
+            return false;
         }
-        if (!validDep) return;
+        if (!validDep) return false;
 
-        setDriveStatus("Calculating drive time…");
+        setDriveStatus("Submitting…");
         try {
             const m = await pdDriveEstimate({
                 placeId: state.origin.placeId,
@@ -415,13 +740,15 @@ function pdInit() {
             });
             state.driveMin = m;
             state.driveSource = "google";
-            setDriveStatus(pdDriveCalculatedLabel(m));
+            // Stored in state; intentionally not shown in UI here.
+            setDriveStatus("");
+            return true;
         } catch {
             state.driveMin = null;
             state.driveSource = "placeholder";
-            setDriveStatus("Could not calculate drive time. Try a more specific address.");
+            setDriveStatus("Could not submit. Try a more specific address.");
+            return false;
         }
-        recomputeUi();
     }
 
     if (originEl) {
@@ -440,36 +767,91 @@ function pdInit() {
     }
 
     calcBtn?.addEventListener("click", () => {
-        void recalcDrive();
+        void (async () => {
+            const ok = await recalcDrive();
+            recomputeUi();
+            if (ok) setWizardStep(1);
+        })();
     });
 
-    // Leave time selection: clicking Safe/Recommended/Tight highlights the choice and drives the timeline below.
-    const timeItems = document.querySelectorAll(".planner-hero-times .planner-hero-timeitem");
-    timeItems.forEach((item) => {
-        const choice = pdLeaveChoiceFromEl(item);
-        if (!choice) return;
-        item.setAttribute("role", "button");
-        item.setAttribute("tabindex", "0");
-        item.setAttribute("aria-label", `Select ${choice === "very" ? "Safe" : choice === "risky" ? "Tight" : "Recommended"} leave time`);
-        item.addEventListener("click", (e) => {
-            e.preventDefault();
-            applyLeaveChoice(choice);
+    wizBackEl?.addEventListener("click", () => {
+        setWizardStep(state.wizardStepIndex - 1);
+    });
+
+    wizNextEl?.addEventListener("click", () => {
+        if (state.wizardStepIndex >= 3) return;
+        // Enforce gating: only allow moving beyond Step 1 after drive is calculated.
+        if (state.wizardStepIndex === 0 && !isStepComplete(0)) return;
+        if (state.wizardStepIndex === 2 && !state.timelineVisible) {
+            createTimeline();
+        }
+        setWizardStep(state.wizardStepIndex + 1);
+    });
+
+    dotEls.forEach((dot) => {
+        dot.addEventListener("click", () => {
+            const idx = Number(dot.getAttribute("data-step-index"));
+            if (!Number.isFinite(idx)) return;
+            setWizardStep(idx);
         });
-        item.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                applyLeaveChoice(choice);
+    });
+
+    // Keep the current step aligned after resizes (scroll-based slider).
+    window.addEventListener(
+        "resize",
+        () => {
+            try {
+                renderWizard();
+            } catch {
+                /* ignore */
             }
-        });
+        },
+        { passive: true },
+    );
+
+
+    // Leave time selection: stacked list buttons.
+    document.querySelectorAll(".pd-leave-option").forEach((btn) => {
+        btn.addEventListener("click", () => applyLeaveChoice(btn.getAttribute("data-choice") || "rec"));
     });
 
-    [cushionEl, precheckEl, bagsEl, parkEl].forEach((el) => {
+    precheckEl?.addEventListener("change", () => {
+        enforceSecurityOptionExclusivity("precheck");
+        recomputeUi();
+    });
+    precheckEl?.addEventListener("input", () => {
+        enforceSecurityOptionExclusivity("precheck");
+        recomputeUi();
+    });
+    clearEl?.addEventListener("change", () => {
+        enforceSecurityOptionExclusivity("clear");
+        recomputeUi();
+    });
+    clearEl?.addEventListener("input", () => {
+        enforceSecurityOptionExclusivity("clear");
+        recomputeUi();
+    });
+
+    [cushionEl, bagsEl, parkEl].forEach((el) => {
         el?.addEventListener("input", () => recomputeUi());
         el?.addEventListener("change", () => recomputeUi());
     });
 
-    saveBtn?.addEventListener("click", () => {
+    parkEl?.addEventListener("change", () => {
+        if (parkEl.checked) {
+            // Require lot selection when enabling parking.
+            openParkModal();
+        } else {
+            state.parkingLotId = "";
+            closeParkModal();
+            recomputeUi();
+            renderWizard();
+        }
+    });
+
+    function savePlanNow() {
         const cushion = Number(cushionEl?.value || 15);
+        enforceSecurityOptionExclusivity("none");
         const plan = {
             id,
             savedAt: Date.now(),
@@ -478,15 +860,22 @@ function pdInit() {
             driveMin: state.driveMin,
             cushion,
             precheck: Boolean(precheckEl?.checked),
+            clear: Boolean(clearEl?.checked),
             bags: Boolean(bagsEl?.checked),
             park: Boolean(parkEl?.checked),
+            parkingLotId: state.parkingLotId,
         };
         pdUpsertPlan(plan);
-        if (saveBtn) saveBtn.textContent = "Saved";
+    }
+
+    saveTimelineEl?.addEventListener("click", () => {
+        savePlanNow();
     });
 
     void refreshWaits();
+    enforceSecurityOptionExclusivity("none");
     applyLeaveChoice(state.leaveChoice);
+    renderWizard();
     recomputeUi();
 }
 
