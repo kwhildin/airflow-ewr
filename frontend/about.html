@@ -1,5 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+    <style>
+    .airport-partnerships {
+        margin-top: 46px;
+    }
+
+    .airport-partnerships-head {
+        max-width: 860px;
+        margin-bottom: 24px;
+    }
+
+    .airport-partnerships-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .airport-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 24px 26px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(185, 195, 214, 0.55);
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+    }
+
+    .airport-card--active {
+        border-color: rgba(31, 86, 179, 0.28);
+        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(238,245,255,0.95));
+    }
+
+    .airport-code {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #6d778b;
+    }
+
+    .airport-card h3 {
+        margin: 0;
+        font-size: 21px;
+        line-height: 1.25;
+        color: #111827;
+    }
+
+    .airport-status {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #6d778b;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .airport-status--active {
+        background: #eaf1ff;
+        color: #1f56b3;
+    }
+
+    @media (max-width: 900px) {
+        .airport-partnerships-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .airport-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,6 +168,82 @@
                 </div>
             </div>
         </section>
+        <section class="airport-partnerships">
+    <div class="airport-partnerships-head">
+        <p class="mini-kicker">Expansion Roadmap</p>
+        <h2 class="section-title section-title--lg">Airport Partnerships</h2>
+        <p class="muted">
+            AirFlow is designed to expand beyond Newark Liberty International Airport by partnering with
+            major airports to provide travelers with clearer wait-time, map, and gate-planning information.
+        </p>
+    </div>
+
+    <div class="airport-partnerships-grid">
+        <article class="airport-card airport-card--active">
+            <div>
+                <p class="airport-code">EWR</p>
+                <h3>Newark Liberty International Airport</h3>
+            </div>
+            <span class="airport-status airport-status--active">Live</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">JFK</p>
+                <h3>John F. Kennedy International Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">LGA</p>
+                <h3>LaGuardia Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">ATL</p>
+                <h3>Hartsfield-Jackson Atlanta Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">ORD</p>
+                <h3>Chicago O'Hare International Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">LAX</p>
+                <h3>Los Angeles International Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">DFW</p>
+                <h3>Dallas Fort Worth International Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+
+        <article class="airport-card">
+            <div>
+                <p class="airport-code">MIA</p>
+                <h3>Miami International Airport</h3>
+            </div>
+            <span class="airport-status">Coming Soon</span>
+        </article>
+    </div>
+</section>
     </main>
 </body>
 </html>
