@@ -59,30 +59,65 @@
                     <p class="hero-note">No install needed on desktop — just use the web.</p>
                 </div>
             </div>
- <div class="hero-art hero-art--phone" aria-hidden="true">
+<div class="hero-art hero-art--phone" aria-hidden="true">
   <style>
-    .hero-phone-image-wrap {
-      width: 100%;
+    .hero-art--phone {
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      width: 100%;
     }
 
-    .hero-phone-image {
-      width: 390px;
-      max-width: 100%;
-      height: auto;
-      display: block;
+    .iphone-preview {
+      position: relative;
+      width: min(430px, 100%);
+      aspect-ratio: 832 / 1792;
+      margin: 0 auto;
+    }
+
+    /* this is the APP SCREEN inside the phone */
+    .iphone-preview-screen {
+      position: absolute;
+      top: 3.2%;
+      left: 5.1%;
+      width: 89.8%;
+      height: 93.2%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 42px;
+      z-index: 1;
+
+      /* adjust these two numbers if you want slightly more/less showing */
+      transform: scale(0.93) translateY(10px);
+      transform-origin: top center;
+    }
+
+    /* this is the transparent iPhone PNG frame */
+    .iphone-preview-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 30px 60px rgba(15, 23, 42, 0.18));
+      z-index: 2;
+      pointer-events: none;
+      display: block;
     }
   </style>
 
-  <div class="hero-phone-image-wrap">
+  <div class="iphone-preview">
+    <!-- YOUR SCREENSHOT / APP IMAGE -->
     <img
+      class="iphone-preview-screen"
       src="assets/app-screen.png"
       alt="AirFlow app preview"
-      class="hero-phone-image"
+    />
+
+    <!-- YOUR TRANSPARENT IPHONE FRAME PNG -->
+    <img
+      class="iphone-preview-frame"
+      src="assets/iphone16-frame.png"
+      alt=""
     />
   </div>
 </div>
