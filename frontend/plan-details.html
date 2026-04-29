@@ -43,6 +43,7 @@
                     <p class="plan-detail-summary-title" id="pd-summary-title">—</p>
                     <p class="plan-detail-summary-route" id="pd-summary-route">—</p>
                     <p class="plan-detail-summary-meta" id="pd-summary-meta">—</p>
+                    <p class="plan-detail-summary-boarding" id="pd-boarding-inline"></p>
                 </div>
                 <div class="plan-detail-head-actions">
                     <button class="btn btn-primary" id="pd-save-btn" type="button">Save plan</button>
@@ -89,45 +90,68 @@
                         <em class="pd-leave-desc">Minimal buffer</em>
                     </div>
                 </div>
-                <p class="planner-hero-note is-hidden" id="pd-boarding-wrap">
-                    Boarding starts at <strong id="pd-boarding">—</strong>
-                </p>
                 <p class="planner-hero-sub" id="pd-support">Enter your address to see your leave time.</p>
             </div>
         </section>
 
-        <section class="card card--padded" aria-label="Timing breakdown" style="margin-top:1rem;">
-            <h2 class="section-title">Timing breakdown</h2>
+        <section class="card card--padded pd-timeline-card" aria-label="Timing breakdown" style="margin-top:1rem;">
+            <h2 class="section-title">Your airport timeline</h2>
             <div class="planner-metrics planner-metrics--compact" style="margin-bottom:0">
                     <div class="planner-metric planner-metric--drive">
-                        <span>Drive</span>
-                        <strong id="pd-drive">—</strong><em>min</em>
+                        <span>Leave for airport</span>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-leave">—</span>
+                            <span class="pd-timeline-minutes"><strong id="pd-drive">—</strong><em>min</em></span>
+                        </div>
                         <small class="planner-metric-sub" id="pd-drive-source"></small>
+                    </div>
+                    <div class="planner-metric is-hidden" id="pd-addons-wrap">
+                        <span id="pd-addons-title">Extra step</span>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-addons">—</span>
+                            <span class="pd-timeline-minutes"><strong id="pd-addons-min">—</strong><em>min</em></span>
+                        </div>
+                        <small class="planner-metric-sub" id="pd-addons-sub">Parking / bag drop</small>
                     </div>
                     <div class="planner-metric">
                         <span>Security</span>
-                        <strong id="pd-security">—</strong><em>min</em>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-security">—</span>
+                            <span class="pd-timeline-minutes"><strong id="pd-security">—</strong><em>min</em></span>
+                        </div>
                         <small class="planner-metric-sub" id="pd-security-source">Terminal estimate</small>
                     </div>
                     <div class="planner-metric">
-                        <span>Walk</span>
-                        <strong id="pd-walk">12</strong><em>min</em>
-                        <small class="planner-metric-sub">Placeholder</small>
-                    </div>
-                    <div class="planner-metric">
-                        <span>Buffer</span>
-                        <strong id="pd-buffer">—</strong><em>min</em>
-                        <small class="planner-metric-sub">Cushion + add-ons</small>
+                        <span>Walk to gate</span>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-walk">—</span>
+                            <span class="pd-timeline-minutes"><strong id="pd-walk">12</strong><em>min</em></span>
+                        </div>
+                        <small class="planner-metric-sub">Walking time</small>
                     </div>
                     <div class="planner-metric planner-metric--total">
-                        <span>Total</span>
-                        <strong id="pd-total">—</strong><em>min</em>
+                        <span>Arrive at gate</span>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-gate">—</span>
+                        </div>
+                        <small class="planner-metric-sub pd-timeline-sub--ghost" aria-hidden="true">&nbsp;</small>
+                    </div>
+                    <div class="planner-metric planner-metric--boarding">
+                        <span>Boarding</span>
+                        <div class="pd-timeline-right">
+                            <span class="pd-timeline-clock" id="pd-tl-boarding">—</span>
+                            <span class="pd-timeline-minutes pd-timeline-minutes--muted"><em>starts</em></span>
+                        </div>
+                        <small class="planner-metric-sub">Boarding begins</small>
                     </div>
             </div>
         </section>
 
         <details class="card card--padded pd-advanced" aria-label="Advanced options" style="margin-top:1rem;">
-            <summary class="pd-advanced-summary">Advanced options</summary>
+            <summary class="pd-advanced-summary">
+                <span class="pd-advanced-title">Advanced options</span>
+                <span class="pd-advanced-sub">Customize Your Preferences</span>
+            </summary>
             <div class="plan-detail-options" style="margin-top:0.75rem">
                 <label class="field">
                     <span class="field-label">Arrival cushion (min)</span>

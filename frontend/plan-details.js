@@ -82,24 +82,27 @@ function pdPickTerminalWait(terminals, termLetter) {
     return hit ? Number(hit.minutes) : null;
 }
 
-function pdComputeBufferMinutes(cushion, bags, park) {
-    const bagExtra = bags ? 15 : 0;
-    const parkExtra = park ? 12 : 0;
-    return Math.max(0, Number(cushion || 0) + bagExtra + parkExtra);
-}
-
 function pdComputeLeaveTimes({ depMs, driveMin, securityMin, walkMin, bufferMin }) {
-    // Keep same core heuristic as existing planner: be at gate by boarding start (~35m pre-departure)
+    // Heuristic: boarding starts ~35m pre-departure. Use the user’s buffer to target being at the gate
+    // `bufferMin` minutes before boarding starts (default cushion is 15).
     const boardingMs = depMs - 35 * 60000;
-    const totalAll = (driveMin + securityMin + walkMin + bufferMin) * 60000;
-    const recLeaveMs = boardingMs - totalAll;
+    const gateTargetMs = boardingMs - Math.max(0, Number(bufferMin || 0)) * 60000;
+    const travelMs = (driveMin + securityMin + walkMin) * 60000;
+    const recLeaveMs = gateTargetMs - travelMs;
 
     return {
         boardingMs,
+        gateTargetMs,
         veryMs: recLeaveMs - 15 * 60000,
         recMs: recLeaveMs,
         riskyMs: recLeaveMs + 10 * 60000,
     };
+}
+
+function pdComputeAddOnsMinutes({ bags, park }) {
+    const bagExtra = bags ? 15 : 0;
+    const parkExtra = park ? 12 : 0;
+    return bagExtra + parkExtra;
 }
 
 async function pdEnsurePlacesAutocomplete(inputEl, onPlace) {
@@ -222,16 +225,25 @@ function pdInit() {
     const parkEl = document.getElementById("pd-park");
 
     const securityEl = document.getElementById("pd-security");
-    const bufferEl = document.getElementById("pd-buffer");
-    const totalEl = document.getElementById("pd-total");
     const badgeEl = document.getElementById("pd-reco-badge");
     const supportEl = document.getElementById("pd-support");
 
-    const boardingWrap = document.getElementById("pd-boarding-wrap");
-    const boardingEl = document.getElementById("pd-boarding");
+    const boardingInlineEl = document.getElementById("pd-boarding-inline");
     const leaveVeryEl = document.getElementById("pd-leave-very");
     const leaveRecEl = document.getElementById("pd-leave-rec");
     const leaveRiskyEl = document.getElementById("pd-leave-risky");
+
+    const tlLeaveEl = document.getElementById("pd-tl-leave");
+    const tlAddOnsEl = document.getElementById("pd-tl-addons");
+    const tlSecurityEl = document.getElementById("pd-tl-security");
+    const tlWalkEl = document.getElementById("pd-tl-walk");
+    const tlGateEl = document.getElementById("pd-tl-gate");
+    const tlBoardingEl = document.getElementById("pd-tl-boarding");
+
+    const addOnsWrapEl = document.getElementById("pd-addons-wrap");
+    const addOnsTitleEl = document.getElementById("pd-addons-title");
+    const addOnsSubEl = document.getElementById("pd-addons-sub");
+    const addOnsMinEl = document.getElementById("pd-addons-min");
 
     const depMs = new Date(flight.scheduled_departure).getTime();
     const validDep = !Number.isNaN(depMs);
@@ -266,7 +278,8 @@ function pdInit() {
 
         const walkMin = 12;
         const driveMin = state.driveMin != null ? state.driveMin : 42;
-        const bufferMin = pdComputeBufferMinutes(cushion, bags, park);
+        const gateBufferMin = Math.max(0, Number(cushion || 0));
+        const addOnsMin = pdComputeAddOnsMinutes({ bags, park });
 
         const secBase = state.securityBaseMin != null ? state.securityBaseMin : 18;
         const securityMin = precheck ? Math.max(3, Math.round(secBase * 0.65)) : secBase;
@@ -274,26 +287,56 @@ function pdInit() {
         if (driveEl) driveEl.textContent = state.driveMin != null ? String(state.driveMin) : "—";
         if (driveSourceEl) driveSourceEl.textContent = state.driveMin != null ? "Google Routes" : "";
         if (securityEl) securityEl.textContent = String(securityMin);
-        if (bufferEl) bufferEl.textContent = String(bufferMin);
+        if (addOnsMinEl) addOnsMinEl.textContent = String(addOnsMin);
+        if (addOnsWrapEl) {
+            const show = addOnsMin > 0;
+            addOnsWrapEl.classList.toggle("is-hidden", !show);
+            if (addOnsTitleEl) {
+                addOnsTitleEl.textContent = bags && park ? "Park + check bag" : (park ? "Park at EWR" : "Check bag");
+            }
+            if (addOnsSubEl) {
+                addOnsSubEl.textContent = bags && park
+                    ? "Allow time to park and drop bags"
+                    : (park ? "Allow time to park and get to terminal" : "Allow time for bag drop");
+            }
+        }
 
-        const total = driveMin + securityMin + walkMin + bufferMin;
-        if (totalEl) totalEl.textContent = String(total);
 
         if (!validDep) {
             if (leaveVeryEl) leaveVeryEl.textContent = "—";
             if (leaveRecEl) leaveRecEl.textContent = "—";
             if (leaveRiskyEl) leaveRiskyEl.textContent = "—";
-            if (boardingWrap) boardingWrap.classList.add("is-hidden");
+            if (boardingInlineEl) boardingInlineEl.textContent = "";
+            if (tlLeaveEl) tlLeaveEl.textContent = "—";
+            if (tlAddOnsEl) tlAddOnsEl.textContent = "—";
+            if (tlSecurityEl) tlSecurityEl.textContent = "—";
+            if (tlWalkEl) tlWalkEl.textContent = "—";
+            if (tlGateEl) tlGateEl.textContent = "—";
+            if (tlBoardingEl) tlBoardingEl.textContent = "—";
             return;
         }
 
-        const times = pdComputeLeaveTimes({ depMs, driveMin, securityMin, walkMin, bufferMin });
-        if (boardingEl) boardingEl.textContent = pdFmtTime(times.boardingMs);
-        if (boardingWrap) boardingWrap.classList.remove("is-hidden");
+        const times = pdComputeLeaveTimes({ depMs, driveMin: driveMin + addOnsMin, securityMin, walkMin, bufferMin: gateBufferMin });
+        if (boardingInlineEl) boardingInlineEl.innerHTML = `Boarding starts at <strong>${pdFmtTime(times.boardingMs)}</strong>`;
 
         if (leaveVeryEl) leaveVeryEl.textContent = pdFmtTime(times.veryMs);
         if (leaveRecEl) leaveRecEl.textContent = pdFmtTime(times.recMs);
         if (leaveRiskyEl) leaveRiskyEl.textContent = pdFmtTime(times.riskyMs);
+
+        const leaveMs = times.recMs;
+        const arriveMs = leaveMs + driveMin * 60000;
+        const addOnsStartMs = arriveMs;
+        const securityStartMs = addOnsStartMs + addOnsMin * 60000;
+        const walkStartMs = securityStartMs + securityMin * 60000;
+        const gateMs = times.gateTargetMs || times.boardingMs;
+        const boardingMs = times.boardingMs;
+
+        if (tlLeaveEl) tlLeaveEl.textContent = pdFmtTime(leaveMs);
+        if (tlAddOnsEl) tlAddOnsEl.textContent = pdFmtTime(addOnsStartMs);
+        if (tlSecurityEl) tlSecurityEl.textContent = pdFmtTime(securityStartMs);
+        if (tlWalkEl) tlWalkEl.textContent = pdFmtTime(walkStartMs);
+        if (tlGateEl) tlGateEl.textContent = pdFmtTime(gateMs);
+        if (tlBoardingEl) tlBoardingEl.textContent = pdFmtTime(boardingMs);
         const hasAddress = Boolean((originEl?.value || "").trim() || state.origin.placeId);
         const hasGoogle = state.driveMin != null;
         if (badgeEl) badgeEl.textContent = hasGoogle ? "Drive time calculated" : (hasAddress ? "Ready to calculate" : "Enter your address to continue");

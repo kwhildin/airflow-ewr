@@ -209,6 +209,15 @@ function waitLevel(minutes) {
     return "Busy";
 }
 
+function badgeClassForLevel(level) {
+    const l = String(level || "").trim().toLowerCase();
+    if (l === "light") return "badge--light";
+    if (l === "moderate") return "badge--moderate";
+    if (l === "busy") return "badge--busy";
+    if (l === "heavy") return "badge--heavy";
+    return "";
+}
+
 function escapeHTML(value) {
     const div = document.createElement("div");
     div.textContent = value == null ? "" : String(value);
@@ -303,6 +312,7 @@ function renderCurrentWaits() {
                         const lane = getLane(row);
                         const wait = getWait(row);
                         const level = waitLevel(wait);
+                        const badgeClass = badgeClassForLevel(level);
 
                         return `
                             <article class="wait-row" role="listitem" style="margin-top: 10px;">
@@ -317,7 +327,7 @@ function renderCurrentWaits() {
                                 </div>
 
                                 <div class="wait-row-right">
-                                    <span class="badge">${escapeHTML(level)}</span>
+                                    <span class="badge ${badgeClass}">${escapeHTML(level)}</span>
                                 </div>
                             </article>
                         `;
