@@ -177,15 +177,70 @@
                 </div>
             </div>
 
-            <div class="hero-art hero-art--phone" aria-hidden="true">
-                <div class="hero-phone-image-wrap">
-                    <img
-                        src="assets/app-preview-phone.png"
-                        alt="AirFlow app preview"
-                        class="hero-phone-image"
-                    />
-                </div>
-            </div>
+    <div class="hero-art hero-art--phone" aria-hidden="true">
+  <style>
+    .af-phone-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 8px;
+    }
+
+    .af-phone16 {
+      position: relative;
+      width: 320px;
+      height: 690px;
+      border-radius: 46px;
+      background: linear-gradient(180deg, #1b2540 0%, #18223b 100%);
+      padding: 9px;
+      box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.22),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+      overflow: hidden;
+    }
+
+    .af-phone16-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 38px;
+      overflow: hidden;
+      background: #f7faff;
+    }
+
+    .af-phone16-screen::before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 28px;
+      border-radius: 999px;
+      background: #0b0b0f;
+      z-index: 20;
+    }
+
+    .af-app-screenshot {
+      position: absolute;
+      inset: 0;
+      background-image: url("assets/app-screen.png");
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-size: contain;
+      background-color: #f7faff;
+    }
+  </style>
+
+  <div class="af-phone-wrap">
+    <div class="af-phone16">
+      <div class="af-phone16-screen">
+        <div class="af-app-screenshot"></div>
+      </div>
+    </div>
+  </div>
+</div>
         </section>
 
         <section class="features">
