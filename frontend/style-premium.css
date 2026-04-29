@@ -2919,3 +2919,238 @@ details.pd-advanced{
   position: relative;
   z-index: 1;
 }
+/* =========================
+   HOMEPAGE IPHONE APP PREVIEW
+   ========================= */
+
+.hero-phone-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.iphone-shell {
+    position: relative;
+    width: 430px;
+    height: 780px;
+    background: #18223f;
+    border-radius: 52px;
+    padding: 16px;
+    box-shadow: 0 30px 80px rgba(20, 33, 61, 0.22);
+}
+
+.iphone-notch {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 28px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.28);
+    z-index: 5;
+}
+
+.iphone-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 38px;
+    background: #eef3fb;
+}
+
+.app-preview-topbar {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.app-preview-logo {
+    width: 105px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.app-preview-pills {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.app-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: rgba(255, 255, 255, 0.92);
+    color: #233b73;
+    border: 1px solid rgba(35, 59, 115, 0.10);
+    backdrop-filter: blur(10px);
+}
+
+.live-pill {
+    color: #2f5fb8;
+}
+
+.app-map-area {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #e9eef7;
+}
+
+/* This shows your airport-map page inside the phone */
+.app-map-area iframe {
+    width: 100%;
+    height: 125%;
+    border: 0;
+    display: block;
+    margin-top: -70px; /* adjust if too much header shows */
+}
+
+/* Bottom directions sheet */
+.app-bottom-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 7;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    box-shadow: 0 -12px 30px rgba(16, 28, 56, 0.12);
+    padding: 14px 16px 18px;
+    max-height: 38%;
+    overflow-y: auto;
+}
+
+.sheet-handle {
+    width: 48px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(34, 51, 84, 0.16);
+    margin: 0 auto 12px;
+}
+
+.sheet-route-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.sheet-kicker {
+    margin: 0 0 4px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #70809d;
+}
+
+.sheet-route-header h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.2;
+    color: #0f1733;
+}
+
+.sheet-subtext {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6a7791;
+}
+
+.sheet-time-badge {
+    flex-shrink: 0;
+    background: #1f56b3;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 16px;
+}
+
+.sheet-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sheet-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-top: 1px solid rgba(28, 46, 84, 0.08);
+}
+
+.sheet-step:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.step-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #e7eefc;
+    color: #1f56b3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.sheet-step strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+    color: #13203b;
+}
+
+.sheet-step p {
+    margin: 0;
+    font-size: 13px;
+    color: #6a7791;
+    line-height: 1.35;
+}
+
+/* Makes the phone fit better on smaller screens */
+@media (max-width: 1200px) {
+    .iphone-shell {
+        width: 380px;
+        height: 700px;
+    }
+}
+
+@media (max-width: 900px) {
+    .iphone-shell {
+        width: 330px;
+        height: 620px;
+    }
+
+    .app-preview-logo {
+        width: 88px;
+    }
+
+    .app-bottom-sheet {
+        max-height: 42%;
+    }
+}
