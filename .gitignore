@@ -3,6 +3,9 @@ venv/
 __pycache__/
 *.pyc
 
+# Env files (IMPORTANT)
+.env
+
 # Cache/data
 data/
 *.json
