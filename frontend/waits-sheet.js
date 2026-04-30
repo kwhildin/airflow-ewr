@@ -1,10 +1,14 @@
-const JS_VERSION = "214-waits-comparison-ui";
+const JS_VERSION = "215-waits-flight-autofill";
 console.log("Loaded waits-sheet.js", JS_VERSION);
 
 const SHEET_ID = "1w4gNnAoM-0SEopHxZLREUj83DpPNAaj0YLwYEwvYVFk";
 const SHEET_GID = "0";
 const SHEET_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&tqx=responseHandler:handleSheetData`;
+const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : "https://airflow-ewr.onrender.com";
+const SECURITY_LEAD_MINUTES = 95;
 
 let WAIT_ROWS = [];
 
@@ -160,6 +164,117 @@ function minuteKey(date) {
         date.getHours(),
         date.getMinutes()
     ].join("-");
+}
+
+function normalizeFlightNumber(raw) {
+    return String(raw || "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "");
+}
+
+function terminalCodeFromValue(rawTerminal) {
+    const text = String(rawTerminal || "").trim().toUpperCase();
+    if (!text) return "";
+    if (text.includes("A")) return "A";
+    if (text.includes("B")) return "B";
+    if (text.includes("C")) return "C";
+    return "";
+}
+
+function toDateInputValue(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
+function toTimeInputValue(date) {
+    const h = String(date.getHours()).padStart(2, "0");
+    const m = String(date.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+}
+
+function setFlightPredictStatus(message, tone = "") {
+    const el = document.getElementById("predict-flight-status");
+    if (!el) return;
+    el.textContent = message || "";
+    el.classList.remove("is-error", "is-success");
+    if (tone === "error") el.classList.add("is-error");
+    if (tone === "success") el.classList.add("is-success");
+}
+
+function pickBestFlightResult(results) {
+    if (!Array.isArray(results) || !results.length) return null;
+    const now = Date.now();
+    const withParsed = results
+        .map(f => ({ flight: f, ts: new Date(f?.scheduled_departure || "").getTime() }))
+        .filter(x => Number.isFinite(x.ts));
+    const upcoming = withParsed
+        .filter(x => x.ts >= now)
+        .sort((a, b) => a.ts - b.ts);
+    if (upcoming.length) return upcoming[0].flight;
+    return withParsed.sort((a, b) => b.ts - a.ts)[0]?.flight || results[0];
+}
+
+function deriveSecurityTargetFromFlight(flight) {
+    const dep = new Date(flight?.scheduled_departure || "");
+    if (Number.isNaN(dep.getTime())) return null;
+    const guess = new Date(dep.getTime() - SECURITY_LEAD_MINUTES * 60000);
+    const minNow = new Date(Date.now() + 5 * 60000);
+    if (guess < minNow) return minNow;
+    return guess;
+}
+
+async function autofillPredictorFromFlight() {
+    const input = document.getElementById("predict-flight-number");
+    const fillButton = document.getElementById("predict-flight-fill");
+    const dateInput = document.getElementById("predict-date");
+    const timeInput = document.getElementById("predict-time");
+    const terminalInput = document.getElementById("predict-terminal");
+    const gateInput = document.getElementById("predict-gate");
+    if (!input || !dateInput || !timeInput || !terminalInput || !gateInput) return;
+
+    const flightNumber = normalizeFlightNumber(input.value);
+    if (!flightNumber) {
+        setFlightPredictStatus("Enter a flight number like UA1234 first.", "error");
+        return;
+    }
+
+    setFlightPredictStatus("Looking up your flight…");
+    if (fillButton) fillButton.disabled = true;
+
+    try {
+        const query = new URLSearchParams({ flight_number: flightNumber });
+        const res = await fetch(`${API_BASE}/api/flights/search?${query.toString()}`);
+        if (!res.ok) throw new Error("Flight search failed.");
+        const payload = await res.json();
+        const best = pickBestFlightResult(payload?.results || []);
+        if (!best) {
+            setFlightPredictStatus("No matching EWR departure found for that flight number.", "error");
+            return;
+        }
+
+        const securityTarget = deriveSecurityTargetFromFlight(best);
+        if (!securityTarget) {
+            setFlightPredictStatus("Found the flight, but departure time was unavailable.", "error");
+            return;
+        }
+
+        dateInput.value = toDateInputValue(securityTarget);
+        timeInput.value = toTimeInputValue(securityTarget);
+        terminalInput.value = terminalCodeFromValue(best.terminal);
+        gateInput.value = String(best.gate || "").trim();
+        setFlightPredictStatus(
+            `Loaded ${normalizeFlightNumber(best.flight_number || flightNumber)}. Filled recommended security time (${SECURITY_LEAD_MINUTES} min before departure).`,
+            "success",
+        );
+    } catch (err) {
+        console.error("Flight autofill failed:", err);
+        setFlightPredictStatus("Couldn’t load flight details right now. Try again in a moment.", "error");
+    } finally {
+        if (fillButton) fillButton.disabled = false;
+    }
 }
 
 function historicalKey(row) {
@@ -529,6 +644,14 @@ function predictWait(event) {
     const gateValue = document.getElementById("predict-gate").value.trim().toLowerCase();
 
     const targetDate = new Date(`${dateValue}T${timeValue}`);
+    if (!dateValue || !timeValue || Number.isNaN(targetDate.getTime())) {
+        if (result) {
+            result.innerHTML = `<div class="waits-predict-msg waits-predict-msg--error" role="status">
+                Enter a valid date and time for when you expect to reach security.
+            </div>`;
+        }
+        return;
+    }
     const targetDay = targetDate.getDay();
     const targetMinute = minutesOfDay(targetDate);
 
@@ -608,6 +731,11 @@ function predictWait(event) {
     const estLevel = waitDisplayLevel(estimate);
     const estTone = waitToneClass(estLevel);
     const estBadge = badgeClassForDisplayLevel(estLevel);
+    const checkpointBits = [];
+    checkpointBits.push(terminalValue ? `Terminal ${terminalValue}` : "Any terminal");
+    checkpointBits.push(laneValue ? `Lane: ${laneValue}` : "Any lane");
+    checkpointBits.push(gateValue ? `Gate: ${gateValue.toUpperCase()}` : "All gates");
+    const checkpointLabel = checkpointBits.join(" · ");
 
     result.innerHTML = `
         <div class="waits-predict-card ${escapeHTML(estTone)}" role="article">
@@ -618,7 +746,8 @@ function predictWait(event) {
                 </p>
                 <span class="badge ${escapeHTML(estBadge)}">${escapeHTML(estLevel)}</span>
             </div>
-            <p class="waits-predict-card__note">Based on historical patterns for this terminal and time.</p>
+            <p class="waits-predict-card__checkpoint"><strong>Security checkpoint:</strong> ${escapeHTML(checkpointLabel)}</p>
+            <p class="waits-predict-card__note">Based on historical patterns for this checkpoint and time.</p>
             <p class="waits-predict-card__meta">${escapeHTML(String(candidates.length))} past records · historical range ${escapeHTML(String(min))}–${escapeHTML(String(max))} min</p>
         </div>
     `;
@@ -713,5 +842,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const predictForm = document.getElementById("predict-form");
     if (predictForm) {
         predictForm.addEventListener("submit", predictWait);
+    }
+
+    const flightFillButton = document.getElementById("predict-flight-fill");
+    if (flightFillButton) {
+        flightFillButton.addEventListener("click", autofillPredictorFromFlight);
     }
 });

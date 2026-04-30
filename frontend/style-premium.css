@@ -5237,6 +5237,39 @@ details.pd-advanced[open] > summary.pd-advanced-summary::after{
   flex-direction: column;
   gap: 1rem;
 }
+.waits-predict-flight-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: end;
+}
+.waits-field--flight {
+  margin: 0;
+}
+.waits-predict-autofill {
+  min-height: 46px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.waits-predict-helper {
+  margin: -0.2rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(71, 85, 105, 0.92);
+}
+.waits-predict-flight-status {
+  margin: -0.25rem 0 0;
+  min-height: 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(71, 85, 105, 0.92);
+}
+.waits-predict-flight-status.is-error {
+  color: rgba(127, 29, 29, 0.92);
+}
+.waits-predict-flight-status.is-success {
+  color: rgba(6, 95, 70, 0.95);
+}
 .waits-predict-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5360,6 +5393,16 @@ details.pd-advanced[open] > summary.pd-advanced-summary::after{
   color: rgba(71, 85, 105, 0.94);
   max-width: 48ch;
 }
+.waits-predict-card__checkpoint {
+  margin: 0.6rem 0 0;
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.4;
+  color: rgba(51, 65, 85, 0.96);
+}
+.waits-predict-card__checkpoint strong {
+  font-weight: 800;
+}
 .waits-predict-card__meta {
   margin: 0.45rem 0 0;
   font-size: 0.78rem;
@@ -5382,6 +5425,10 @@ details.pd-advanced[open] > summary.pd-advanced-summary::after{
   color: rgba(127, 29, 29, 0.92);
 }
 @media (min-width: 720px) {
+  .waits-predict-flight-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.85rem;
+  }
   .waits-predict-fields {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

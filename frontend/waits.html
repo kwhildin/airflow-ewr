@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style-premium.css?v=p54" />
+    <link rel="stylesheet" href="style-premium.css?v=p58" />
 </head>
 <body>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -66,6 +66,24 @@
             </header>
 
             <form id="predict-form" class="waits-predict-form" novalidate>
+                <div class="waits-predict-flight-row">
+                    <label class="waits-field waits-field--flight">
+                        <span class="waits-field-label">Flight number</span>
+                        <input
+                            id="predict-flight-number"
+                            class="waits-input"
+                            type="text"
+                            placeholder="e.g. UA1234"
+                            autocomplete="off"
+                            inputmode="text"
+                        />
+                    </label>
+                    <button type="button" class="btn btn-ghost waits-predict-autofill" id="predict-flight-fill">
+                        Autofill from flight
+                    </button>
+                </div>
+                <p class="waits-predict-helper">Enter a flight to auto-fill terminal, gate, and a recommended security arrival time.</p>
+                <p id="predict-flight-status" class="waits-predict-flight-status" role="status" aria-live="polite"></p>
                 <div class="waits-predict-fields">
                     <label class="waits-field">
                         <span class="waits-field-label">Date</span>
@@ -130,6 +148,6 @@
         </div>
     </footer>
 
-    <script src="waits-sheet.js?v=214"></script>
+    <script src="waits-sheet.js?v=215"></script>
 </body>
 </html>
