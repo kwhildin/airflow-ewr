@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style-premium.css?v=p1" />
+    <link rel="stylesheet" href="style-premium.css?v=p53" />
 </head>
 <body>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -16,7 +16,7 @@
     <header class="topbar">
         <div class="container topbar-inner">
             <a class="brand" href="index.html" aria-label="AirFlow home">
-                <img class="brand-logo" src="assets/airflow-logo.png" alt="AirFlow" width="160" height="42" decoding="async" />
+                <img class="brand-logo" src="assets/airflow-logo-transparent.png" alt="AirFlow" decoding="async" />
             </a>
 
             <nav class="topnav" aria-label="Primary">
@@ -35,7 +35,7 @@
     </header>
 
     <main class="container page">
-        <a class="back-link" href="plan.html">← Back to results</a>
+        <a class="back-link" id="pd-back-link" href="plan.html">← Back to results</a>
 
         <section class="card card--padded plan-detail-head" aria-label="Selected flight">
             <div class="plan-detail-head-top">
@@ -52,9 +52,11 @@
             <div class="pd-steps-track" id="pd-steps-track">
                 <section class="pd-step" data-step="address" aria-label="Step 1: Address">
                     <section class="card card--padded plan-detail-card" id="pd-step-address" aria-label="Departing address">
-                        <p class="pd-step-kicker">Step 1 of 4</p>
-                        <h2 class="section-title">1. Enter starting address</h2>
-                        <p class="muted" style="margin-top:0">Submit once to save a traffic-aware drive estimate for your plan.</p>
+                        <header class="pd-step-progress-head">
+                            <p class="pd-step-progress-line">Step 1 of 4 — Starting point</p>
+                            <p class="pd-step-hint">Tell us where you’re leaving from.</p>
+                        </header>
+                        <p class="muted pd-step-tertiary">Submit once to save a traffic-aware drive estimate for your plan.</p>
 
                         <div class="pd-address-row">
                             <label class="field plan-detail-address">
@@ -71,86 +73,104 @@
 
                 <section class="pd-step" data-step="options" aria-label="Step 2: Advanced options">
                     <section class="card card--padded pd-advanced" id="pd-step-advanced" aria-label="Advanced options">
-                        <div class="page-head" style="margin:0 0 0.75rem">
-                            <p class="pd-step-kicker" style="margin:0 0 0.25rem">Step 2 of 4</p>
-                            <h2 class="section-title" style="margin:0">2. Advanced options</h2>
-                            <p class="muted" style="margin:0.25rem 0 0">Customize cushion and security preferences.</p>
-                        </div>
-                        <div class="plan-detail-options">
-                            <label class="field">
-                                <span class="field-label">Arrival cushion</span>
-                                <input class="field-input" id="pd-cushion" type="number" min="0" max="180" value="15" />
-                            </label>
-                            <label class="planner-toggle">
-                                <input type="checkbox" id="pd-precheck" />
-                                <span>TSA PreCheck</span>
-                            </label>
-                            <label class="planner-toggle">
-                                <input type="checkbox" id="pd-clear" />
-                                <span>CLEAR</span>
-                            </label>
-                            <label class="planner-toggle">
-                                <input type="checkbox" id="pd-bags" />
-                                <span>Checked bag</span>
-                            </label>
-                            <label class="planner-toggle">
-                                <input type="checkbox" id="pd-park" />
-                                <span>Parking</span>
-                            </label>
+                        <header class="pd-step-progress-head pd-step-progress-head--spaced">
+                            <p class="pd-step-progress-line">Step 2 of 4 — Airport preferences</p>
+                            <p class="pd-step-hint">Adjust security, bags, and parking assumptions.</p>
+                        </header>
+                        <div class="plan-detail-options pd-advanced-layout">
+                            <div class="pd-advanced-block pd-advanced-block--security">
+                                <p class="pd-advanced-block-kicker">Security line</p>
+                                <div class="pd-advanced-toggle-grid">
+                                    <label class="planner-toggle">
+                                        <input type="checkbox" id="pd-precheck" />
+                                        <span>TSA PreCheck</span>
+                                    </label>
+                                    <label class="planner-toggle">
+                                        <input type="checkbox" id="pd-clear" />
+                                        <span>CLEAR</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="pd-advanced-block pd-advanced-block--airport">
+                                <p class="pd-advanced-block-kicker">At the airport</p>
+                                <div class="pd-advanced-toggle-grid">
+                                    <label class="planner-toggle">
+                                        <input type="checkbox" id="pd-bags" />
+                                        <span>Checked bag</span>
+                                    </label>
+                                    <label class="planner-toggle">
+                                        <input type="checkbox" id="pd-park" />
+                                        <span>Parking</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <p class="muted is-hidden" id="pd-park-selected" style="margin:0.55rem 0 0">Parking lot: —</p>
-                        <p class="muted" id="pd-options-note" style="margin-top:0.65rem">Security time uses your selected flight terminal. (TSA PreCheck and CLEAR can’t both be selected.)</p>
+                        <p class="muted pd-options-note" id="pd-options-note">
+                            Security time uses your selected flight terminal. TSA PreCheck and CLEAR can’t both be selected.
+                        </p>
                     </section>
                 </section>
 
                 <section class="pd-step" data-step="leave" aria-label="Step 3: Leave-by choice">
                     <section class="pd-leave-focus" id="pd-step-leave" aria-label="Leave time">
                         <section class="card card--padded" aria-label="Leave by choice">
-                            <p class="pd-step-kicker">Step 3 of 4</p>
-                            <h2 class="section-title">3. Choose your leave-by time</h2>
-                            <p class="muted" id="pd-support" style="margin-top:0.25rem">Pick a buffer level. You can change this later.</p>
+                            <header class="pd-step-progress-head">
+                                <p class="pd-step-progress-line">Step 3 of 4 — Leave-by style</p>
+                                <p class="pd-step-hint">Choose how much buffer you want before boarding.</p>
+                            </header>
+                            <p class="muted pd-step-dynamic" id="pd-support"></p>
 
                             <div class="pd-leave-list" role="list" aria-label="Leave by options">
-                                <button type="button" class="pd-leave-option" data-choice="very_safe">
+                                <button type="button" class="pd-leave-option pd-leave-option--relaxed" data-choice="very_safe">
                                     <div class="pd-leave-left">
-                                        <span class="pd-leave-title">Very safe</span>
-                                        <span class="pd-leave-sub">Maximum buffer</span>
+                                        <span class="pd-leave-title">Relaxed</span>
+                                        <span class="pd-leave-sub">Maximum cushion</span>
+                                        <span class="pd-leave-gate" id="pd-leave-very-safe-gate">—</span>
                                     </div>
                                     <div class="pd-leave-right">
                                         <span class="pd-leave-time" id="pd-leave-very-safe">—</span>
                                     </div>
                                 </button>
-                                <button type="button" class="pd-leave-option" data-choice="safe">
+                                <button type="button" class="pd-leave-option pd-leave-option--safe" data-choice="safe">
                                     <div class="pd-leave-left">
                                         <span class="pd-leave-title">Safe</span>
                                         <span class="pd-leave-sub">Extra buffer</span>
+                                        <span class="pd-leave-gate" id="pd-leave-safe-gate">—</span>
                                     </div>
                                     <div class="pd-leave-right">
                                         <span class="pd-leave-time" id="pd-leave-safe">—</span>
                                     </div>
                                 </button>
-                                <button type="button" class="pd-leave-option is-selected" data-choice="rec">
+                                <button type="button" class="pd-leave-option pd-leave-option--balanced is-selected" data-choice="rec">
                                     <div class="pd-leave-left">
-                                        <span class="pd-leave-title">Recommended</span>
+                                        <div class="pd-leave-title-wrap">
+                                            <span class="pd-leave-title">Balanced</span>
+                                            <span class="pd-leave-recommended-pill">Recommended</span>
+                                        </div>
                                         <span class="pd-leave-sub">Best balance</span>
+                                        <span class="pd-leave-gate" id="pd-leave-rec-gate">—</span>
                                     </div>
                                     <div class="pd-leave-right">
                                         <span class="pd-leave-time" id="pd-leave-rec">—</span>
                                     </div>
                                 </button>
-                                <button type="button" class="pd-leave-option" data-choice="tight">
+                                <button type="button" class="pd-leave-option pd-leave-option--tight" data-choice="tight">
                                     <div class="pd-leave-left">
                                         <span class="pd-leave-title">Tight</span>
                                         <span class="pd-leave-sub">Minimal buffer</span>
+                                        <span class="pd-leave-gate" id="pd-leave-tight-gate">—</span>
                                     </div>
                                     <div class="pd-leave-right">
                                         <span class="pd-leave-time" id="pd-leave-tight">—</span>
                                     </div>
                                 </button>
-                                <button type="button" class="pd-leave-option" data-choice="very_tight">
+                                <button type="button" class="pd-leave-option pd-leave-option--last-call" data-choice="very_tight">
                                     <div class="pd-leave-left">
-                                        <span class="pd-leave-title">Very tight</span>
-                                        <span class="pd-leave-sub">Risky / last call</span>
+                                        <span class="pd-leave-title">Last call</span>
+                                        <span class="pd-leave-sub">Risky</span>
+                                        <span class="pd-leave-gate" id="pd-leave-very-tight-gate">—</span>
                                     </div>
                                     <div class="pd-leave-right">
                                         <span class="pd-leave-time" id="pd-leave-very-tight">—</span>
@@ -167,9 +187,8 @@
                     <section class="card card--padded pd-timeline-card is-hidden" id="pd-step-timeline" aria-label="Timing breakdown">
                         <div class="pd-timeline-head">
                             <div class="pd-timeline-head-left">
-                                <p class="pd-timeline-kicker">Step 4 of 4</p>
-                                <h2 class="section-title" style="margin:0">Your airport timeline</h2>
-                                <p class="pd-timeline-subtitle">A step-by-step plan from leaving home to boarding.</p>
+                                <p class="pd-step-progress-line">Step 4 of 4 — Your airport timeline</p>
+                                <p class="pd-step-hint">Review your step-by-step plan.</p>
                             </div>
                             <button class="btn btn-primary" id="pd-save-timeline" type="button">Save timeline</button>
                         </div>
@@ -180,7 +199,12 @@
                                     <div class="pd-timeline-row">
                                         <div class="pd-timeline-main">
                                             <p class="pd-timeline-title">Leave for airport</p>
-                                            <p class="pd-timeline-sub" id="pd-drive-source">Google Routes</p>
+                                            <div class="pd-timeline-address-line">
+                                                <p class="pd-timeline-sub pd-timeline-sub--address" id="pd-drive-source">—</p>
+                                                <button type="button" class="pd-timeline-edit" id="pd-edit-origin" aria-label="Edit starting address">
+                                                    Edit
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="pd-timeline-meta">
                                             <p class="pd-timeline-clock" id="pd-tl-leave">—</p>
@@ -196,7 +220,15 @@
                                     <div class="pd-timeline-row">
                                         <div class="pd-timeline-main">
                                             <p class="pd-timeline-title" id="pd-addons-title">Extra step</p>
-                                            <p class="pd-timeline-sub" id="pd-addons-sub">Parking / bag drop</p>
+                                            <div class="pd-timeline-address-line pd-timeline-security-line is-hidden" id="pd-addons-park-edit-row">
+                                                <div class="pd-timeline-security-left">
+                                                    <p class="pd-timeline-security-primary" id="pd-addons-parking-name">—</p>
+                                                </div>
+                                                <button type="button" class="pd-timeline-edit" id="pd-edit-parking" aria-label="Edit parking lot">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                            <p class="pd-timeline-sub pd-timeline-sub--addons" id="pd-addons-sub">Parking / bag drop</p>
                                         </div>
                                         <div class="pd-timeline-meta">
                                             <p class="pd-timeline-clock" id="pd-tl-addons">—</p>
@@ -212,7 +244,15 @@
                                     <div class="pd-timeline-row">
                                         <div class="pd-timeline-main">
                                             <p class="pd-timeline-title">Security</p>
-                                            <p class="pd-timeline-sub" id="pd-security-source">Terminal estimate</p>
+                                            <div class="pd-timeline-address-line pd-timeline-security-line">
+                                                <div class="pd-timeline-security-left">
+                                                    <p class="pd-timeline-security-primary" id="pd-security-gate">—</p>
+                                                    <p class="pd-timeline-security-secondary" id="pd-security-line">Regular security</p>
+                                                </div>
+                                                <button type="button" class="pd-timeline-edit" id="pd-edit-security" aria-label="Edit security options">
+                                                    Edit
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="pd-timeline-meta">
                                             <p class="pd-timeline-clock" id="pd-tl-security">—</p>
@@ -244,7 +284,17 @@
                                     <div class="pd-timeline-row">
                                         <div class="pd-timeline-main">
                                             <p class="pd-timeline-title">Arrive at gate</p>
-                                            <p class="pd-timeline-sub">Target arrival</p>
+                                            <div class="pd-timeline-address-line pd-timeline-security-line">
+                                                <div class="pd-timeline-security-left">
+                                                    <p class="pd-timeline-security-secondary" style="margin:0">Target arrival</p>
+                                                    <p class="pd-timeline-sub pd-timeline-buffer-hint" id="pd-gate-buffer-hint">
+                                                        —
+                                                    </p>
+                                                </div>
+                                                <button type="button" class="pd-timeline-edit" id="pd-edit-buffer" aria-label="Edit leave-by buffer (step 3)">
+                                                    Edit
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="pd-timeline-meta">
                                             <p class="pd-timeline-clock" id="pd-tl-gate">—</p>
@@ -269,16 +319,66 @@
                             </li>
                         </ol>
 
-                        <section class="pd-directions" aria-label="Airport directions">
-                            <div class="pd-directions-head">
-                                <div class="pd-directions-left">
-                                    <p class="pd-directions-kicker">Airport directions</p>
-                                    <p class="pd-directions-route" id="pd-dir-route">—</p>
-                                    <p class="pd-directions-sub">Use the airport map search to start navigation.</p>
-                                </div>
-                                <a class="btn btn-ghost" id="pd-open-airport-map" href="airport-map.html">Open directions in airport map</a>
+                        <section class="pd-next-steps" id="pd-next-steps" aria-label="Next steps">
+                            <h3 class="pd-next-steps-title">Next steps</h3>
+                            <div class="pd-next-steps-grid">
+                                <article class="pd-next-step-card pd-next-step-card--drive" aria-label="Drive to airport">
+                                    <div class="pd-next-step-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4 16h2l1-4h10l1 4h2" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                                            <path d="M6 16v2M18 16v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                            <path d="M7 12 8 8h8l1 4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                                            <circle cx="8.5" cy="18" r="1.25" fill="currentColor"/>
+                                            <circle cx="15.5" cy="18" r="1.25" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <h4 class="pd-next-step-heading">Drive to airport</h4>
+                                    <p class="pd-next-step-sub" id="pd-drive-dir-route">—</p>
+                                    <div class="pd-next-step-footer">
+                                        <a
+                                            class="btn btn-ghost pd-next-step-btn"
+                                            id="pd-open-drive-maps"
+                                            href="#"
+                                            aria-disabled="true"
+                                            tabindex="-1"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Open in Google Maps
+                                        </a>
+                                    </div>
+                                </article>
+
+                                <article class="pd-next-step-card pd-next-step-card--map" aria-label="Navigate inside EWR">
+                                    <div class="pd-next-step-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 21s6-4.5 6-10a6 6 0 1 0-12 0c0 5.5 6 10 6 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                                            <path d="M12 11v4M12 7h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <h4 class="pd-next-step-heading">Navigate inside EWR</h4>
+                                    <p class="pd-next-step-sub" id="pd-dir-route">—</p>
+                                    <div class="pd-next-step-footer">
+                                        <a class="btn btn-ghost pd-next-step-btn" id="pd-open-airport-map" href="airport-map.html">Open airport map</a>
+                                    </div>
+                                </article>
+
+                                <article class="pd-next-step-card pd-next-step-card--share" aria-label="Share with companions">
+                                    <div class="pd-next-step-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <h4 class="pd-next-step-heading">Share with companions</h4>
+                                    <p class="pd-next-step-sub pd-next-step-sub--static">Send this plan so everyone has the same timing.</p>
+                                    <div class="pd-next-step-footer">
+                                        <button type="button" class="btn btn-ghost pd-next-step-btn" id="pd-share-plan">Share plan</button>
+                                    </div>
+                                    <p class="pd-share-plan-status is-hidden" id="pd-share-plan-status" role="status" aria-live="polite"></p>
+                                </article>
                             </div>
-                            <p class="pd-directions-note">Automatic routing may not be available inside the embedded map. If needed, open the full map and search your gate.</p>
                         </section>
                     </section>
                 </section>
@@ -286,14 +386,35 @@
         </div>
     </main>
 
-    <div class="pd-modal is-hidden" id="pd-park-modal" role="dialog" aria-modal="true" aria-labelledby="pd-park-modal-title">
+    <footer class="site-footer">
+        <div class="container site-footer-inner">
+            <nav class="site-footer-links" aria-label="Footer">
+                <a href="plan.html">Plan a trip</a>
+                <a href="waits.html">Security waits</a>
+                <a href="airport-map.html">Terminal map</a>
+                <a href="saved.html">Saved plans</a>
+                <a href="about.html">About</a>
+                <a href="profile.html">Account</a>
+            </nav>
+            <p class="site-footer-note">
+                Leave-by and wait estimates are for Newark (EWR) planning only—not official airport, TSA, or airline guidance.
+            </p>
+            <p class="site-footer-legal">
+                <a href="about.html">Privacy &amp; terms</a>
+                <span aria-hidden="true">·</span>
+                <span>&copy; 2026 AirFlow</span>
+            </p>
+        </div>
+    </footer>
+
+    <div class="pd-modal pd-park-modal is-hidden" id="pd-park-modal" role="dialog" aria-modal="true" aria-labelledby="pd-park-modal-title">
         <div class="pd-modal-backdrop" data-action="close"></div>
         <div class="pd-modal-card" role="document">
             <div class="pd-modal-head">
                 <div>
                     <p class="pd-step-kicker" style="margin:0 0 0.25rem">Parking</p>
                     <h2 class="section-title" id="pd-park-modal-title" style="margin:0">Choose a parking lot</h2>
-                    <p class="muted" id="pd-park-modal-sub" style="margin:0.35rem 0 0">We’ll recommend the closest option to your terminal.</p>
+                    <p class="muted pd-park-modal-lede" id="pd-park-modal-sub">We’ll recommend the closest option to your terminal.</p>
                 </div>
                 <button type="button" class="pd-modal-close" aria-label="Close parking lot picker" data-action="close">×</button>
             </div>
@@ -303,6 +424,27 @@
             <div class="pd-modal-actions">
                 <button type="button" class="btn btn-ghost" data-action="cancel">Cancel</button>
                 <button type="button" class="btn btn-primary" id="pd-park-confirm" disabled>Confirm lot</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pd-modal pd-security-modal is-hidden" id="pd-security-modal" role="dialog" aria-modal="true" aria-labelledby="pd-security-modal-title">
+        <div class="pd-modal-backdrop" data-action="close"></div>
+        <div class="pd-modal-card" role="document">
+            <div class="pd-modal-head">
+                <div>
+                    <p class="pd-step-kicker" style="margin:0 0 0.25rem">Security</p>
+                    <h2 class="section-title" id="pd-security-modal-title" style="margin:0">Security line</h2>
+                    <p class="muted" style="margin:0.35rem 0 0">Choose how you'll pass security at EWR.</p>
+                </div>
+                <button type="button" class="pd-modal-close" aria-label="Close security options" data-action="close">×</button>
+            </div>
+            <div class="pd-modal-body">
+                <div class="pd-park-list" id="pd-security-list" role="list"></div>
+            </div>
+            <div class="pd-modal-actions">
+                <button type="button" class="btn btn-ghost" data-action="cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="pd-security-confirm">Confirm</button>
             </div>
         </div>
     </div>
@@ -322,7 +464,7 @@
 
     <script src="saved-flights.js"></script>
     <script src="app.js?v=maps2"></script>
-    <script src="plan-details.js?v=pd1"></script>
+    <script src="plan-details.js?v=pd28"></script>
 </body>
 </html>
 

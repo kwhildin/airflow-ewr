@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from google_routes import compute_drive_route
+from google_routes import ALLOWED_DESTINATION_KEYS, compute_drive_route
 from flightview_fids_scraper import fetch_ewr_departures
 from wait_time_model import predictor
 
@@ -177,6 +177,13 @@ class DriveEstimateRequest(BaseModel):
     origin_address: str | None = Field(default=None, description="Free-text address (fallback if no place id).")
     origin_place_id: str | None = Field(default=None, description="Google Places place_id from Autocomplete selection.")
     departure_time: str = Field(..., description="ISO-8601 datetime for when the user would leave home/drive start.")
+    destination_key: str | None = Field(
+        default=None,
+        description=(
+            "Routing endpoint at EWR: ewr (default), parking lot ids (p1_short_term_a, …), "
+            "or terminal_a | terminal_b | terminal_c for terminal curb drop-off."
+        ),
+    )
 
 
 @app.get("/api/config/google-maps")
@@ -196,11 +203,16 @@ def planner_drive_estimate(req: DriveEstimateRequest):
     if dep_dt < _now_utc():
         dep_assumptions = [*dep_assumptions, "departure_time_in_past_traffic_may_be_inaccurate"]
 
+    dk = (req.destination_key or "ewr").strip().lower()
+    if dk not in ALLOWED_DESTINATION_KEYS:
+        dk = "ewr"
+
     try:
         route = compute_drive_route(
             origin_address=req.origin_address,
             origin_place_id=req.origin_place_id,
             departure_time=dep_dt,
+            destination_key=dk,
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
@@ -217,7 +229,7 @@ def planner_drive_estimate(req: DriveEstimateRequest):
             *dep_assumptions,
             "routes_api_compute_routes",
             "routing_preference_traffic_aware_optimal",
-            "destination_fixed_ewr",
+            f"destination_{dk}",
         ],
     }
 

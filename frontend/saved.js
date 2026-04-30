@@ -46,6 +46,76 @@ function normalizeTerminalLetter(raw) {
     return t;
 }
 
+function parkingLotShortCode(id) {
+    const raw = String(id || "");
+    if (raw.startsWith("p1_")) return "P1";
+    if (raw.startsWith("p2_")) return "P2";
+    if (raw.startsWith("p3_")) return "P3";
+    if (raw.startsWith("p4_")) return "P4";
+    if (raw.startsWith("p6_")) return "P6";
+    return "P4";
+}
+
+/** Display-only route line for saved plan cards (matches plan search style). */
+function formatSavedRouteLine(f) {
+    const fnRaw = String(f.flight_number || "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "") || "—";
+    const fn = escapeHtml(fnRaw);
+    const ap = String(f.destination_airport || "").trim();
+    if (ap) return `${fn} → ${escapeHtml(ap.toUpperCase())}`;
+    const city = String(f.destination_city || "").trim();
+    if (city) return `${fn} → ${escapeHtml(city)}`;
+    return fn;
+}
+
+function formatDepartureParts(iso) {
+    if (!iso) return { date: "—", time: "—" };
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return { date: "—", time: "—" };
+    return {
+        date: d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }),
+        time: d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }),
+    };
+}
+
+function departureDayBucket(iso) {
+    const d = new Date(iso || "");
+    if (Number.isNaN(d.getTime())) return "upcoming";
+    const depDay = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+    const now = new Date();
+    const today0 = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow0 = today0 + 86400000;
+    if (depDay < today0) return "past";
+    if (depDay === today0) return "today";
+    if (depDay === tomorrow0) return "tomorrow";
+    return "upcoming";
+}
+
+/** Same URL rules as plan-details airport directions (display-only link). */
+function buildAirportDirectionsUrl(plan) {
+    const f = plan?.flight || {};
+    const termLetter = normalizeTerminalLetter(f.terminal);
+    const gateRaw = String(f.gate || "").trim().replace(/\s+/g, "");
+    const park = Boolean(plan?.park);
+    const lotId = String(plan?.parkingLotId || "").trim();
+    const fromParam =
+        park && lotId ? parkingLotShortCode(lotId) : termLetter ? `Security-${termLetter}` : "Security";
+    const toParam = gateRaw;
+    const terminalParam = termLetter || "";
+    if (!terminalParam || !toParam) return "";
+    return `airport-map.html?from=${encodeURIComponent(fromParam)}&to=${encodeURIComponent(toParam)}&terminal=${encodeURIComponent(terminalParam)}`;
+}
+
+const SAVED_PLAN_GROUPS = ["today", "tomorrow", "upcoming", "past"];
+const SAVED_PLAN_GROUP_LABEL = {
+    today: "Today",
+    tomorrow: "Tomorrow",
+    upcoming: "Upcoming",
+    past: "Earlier",
+};
+
 async function fetchTerminalWaitsOnce() {
     if (__savedPlansWaitsCache) return __savedPlansWaitsCache;
     try {
@@ -130,15 +200,17 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
     const showAddOns = addOnsMin > 0;
 
     return `
-        <div class="saved-plan-timeline" role="list" aria-label="Saved plan timeline">
+        <div class="saved-plan-timeline-outer">
+            <div class="saved-plan-timeline-scroll">
+            <div class="saved-plan-timeline" role="list" aria-label="Saved plan itinerary">
             <div class="saved-plan-step" role="listitem">
                 <div class="saved-plan-step-top">
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
+                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(leaveMs))}</p>
                     <p class="saved-plan-step-title">Leave</p>
                     <p class="saved-plan-step-sub">${escapeHtml(driveSub)}</p>
-                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(leaveMs))}</p>
                     <p class="saved-plan-step-meta"><strong>${escapeHtml(String(typeof plan?.driveMin === "number" ? plan.driveMin : "—"))}</strong><span>min</span></p>
                 </div>
             </div>
@@ -151,9 +223,9 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
+                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(addOnsStartMs))}</p>
                     <p class="saved-plan-step-title">${escapeHtml(addOnsTitle)}</p>
                     <p class="saved-plan-step-sub">${escapeHtml(addOnsSub)}</p>
-                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(addOnsStartMs))}</p>
                     <p class="saved-plan-step-meta"><strong>${escapeHtml(String(addOnsMin))}</strong><span>min</span></p>
                 </div>
             </div>`
@@ -165,9 +237,9 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
+                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(securityStartMs))}</p>
                     <p class="saved-plan-step-title">Security</p>
                     <p class="saved-plan-step-sub">${escapeHtml(secSub)}</p>
-                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(securityStartMs))}</p>
                     <p class="saved-plan-step-meta"><strong>${escapeHtml(String(securityMin))}</strong><span>min</span></p>
                 </div>
             </div>
@@ -177,9 +249,9 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
+                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(walkStartMs))}</p>
                     <p class="saved-plan-step-title">Walk</p>
                     <p class="saved-plan-step-sub">To gate</p>
-                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(walkStartMs))}</p>
                     <p class="saved-plan-step-meta"><strong>${escapeHtml(String(walkMin))}</strong><span>min</span></p>
                 </div>
             </div>
@@ -189,9 +261,9 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
-                    <p class="saved-plan-step-title">At gate</p>
-                    <p class="saved-plan-step-sub">&nbsp;</p>
                     <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(gateMs))}</p>
+                    <p class="saved-plan-step-title">At gate</p>
+                    <p class="saved-plan-step-sub">Arrive by</p>
                 </div>
             </div>
 
@@ -200,11 +272,13 @@ function buildSavedPlanTimelineHtml(plan, terminals) {
                     <span class="saved-plan-dot" aria-hidden="true"></span>
                 </div>
                 <div class="saved-plan-step-body">
+                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(boardingMs))}</p>
                     <p class="saved-plan-step-title">Boarding</p>
                     <p class="saved-plan-step-sub">Starts</p>
-                    <p class="saved-plan-step-time">${escapeHtml(formatTimeOnly(boardingMs))}</p>
-                    <p class="saved-plan-step-meta saved-plan-step-meta--muted"><span>starts</span></p>
+                    <p class="saved-plan-step-meta saved-plan-step-meta--muted"><span>boarding</span></p>
                 </div>
+            </div>
+            </div>
             </div>
         </div>
     `;
@@ -263,6 +337,7 @@ function buildPlanDetailsUrlFromPlan(plan) {
         gate: f.gate || "",
         status: f.status || f.flight_status || "",
         terminal_wait: f.terminal_wait == null ? "" : String(f.terminal_wait),
+        from: "saved",
     });
     return `plan-details.html?${params.toString()}`;
 }
@@ -287,6 +362,74 @@ function removeSavedPlan(id) {
     setSavedPlans(next);
 }
 
+function renderSavedPlanCardHtml(p) {
+    const f = p.flight || {};
+    const flightNo = f.flight_number || "—";
+    const airline = f.airline || "—";
+    const routeLine = formatSavedRouteLine(f);
+    const depParts = formatDepartureParts(f.scheduled_departure);
+    const planUrl = buildPlanDetailsUrlFromPlan(p);
+    const safePlanUrl = planUrl.replace(/"/g, "&quot;");
+    const id = encodeURIComponent(p.id || "");
+    const planPayload = encodeURIComponent(JSON.stringify(p));
+    const mapUrl = buildAirportDirectionsUrl(p);
+    const mapHref = mapUrl ? mapUrl.replace(/"/g, "&quot;") : "";
+    const mapBtn =
+        mapUrl && mapHref
+            ? `<a class="btn btn-ghost saved-plan-action-map" href="${mapHref}">Airport directions</a>`
+            : `<button type="button" class="btn btn-ghost saved-plan-action-map" disabled title="Gate and terminal required for directions">Airport directions</button>`;
+
+    const chips = [];
+    const termRaw = String(f.terminal || "").trim();
+    if (termRaw && termRaw !== "—") {
+        const tl = termRaw.toUpperCase().replace(/TERMINAL\s*/i, "").trim();
+        if (/^[ABC]$/.test(tl)) {
+            chips.push(`<span class="saved-chip saved-chip--term">Terminal ${tl}</span>`);
+        } else {
+            chips.push(`<span class="saved-chip saved-chip--term">${escapeHtml(termRaw)}</span>`);
+        }
+    }
+    const gateRaw = String(f.gate || "").trim();
+    if (gateRaw && gateRaw !== "—") {
+        chips.push(`<span class="saved-chip saved-chip--gate">Gate ${escapeHtml(gateRaw)}</span>`);
+    }
+    const chipsHtml = chips.length ? `<div class="saved-itin-chips">${chips.join("")}</div>` : "";
+
+    return `
+            <li class="flight-result-item-wrap">
+                <details class="saved-card saved-card--plan" data-saved-plan="${planPayload}">
+                    <summary class="saved-card-summary saved-card-summary--plan">
+                        <div class="saved-itin-col saved-itin-col--flight">
+                            <span class="saved-itin-flight-no">${escapeHtml(flightNo)}</span>
+                            <span class="saved-itin-airline">${escapeHtml(airline)}</span>
+                        </div>
+                        <div class="saved-itin-col saved-itin-col--route">
+                            <span class="saved-itin-route">${routeLine}</span>
+                            ${chipsHtml}
+                        </div>
+                        <div class="saved-itin-col saved-itin-col--when">
+                            <span class="saved-itin-dep-date">${escapeHtml(depParts.date)}</span>
+                            <span class="saved-itin-dep-time">${escapeHtml(depParts.time)}</span>
+                            <span class="saved-plan-pill">Saved plan</span>
+                        </div>
+                    </summary>
+                    <div class="saved-card-body saved-card-body--plan">
+                        <div data-saved-plan-timeline></div>
+                        <div class="saved-plan-actions saved-plan-actions--trips">
+                            <div class="saved-plan-actions-primary">
+                                <a class="btn btn-primary" href="${safePlanUrl}">Open timeline</a>
+                                ${mapBtn}
+                            </div>
+                            <div class="saved-plan-actions-end">
+                                <a class="btn btn-ghost" href="${safePlanUrl}">Edit plan</a>
+                                <button type="button" class="btn btn-saved-remove" data-plan-id="${id}" aria-label="Remove saved plan" title="Remove saved plan">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </li>`;
+}
+
 function renderSavedPlansList() {
     const container = document.getElementById("saved-plans-list");
     const countEl = document.getElementById("saved-plans-count");
@@ -297,52 +440,44 @@ function renderSavedPlansList() {
 
     if (!plans.length) {
         container.innerHTML =
-            `<li class="saved-empty" style="list-style:none;">
+            `<li class="saved-empty saved-empty--plans" style="list-style:none;">
+                <div class="saved-empty-visual" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 3.5V7M16 3.5V7M3.5 10.5h17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14h4M8 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
                 <div class="saved-empty-inner">
                     <p class="saved-empty-title">No saved plans yet</p>
-                    <p class="saved-empty-copy">Pick a flight on Plan My Trip, then Save this plan to keep it here.</p>
-                    <a class="btn btn-primary" href="plan.html">Plan My Trip</a>
+                    <p class="saved-empty-copy">Build a plan on Plan My Trip, then save it to see your timeline here.</p>
+                    <a class="btn btn-primary saved-empty-cta" href="plan.html">Plan My Trip</a>
                 </div>
              </li>`;
         return;
     }
 
-    container.innerHTML = plans
-        .map((p) => {
-            const f = p.flight || {};
-            const dest = f.destination_airport || f.destination_city || "—";
-            const flightNo = f.flight_number || "—";
-            const airline = f.airline || "—";
-            const departs = formatDateTime(f.scheduled_departure);
-            const planUrl = buildPlanDetailsUrlFromPlan(p);
-            const id = encodeURIComponent(p.id || "");
-            const planPayload = encodeURIComponent(JSON.stringify(p));
+    const sorted = [...plans].sort((a, b) => {
+        const ta = new Date(a?.flight?.scheduled_departure || 0).getTime();
+        const tb = new Date(b?.flight?.scheduled_departure || 0).getTime();
+        return ta - tb;
+    });
 
-            return `
-            <li class="flight-result-item-wrap">
-                <details class="saved-card" data-saved-plan="${planPayload}">
-                    <summary class="saved-card-summary">
-                        <div class="saved-card-left">
-                            <p class="saved-flight">${escapeHtml(flightNo)}</p>
-                            <p class="saved-dest">${escapeHtml(dest)}</p>
-                            <p class="saved-meta">${escapeHtml(airline)} · Departs ${escapeHtml(departs)}</p>
-                        </div>
-                        <div class="saved-card-right">
-                            <span class="saved-primary"><strong>Saved plan</strong></span>
-                            <span class="saved-status">Plan</span>
-                        </div>
-                    </summary>
-                    <div class="saved-card-body saved-card-body--plan">
-                        <div data-saved-plan-timeline></div>
-                        <div class="saved-plan-actions">
-                            <a class="btn btn-primary" href="${planUrl.replace(/"/g, "&quot;")}">Edit plan</a>
-                            <button type="button" class="btn btn-ghost" data-plan-id="${id}" aria-label="Remove saved plan" title="Remove saved plan">Remove plan</button>
-                        </div>
-                    </div>
-                </details>
-            </li>`;
-        })
-        .join("");
+    const buckets = { today: [], tomorrow: [], upcoming: [], past: [] };
+    for (const p of sorted) {
+        const bucket = departureDayBucket(p?.flight?.scheduled_departure);
+        buckets[bucket].push(p);
+    }
+
+    const parts = [];
+    for (const key of SAVED_PLAN_GROUPS) {
+        const group = buckets[key];
+        if (!group.length) continue;
+        parts.push(
+            `<li class="saved-group-heading" role="presentation"><span class="saved-group-heading-text">${SAVED_PLAN_GROUP_LABEL[key]}</span></li>`,
+        );
+        for (const p of group) {
+            parts.push(renderSavedPlanCardHtml(p));
+        }
+    }
+
+    container.innerHTML = parts.join("");
 
     container.querySelectorAll("[data-plan-id]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
@@ -369,11 +504,14 @@ function renderSavedList() {
 
     if (!flights.length) {
         container.innerHTML =
-            `<li class="saved-empty" style="list-style:none;">
+            `<li class="saved-empty saved-empty--flights" style="list-style:none;">
+                <div class="saved-empty-visual" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none"><path d="M12 2l8 4v6c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11V6l8-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m9 12 2 2 4-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
                 <div class="saved-empty-inner">
                     <p class="saved-empty-title">No saved flights yet</p>
-                    <p class="saved-empty-copy">Go to Plan My Trip, search for a flight, and tap Save to keep it here.</p>
-                    <a class="btn btn-primary" href="plan.html">Plan My Trip</a>
+                    <p class="saved-empty-copy">Search for a flight and save it to keep it here.</p>
+                    <a class="btn btn-primary saved-empty-cta" href="plan.html">Plan My Trip</a>
                 </div>
              </li>`;
         return;

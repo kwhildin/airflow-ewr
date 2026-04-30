@@ -191,6 +191,87 @@ function formatTimeToDeparture(iso) {
     return m ? `${h}h ${m}m` : `${h}h`;
 }
 
+/** Minutes until departure from ISO; null if past or invalid (display-only). */
+function minutesUntilDeparture(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    const ms = d.getTime() - Date.now();
+    if (Number.isNaN(d.getTime()) || ms <= 0) return null;
+    return Math.round(ms / 60000);
+}
+
+function flightTerminalBadgeLabel(f) {
+    const byMeta = (f._terminalLabel || normalizeTerminalLabel(f.terminal) || "").trim();
+    if (byMeta) return byMeta;
+    const t = String(f.terminal || "").trim();
+    if (!t || t === "—") return "";
+    return /^terminal\s/i.test(t) ? t : `Terminal ${t}`;
+}
+
+function flightGateBadgeLabel(f) {
+    const g = String(f.gate || "").trim();
+    if (!g || g === "—") return "";
+    return /^gate\s/i.test(g) ? g : `Gate ${g}`;
+}
+
+/** Route title for scanning, e.g. UA317 → DUB (display-only). */
+function formatFlightRouteLine(f) {
+    const fn = normalizeFlightNumber(f.flight_number) || "—";
+    const ap = String(f.destination_airport || "").trim();
+    if (ap) return `${escapeHtml(fn)} → ${escapeHtml(ap.toUpperCase())}`;
+    const city = String(f.destination_city || "").trim();
+    if (city) return `${escapeHtml(fn)} → ${escapeHtml(city)}`;
+    return escapeHtml(fn);
+}
+
+/** Terminal + gate chips only (tertiary scan row). */
+function renderFlightResultChipsHtml(f) {
+    const parts = [];
+    const term = flightTerminalBadgeLabel(f);
+    if (term) parts.push(`<span class="flight-result-chip flight-result-chip--terminal">${escapeHtml(term)}</span>`);
+    const gate = flightGateBadgeLabel(f);
+    if (gate) parts.push(`<span class="flight-result-chip flight-result-chip--gate">${escapeHtml(gate)}</span>`);
+    if (!parts.length) return "";
+    return `<div class="flight-result-card-chips">${parts.join("")}</div>`;
+}
+
+function displayFlightStatusLabel(f, isDepartedByClock) {
+    if (isDepartedByClock) return "Departed";
+    const raw = String(f.flight_status || "").trim();
+    const lower = raw.toLowerCase();
+    if (!raw || raw === "—" || lower === "scheduled") return "On time";
+    return raw;
+}
+
+function renderFlightStatusPillHtml(f, { isDepartedRow, isDepartedByClock, departingSoon }) {
+    if (isDepartedRow || isDepartedByClock) {
+        return `<span class="flight-result-status-pill flight-result-status-pill--departed">Departed</span>`;
+    }
+    if (departingSoon) {
+        return `<span class="flight-result-status-pill flight-result-status-pill--soon">Departing soon</span>`;
+    }
+    const label = displayFlightStatusLabel(f, false);
+    const lower = label.toLowerCase();
+    if (lower === "on time") {
+        return `<span class="flight-result-status-pill flight-result-status-pill--ontime">On time</span>`;
+    }
+    if (lower === "delayed" || lower === "cancelled" || lower === "canceled") {
+        return `<span class="flight-result-status-pill flight-result-status-pill--alert">${escapeHtml(label)}</span>`;
+    }
+    return `<span class="flight-result-status-pill flight-result-status-pill--info">${escapeHtml(label)}</span>`;
+}
+
+function renderFlightDepartsInHtml(depIsoRaw, isDepartedByClock, isDepartedRow) {
+    if (isDepartedRow || isDepartedByClock) {
+        return `<p class="flight-result-countdown flight-result-countdown--gone">Departed</p>`;
+    }
+    const ttd = formatTimeToDeparture(depIsoRaw);
+    if (ttd === "—") {
+        return `<p class="flight-result-countdown"><span class="flight-result-countdown-prefix">Departs in </span><span class="flight-result-countdown-value">—</span></p>`;
+    }
+    return `<p class="flight-result-countdown"><span class="flight-result-countdown-prefix">Departs in </span><span class="flight-result-countdown-value">${escapeHtml(ttd)}</span></p>`;
+}
+
 function minutesAgoFromIso(iso) {
     if (!iso) return null;
     const t = new Date(iso).getTime();
@@ -889,13 +970,19 @@ async function setupPlannerOriginInput(detailsEl, panel) {
 }
 
 function renderDepartedFlightRowHtml(f) {
-    const dest = f.destination_airport || f.destination_city || "—";
-    const flightNo = f.flight_number || "—";
     const airline = f.airline || "—";
     const departs = formatTimeOnly(f.scheduled_departure);
     const termShort = f.terminal || "—";
-    const ttd = "Departed";
     const statusText = "Departed";
+    const routeLine = formatFlightRouteLine(f);
+    const chipsHtml = renderFlightResultChipsHtml(f);
+    const statusPillHtml = renderFlightStatusPillHtml(f, { isDepartedRow: true, isDepartedByClock: true, departingSoon: false });
+    const depIsoRaw = f.scheduled_departure || "";
+    const departsInHtml = renderFlightDepartsInHtml(depIsoRaw, true, true);
+    const rightTerminalExtra =
+        flightTerminalBadgeLabel(f) || !String(termShort).trim() || termShort === "—"
+            ? ""
+            : `<p class="flight-result-right-terminal">${escapeHtml(termShort)}</p>`;
 
     const saved = typeof isFlightSaved === "function" && isFlightSaved(f);
     const heartLabel = saved ? "Remove from saved" : "Save flight";
@@ -904,40 +991,27 @@ function renderDepartedFlightRowHtml(f) {
     const key = encodeURIComponent(flightStorageKey(f));
 
     return `
-            <li class="flight-result-item-wrap">
-                <details class="flight-result-item" data-flight-key="${key}" data-departed="1">
+            <li class="flight-result-item-wrap flight-result-item-wrap--departed">
+                <details class="flight-result-item flight-result-item--departed" data-flight-key="${key}" data-departed="1">
                     <summary class="flight-result-summary">
-                        <div class="flight-result-preview" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Flight</span>
-                                <span class="flight-result-preview-value">${escapeHtml(flightNo)}</span>
+                        <div class="flight-result-preview flight-result-preview--card" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
+                            <div class="flight-result-card-zones">
+                                <div class="flight-result-zone flight-result-zone--identity">
+                                    <p class="flight-result-route">${routeLine}</p>
+                                    <p class="flight-result-airline">${escapeHtml(airline)}</p>
+                                    ${statusPillHtml}
+                                    ${chipsHtml}
+                                </div>
+                                <div class="flight-result-zone flight-result-zone--action">
+                                    <p class="flight-result-dep-time">${escapeHtml(departs)}</p>
+                                    ${departsInHtml}
+                                    ${rightTerminalExtra}
+                                    <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
+                                </div>
                             </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Airline</span>
-                                <span class="flight-result-preview-value">${escapeHtml(airline)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell flight-result-preview-cell--wide">
-                                <span class="flight-result-preview-label">Destination</span>
-                                <span class="flight-result-preview-value">${escapeHtml(dest)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Departs</span>
-                                <span class="flight-result-preview-value">${escapeHtml(departs)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Time to dep.</span>
-                                <span class="flight-result-preview-value">${escapeHtml(ttd)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Terminal</span>
-                                <span class="flight-result-preview-value">${escapeHtml(termShort)}</span>
-                            </div>
-                        </div>
-                        <div class="flight-result-preview-actions">
-                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
                         </div>
                     </summary>
-                    <div class="flight-result-body flight-result-body--departed">
+                    <div class="flight-result-body flight-result-body--departed flight-result-body--quicklook">
                         <p class="planner-departed-msg" role="status">Quick Look</p>
                         <section class="planner-secondary" aria-label="Quick look details">
                             <div class="planner-details-grid">
@@ -961,16 +1035,26 @@ function renderDepartedFlightRowHtml(f) {
 function renderFlightRowHtml(f) {
     if (isFlightDeparted(f)) return renderDepartedFlightRowHtml(f);
 
-    const dest = f.destination_airport || f.destination_city || "—";
-    const flightNo = f.flight_number || "—";
     const airline = f.airline || "—";
     const departs = formatTimeOnly(f.scheduled_departure);
     const termShort = f.terminal || "—";
     const depIsoRaw = f.scheduled_departure || "";
     const depMsForStatus = new Date(depIsoRaw).getTime();
     const isDepartedByClock = !Number.isNaN(depMsForStatus) && Date.now() > depMsForStatus;
-    const ttd = isDepartedByClock ? "Departed" : formatTimeToDeparture(depIsoRaw);
-    const statusText = isDepartedByClock ? "Departed" : f.flight_status || "—";
+    const minsUntil = minutesUntilDeparture(depIsoRaw);
+    const departingSoon = !isDepartedByClock && minsUntil != null && minsUntil < 30;
+    const routeLine = formatFlightRouteLine(f);
+    const chipsHtml = renderFlightResultChipsHtml(f);
+    const statusPillHtml = renderFlightStatusPillHtml(f, {
+        isDepartedRow: false,
+        isDepartedByClock,
+        departingSoon,
+    });
+    const departsInHtml = renderFlightDepartsInHtml(depIsoRaw, isDepartedByClock, false);
+    const rightTerminalExtra =
+        flightTerminalBadgeLabel(f) || !String(termShort).trim() || termShort === "—"
+            ? ""
+            : `<p class="flight-result-right-terminal">${escapeHtml(termShort)}</p>`;
     const driveDisplay = "—";
     const cushion = 15; // default buffer (customizable in UI)
     const secBase = typeof f._securityMinutes === "number" ? f._securityMinutes : 18;
@@ -997,37 +1081,24 @@ function renderFlightRowHtml(f) {
             <li class="flight-result-item-wrap">
                 <details class="flight-result-item" data-flight-key="${key}">
                     <summary class="flight-result-summary">
-                        <div class="flight-result-preview" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Flight</span>
-                                <span class="flight-result-preview-value">${escapeHtml(flightNo)}</span>
+                        <div class="flight-result-preview flight-result-preview--card" data-role="chooseFlight" data-href="${planUrl.replace(/"/g, "&quot;")}">
+                            <div class="flight-result-card-zones">
+                                <div class="flight-result-zone flight-result-zone--identity">
+                                    <p class="flight-result-route">${routeLine}</p>
+                                    <p class="flight-result-airline">${escapeHtml(airline)}</p>
+                                    ${statusPillHtml}
+                                    ${chipsHtml}
+                                </div>
+                                <div class="flight-result-zone flight-result-zone--action">
+                                    <p class="flight-result-dep-time">${escapeHtml(departs)}</p>
+                                    ${departsInHtml}
+                                    ${rightTerminalExtra}
+                                    <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
+                                </div>
                             </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Airline</span>
-                                <span class="flight-result-preview-value">${escapeHtml(airline)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell flight-result-preview-cell--wide">
-                                <span class="flight-result-preview-label">Destination</span>
-                                <span class="flight-result-preview-value">${escapeHtml(dest)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Departs</span>
-                                <span class="flight-result-preview-value">${escapeHtml(departs)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Time to dep.</span>
-                                <span class="flight-result-preview-value">${escapeHtml(ttd)}</span>
-                            </div>
-                            <div class="flight-result-preview-cell">
-                                <span class="flight-result-preview-label">Terminal</span>
-                                <span class="flight-result-preview-value">${escapeHtml(termShort)}</span>
-                            </div>
-                        </div>
-                        <div class="flight-result-preview-actions">
-                            <button type="button" class="btn btn-primary btn-choose-flight" data-role="chooseBtn" data-href="${planUrl.replace(/"/g, "&quot;")}">Choose flight</button>
                         </div>
                     </summary>
-                    <div class="flight-result-body">
+                    <div class="flight-result-body flight-result-body--quicklook">
                         <p class="planner-departed-msg" role="status">Quick Look</p>
                         <section class="planner-secondary" aria-label="Quick look details">
                             <div class="planner-details-grid">
@@ -1035,7 +1106,7 @@ function renderFlightRowHtml(f) {
                                 <p class="${initialBoarding ? "" : "is-hidden"}"><strong>Boarding time</strong><span>${escapeHtml(initialBoarding || "")}</span></p>
                                 <p><strong>Terminal</strong><span>${escapeHtml(f._terminalLabel || f.terminal || "—")}</span></p>
                                 <p><strong>Gate</strong><span>${escapeHtml(f.gate || "—")}</span></p>
-                                <p><strong>Status</strong><span>${escapeHtml(statusText)}</span></p>
+                                <p><strong>Status</strong><span>${escapeHtml(displayFlightStatusLabel(f, isDepartedByClock))}</span></p>
                             </div>
                         </section>
 
@@ -1327,11 +1398,20 @@ function pushRecentSearch(entry) {
     renderRecentSearches();
 }
 
+function isRenderableRecentSearchEntry(entry) {
+    if (!entry || typeof entry !== "object") return false;
+    if (entry.mode === "flight") return Boolean(String(entry.flight || "").trim());
+    if (entry.mode === "route") {
+        return Boolean(String(entry.airline || "").trim() && String(entry.destination || "").trim());
+    }
+    return false;
+}
+
 function renderRecentSearches() {
     const wrap = document.getElementById("recent-searches");
     const ul = document.getElementById("recent-searches-list");
     if (!wrap || !ul) return;
-    const list = getRecentSearches();
+    const list = getRecentSearches().filter(isRenderableRecentSearchEntry);
     if (!list.length) {
         wrap.classList.add("is-hidden");
         ul.innerHTML = "";
@@ -1345,7 +1425,7 @@ function renderRecentSearches() {
                     ? entry.flight || "Flight"
                     : `${entry.airline || "—"} → ${entry.destination || "—"}`;
             const data = encodeURIComponent(JSON.stringify(entry));
-            return `<button type="button" class="chip" data-recent="${data}">${escapeHtml(label)}</button>`;
+            return `<button type="button" class="chip chip--recent" data-recent="${data}">${escapeHtml(label)}</button>`;
         })
         .join("");
 
@@ -1358,7 +1438,7 @@ function renderRecentSearches() {
                         ? entry.flight || "Flight"
                         : `${entry.airline || "—"} → ${entry.destination || "—"}`;
                 const data = encodeURIComponent(JSON.stringify(entry));
-                return `<li class="recent-searches-item"><button type="button" class="recent-search-chip" data-recent="${data}">${escapeHtml(
+                return `<li class="recent-searches-item"><button type="button" class="recent-search-chip chip--recent" data-recent="${data}">${escapeHtml(
                     label,
                 )}</button></li>`;
             })

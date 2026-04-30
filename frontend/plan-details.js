@@ -82,9 +82,11 @@ function pdPickTerminalWait(terminals, termLetter) {
     return hit ? Number(hit.minutes) : null;
 }
 
+/** Minutes at gate before boarding for the "Recommended" tier; other tiers shift leave time around this anchor. */
+const PD_BASE_GATE_BUFFER_MIN = 15;
+
 function pdComputeLeaveTimes({ depMs, driveMin, securityMin, walkMin, bufferMin }) {
-    // Heuristic: boarding starts ~35m pre-departure. Use the user’s buffer to target being at the gate
-    // `bufferMin` minutes before boarding starts (default cushion is 15).
+    // Heuristic: boarding starts ~35m pre-departure. Target being at the gate `bufferMin` minutes before boarding.
     const boardingMs = depMs - 35 * 60000;
     const gateTargetMs = boardingMs - Math.max(0, Number(bufferMin || 0)) * 60000;
     const travelMs = (driveMin + securityMin + walkMin) * 60000;
@@ -97,6 +99,37 @@ function pdComputeLeaveTimes({ depMs, driveMin, securityMin, walkMin, bufferMin 
         recMs: recLeaveMs,
         riskyMs: recLeaveMs + 10 * 60000,
     };
+}
+
+function pdMinsAtGateBeforeBoarding(boardingMs, leaveMs, driveMin, addOnsMin, securityMin, walkMin) {
+    const gateArriveMs = leaveMs + (driveMin + addOnsMin + securityMin + walkMin) * 60000;
+    return (boardingMs - gateArriveMs) / 60000;
+}
+
+function pdFmtGateBeforeBoardingLine(mins) {
+    const m = Math.round(Number(mins));
+    if (!Number.isFinite(m)) return "\u2014";
+    if (m >= 2) return `~${m} min before boarding`;
+    if (m === 1) return "~1 min before boarding";
+    if (m === 0) return "At boarding time";
+    const abs = Math.abs(m);
+    if (abs === 1) return "~1 min after boarding";
+    return `~${abs} min after boarding`;
+}
+
+const PD_LEAVE_GATE_NOTE_IDS = [
+    ["very_safe", "pd-leave-very-safe-gate"],
+    ["safe", "pd-leave-safe-gate"],
+    ["rec", "pd-leave-rec-gate"],
+    ["tight", "pd-leave-tight-gate"],
+    ["very_tight", "pd-leave-very-tight-gate"],
+];
+
+function pdClearLeaveGateNotes() {
+    for (const [, id] of PD_LEAVE_GATE_NOTE_IDS) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "\u2014";
+    }
 }
 
 function pdComputeAddOnsMinutes({ bags, park, parking_lot_id }) {
@@ -137,6 +170,12 @@ function pdParkingLotName(id) {
     return map[String(id || "")] || "Parking lot";
 }
 
+function pdSecurityLineLabel(precheck, hasClear) {
+    if (precheck) return "TSA PreCheck";
+    if (hasClear) return "CLEAR";
+    return "Regular security";
+}
+
 function pdParkingLotShortCode(id) {
     const raw = String(id || "");
     if (raw.startsWith("p1_")) return "P1";
@@ -145,6 +184,66 @@ function pdParkingLotShortCode(id) {
     if (raw.startsWith("p4_")) return "P4";
     if (raw.startsWith("p6_")) return "P6";
     return "P4";
+}
+
+/** Routes API / Maps destination keys — must stay aligned with backend `DESTINATION_BY_KEY`. */
+function pdDriveDestinationKeyFromPlan(flight, park, parkingLotId) {
+    if (park && String(parkingLotId || "").trim()) {
+        return String(parkingLotId).trim();
+    }
+    const letter = pdNormalizeTerminalLetter(flight.terminal);
+    if (letter === "A") return "terminal_a";
+    if (letter === "B") return "terminal_b";
+    if (letter === "C") return "terminal_c";
+    return "ewr";
+}
+
+const PD_MAPS_DESTINATION_QUERY = {
+    ewr: "Newark Liberty International Airport (EWR), Newark, NJ",
+    p1_short_term_a: "P1 Short-Term Parking, Newark Liberty International Airport, Newark, NJ",
+    p2_short_term_b: "P2 Short-Term Parking, Newark Liberty International Airport, Newark, NJ",
+    p3_short_term_c: "P3 Short-Term Parking, Newark Liberty International Airport, Newark, NJ",
+    p4_daily: "P4 Daily Parking Garage, Newark Liberty International Airport, Newark, NJ",
+    p6_economy: "P6 Economy Parking, Newark Liberty International Airport, Newark, NJ",
+    terminal_a: "Newark Airport Terminal A, Newark, NJ",
+    terminal_b: "Newark Airport Terminal B, Newark, NJ",
+    terminal_c: "Newark Airport Terminal C, Newark, NJ",
+};
+
+function pdMapsDestinationQuery(destinationKey) {
+    const k = String(destinationKey || "ewr").trim().toLowerCase();
+    return PD_MAPS_DESTINATION_QUERY[k] || PD_MAPS_DESTINATION_QUERY.ewr;
+}
+
+function pdDriveDestinationShortLabel(destinationKey) {
+    const k = String(destinationKey || "ewr").trim().toLowerCase();
+    const labels = {
+        ewr: "Newark (EWR)",
+        p1_short_term_a: "P1 parking",
+        p2_short_term_b: "P2 parking",
+        p3_short_term_c: "P3 parking",
+        p4_daily: "P4 garage",
+        p6_economy: "P6 parking",
+        terminal_a: "Terminal A",
+        terminal_b: "Terminal B",
+        terminal_c: "Terminal C",
+    };
+    return labels[k] || labels.ewr;
+}
+
+function pdBuildGoogleMapsDriveUrl(originPlaceId, originAddress, destinationKey) {
+    const pid = String(originPlaceId || "").trim();
+    const addr = String(originAddress || "").trim();
+    if (!pid && !addr) return "";
+    const params = new URLSearchParams();
+    params.set("api", "1");
+    params.set("travelmode", "driving");
+    params.set("destination", pdMapsDestinationQuery(destinationKey));
+    // Prefer a readable origin address so Maps opens with that point-to-point route.
+    // Using origin_place_id alone often resolves poorly or falls back to “Your location”.
+    if (addr) params.set("origin", addr);
+    else if (pid) params.set("origin_place_id", pid);
+    return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
 async function pdEnsurePlacesAutocomplete(inputEl, onPlace) {
@@ -222,11 +321,12 @@ async function pdEnsurePlacesAutocomplete(inputEl, onPlace) {
     });
 }
 
-async function pdDriveEstimate({ placeId, address, departureIso }) {
+async function pdDriveEstimate({ placeId, address, departureIso, destinationKey }) {
     const payload = await postPlannerDriveEstimate({
         origin_address: placeId ? (address || null) : (address || null),
         origin_place_id: placeId || null,
         departure_time: departureIso,
+        destination_key: destinationKey || "ewr",
     });
     const m = Number(payload.drive_minutes);
     if (!Number.isFinite(m) || m < 1) throw new Error("Invalid drive minutes");
@@ -236,6 +336,17 @@ async function pdDriveEstimate({ placeId, address, departureIso }) {
 function pdInit() {
     const flight = pdGetFlightFromQuery();
     const id = pdPlanId(flight);
+
+    const backLinkEl = document.getElementById("pd-back-link");
+    if (backLinkEl instanceof HTMLAnchorElement) {
+        const fromCtx = String(pdGetQuery().get("from") || "")
+            .trim()
+            .toLowerCase();
+        if (fromCtx === "saved") {
+            backLinkEl.href = "saved.html";
+            backLinkEl.textContent = "← Back to saved plans";
+        }
+    }
 
     const flightNo = flight.flight_number || "—";
     const airline = flight.airline || "—";
@@ -266,10 +377,10 @@ function pdInit() {
     const dotEls = Array.from(document.querySelectorAll(".pd-dot"));
     const wizBackEl = document.getElementById("pd-wiz-back");
     const wizNextEl = document.getElementById("pd-wiz-next");
+    const wizardBarEl = document.querySelector("nav.pd-wizard");
     const stepTimelineEl = document.getElementById("pd-step-timeline");
     const saveTimelineEl = document.getElementById("pd-save-timeline");
 
-    const cushionEl = document.getElementById("pd-cushion");
     const precheckEl = document.getElementById("pd-precheck");
     const clearEl = document.getElementById("pd-clear");
     const bagsEl = document.getElementById("pd-bags");
@@ -294,6 +405,8 @@ function pdInit() {
     const tlBoardingEl = document.getElementById("pd-tl-boarding");
     const dirRouteEl = document.getElementById("pd-dir-route");
     const openAirportMapEl = document.getElementById("pd-open-airport-map");
+    const driveDirRouteEl = document.getElementById("pd-drive-dir-route");
+    const openDriveMapsEl = document.getElementById("pd-open-drive-maps");
 
     const addOnsWrapEl = document.getElementById("pd-addons-wrap");
     const addOnsTitleEl = document.getElementById("pd-addons-title");
@@ -304,6 +417,10 @@ function pdInit() {
     const parkModalEl = document.getElementById("pd-park-modal");
     const parkListEl = document.getElementById("pd-park-list");
     const parkConfirmEl = document.getElementById("pd-park-confirm");
+
+    const secModalEl = document.getElementById("pd-security-modal");
+    const secListEl = document.getElementById("pd-security-list");
+    const secConfirmEl = document.getElementById("pd-security-confirm");
 
     const depMs = new Date(flight.scheduled_departure).getTime();
     const validDep = !Number.isNaN(depMs);
@@ -319,21 +436,14 @@ function pdInit() {
         leaveChoice: "rec", // very_safe | safe | rec | tight | very_tight
         wizardStepIndex: 0, // 0..3
         timelineVisible: false,
+        /** Minutes at gate before boarding starts for the selected leave tier (may be negative). */
+        effectiveGateBufferMin: PD_BASE_GATE_BUFFER_MIN,
         parkingLotId: "",
+        /** When set, successful drive Submit returns to this wizard step instead of step 2. */
+        wizardReturnStepAfterAddress: null,
+        /** When set, Next from Advanced options (step 2) returns to this step — skips Leave-by. */
+        wizardReturnStepAfterOptionsEdit: null,
     };
-
-    const saved = pdFindPlan(id);
-    if (saved) {
-        state.origin = saved.origin || state.origin;
-        state.driveMin = typeof saved.driveMin === "number" ? saved.driveMin : state.driveMin;
-        if (originEl && state.origin.address) originEl.value = state.origin.address;
-        if (cushionEl && typeof saved.cushion === "number") cushionEl.value = String(saved.cushion);
-        if (precheckEl) precheckEl.checked = Boolean(saved.precheck);
-        if (clearEl) clearEl.checked = Boolean(saved.clear);
-        if (bagsEl) bagsEl.checked = Boolean(saved.bags);
-        if (parkEl) parkEl.checked = Boolean(saved.park);
-        state.parkingLotId = String(saved.parkingLotId || "");
-    }
 
     function hasAddress() {
         return Boolean((originEl?.value || "").trim() || state.origin.placeId);
@@ -352,11 +462,84 @@ function pdInit() {
         return isStepComplete(0) ? 3 : 0;
     }
 
+    let persistPlanTimer = null;
+
+    /**
+     * Full persisted plan state. Timeline clock labels are not stored; they are recomputed on load
+     * from these fields (address, drive, cushion/buffer, security line, bags/park/lot, leave-by tier, etc.).
+     */
+    function buildPlanRecord() {
+        const cushion = Math.max(
+            0,
+            Math.round(Number(state.effectiveGateBufferMin)),
+        );
+        return {
+            id,
+            savedAt: Date.now(),
+            flight,
+            origin: { ...state.origin, address: (originEl?.value || "").trim() },
+            driveMin: state.driveMin,
+            cushion: Number.isFinite(cushion) ? cushion : PD_BASE_GATE_BUFFER_MIN,
+            precheck: Boolean(precheckEl?.checked),
+            clear: Boolean(clearEl?.checked),
+            bags: Boolean(bagsEl?.checked),
+            park: Boolean(parkEl?.checked),
+            parkingLotId: state.parkingLotId,
+            leaveChoice: state.leaveChoice,
+            wizardStepIndex: state.wizardStepIndex,
+            timelineVisible: state.timelineVisible,
+        };
+    }
+
+    function schedulePersistPlan() {
+        if (persistPlanTimer != null) window.clearTimeout(persistPlanTimer);
+        persistPlanTimer = window.setTimeout(() => {
+            persistPlanTimer = null;
+            try {
+                pdUpsertPlan(buildPlanRecord());
+            } catch {
+                /* ignore quota / private mode */
+            }
+        }, 200);
+    }
+
+    const saved = pdFindPlan(id);
+    if (saved) {
+        state.origin = saved.origin || state.origin;
+        state.driveMin = typeof saved.driveMin === "number" ? saved.driveMin : state.driveMin;
+        if (originEl && state.origin.address) originEl.value = state.origin.address;
+        if (precheckEl) precheckEl.checked = Boolean(saved.precheck);
+        if (clearEl) clearEl.checked = Boolean(saved.clear);
+        if (bagsEl) bagsEl.checked = Boolean(saved.bags);
+        if (parkEl) parkEl.checked = Boolean(saved.park);
+        state.parkingLotId = String(saved.parkingLotId || "");
+        if (typeof saved.wizardStepIndex === "number" && Number.isFinite(saved.wizardStepIndex)) {
+            state.wizardStepIndex = Math.max(0, Math.min(3, Math.round(saved.wizardStepIndex)));
+        }
+        if (typeof saved.timelineVisible === "boolean") {
+            state.timelineVisible = saved.timelineVisible;
+        }
+        if (saved.leaveChoice) {
+            const allowed = new Set(["very_safe", "safe", "rec", "tight", "very_tight"]);
+            if (allowed.has(String(saved.leaveChoice))) state.leaveChoice = saved.leaveChoice;
+        }
+        state.wizardStepIndex = Math.min(state.wizardStepIndex, maxReachableStep());
+    }
+
     function setWizardStep(idx) {
         const next = Math.max(0, Math.min(3, Number(idx) || 0));
+        const prev = state.wizardStepIndex;
+        // Leaving step 1 without a fresh Submit cancels “return to timeline after edit”.
+        if (prev === 0 && next !== 0 && state.wizardReturnStepAfterAddress != null) {
+            state.wizardReturnStepAfterAddress = null;
+        }
+        if (prev === 1 && next !== 1 && state.wizardReturnStepAfterOptionsEdit != null) {
+            state.wizardReturnStepAfterOptionsEdit = null;
+        }
         const maxStep = maxReachableStep();
         state.wizardStepIndex = Math.min(next, maxStep);
         renderWizard();
+        schedulePersistPlan();
     }
 
     function createTimeline() {
@@ -366,15 +549,58 @@ function pdInit() {
         recomputeUi();
     }
 
+    function syncNextStepsChrome() {
+        const wrap = document.getElementById("pd-next-steps");
+        const shareBtn = document.getElementById("pd-share-plan");
+        const mapDisabled =
+            openAirportMapEl instanceof HTMLElement &&
+            openAirportMapEl.classList.contains("is-disabled");
+        const airportPrimary =
+            state.wizardStepIndex >= 3 && state.timelineVisible && !mapDisabled;
+        wrap?.classList.toggle("pd-next-steps--airport-primary", airportPrimary);
+
+        if (openAirportMapEl instanceof HTMLElement) {
+            openAirportMapEl.classList.toggle("btn-primary", airportPrimary);
+            openAirportMapEl.classList.toggle("btn-ghost", !airportPrimary);
+        }
+        if (openDriveMapsEl instanceof HTMLElement) {
+            openDriveMapsEl.classList.remove("btn-primary");
+            openDriveMapsEl.classList.add("btn-ghost");
+        }
+        if (shareBtn instanceof HTMLElement) {
+            shareBtn.classList.remove("btn-primary");
+            shareBtn.classList.add("btn-ghost");
+        }
+    }
+
+    function scrollWizardViewportToStep(stepIndex) {
+        if (!(stepsViewportEl instanceof HTMLElement) || !stepsTrackEl) return;
+        const panels = stepsTrackEl.querySelectorAll(":scope > .pd-step");
+        const panel = panels[stepIndex];
+        if (!(panel instanceof HTMLElement)) return;
+
+        const snap = () => {
+            // Align by geometry so we never land “between” steps (smooth scroll + width*index can drift).
+            const vr = stepsViewportEl.getBoundingClientRect();
+            const pr = panel.getBoundingClientRect();
+            const dx = pr.left - vr.left;
+            stepsViewportEl.scrollLeft += dx;
+        };
+
+        snap();
+        requestAnimationFrame(() => {
+            requestAnimationFrame(snap);
+        });
+    }
+
     function renderWizard() {
-        // Track swipe: prefer scroll-snap scrolling to avoid transform text blurriness.
-        if (stepsViewportEl instanceof HTMLElement) {
-            const w = stepsViewportEl.clientWidth || 0;
-            if (w > 0) {
-                stepsViewportEl.scrollTo({ left: state.wizardStepIndex * w, behavior: "smooth" });
-            }
+        // Step 4 timeline visibility affects layout — apply before snapping horizontal scroll.
+        if (stepTimelineEl) stepTimelineEl.classList.toggle("is-hidden", !state.timelineVisible);
+
+        // Horizontal steps: scroll viewport (no transform — keeps text crisp). Instant snap avoids halfway frames.
+        if (stepsViewportEl instanceof HTMLElement && stepsTrackEl) {
+            scrollWizardViewportToStep(state.wizardStepIndex);
         } else if (stepsTrackEl) {
-            // Fallback: old transform method.
             stepsTrackEl.style.transform = `translateX(-${state.wizardStepIndex * 100}%)`;
         }
 
@@ -397,7 +623,9 @@ function pdInit() {
 
         if (wizNextEl) {
             if (state.wizardStepIndex === 2) {
-                wizNextEl.textContent = "Generate timeline";
+                // Must clear is-hidden: it is set on step 3+, so returning here from “Edit buffer” would otherwise hide Next forever.
+                wizNextEl.classList.remove("is-hidden");
+                wizNextEl.textContent = state.timelineVisible ? "Next" : "Generate timeline";
                 wizNextEl.disabled = false;
             } else if (state.wizardStepIndex >= 3) {
                 // No bottom-right action on the last step.
@@ -409,8 +637,9 @@ function pdInit() {
             }
         }
 
-        // Step 4 inner content: show/hide timeline.
-        if (stepTimelineEl) stepTimelineEl.classList.toggle("is-hidden", !state.timelineVisible);
+        const timelineFinal = state.wizardStepIndex >= 3 && state.timelineVisible;
+        wizardBarEl?.classList.toggle("pd-wizard--timeline-final", timelineFinal);
+        syncNextStepsChrome();
     }
 
     function enforceSecurityOptionExclusivity(source) {
@@ -446,6 +675,83 @@ function pdInit() {
         parkModalEl?.setAttribute("aria-hidden", "true");
     }
 
+    function pdSecurityChoiceKeyFromDom() {
+        if (!precheckEl || !clearEl) return "regular";
+        if (precheckEl.checked) return "precheck";
+        if (clearEl.checked) return "clear";
+        return "regular";
+    }
+
+    function pdApplySecurityChoice(key) {
+        if (!precheckEl || !clearEl) return;
+        const k = String(key || "regular");
+        if (k === "precheck") {
+            precheckEl.checked = true;
+            clearEl.checked = false;
+            enforceSecurityOptionExclusivity("precheck");
+        } else if (k === "clear") {
+            clearEl.checked = true;
+            precheckEl.checked = false;
+            enforceSecurityOptionExclusivity("clear");
+        } else {
+            precheckEl.checked = false;
+            clearEl.checked = false;
+            enforceSecurityOptionExclusivity("none");
+        }
+    }
+
+    function closeSecurityModal() {
+        secModalEl?.classList.add("is-hidden");
+        secModalEl?.setAttribute("aria-hidden", "true");
+    }
+
+    function openSecurityModal() {
+        if (!secModalEl || !secListEl || !precheckEl || !clearEl) return;
+        let pending = pdSecurityChoiceKeyFromDom();
+        const opts = [
+            { id: "regular", name: "Regular" },
+            { id: "clear", name: "CLEAR" },
+            { id: "precheck", name: "TSA PreCheck" },
+        ];
+        secListEl.innerHTML = opts
+            .map((o) => {
+                const cls = ["pd-park-item", pending === o.id ? "is-selected" : ""].filter(Boolean).join(" ");
+                return `
+                    <button type="button" class="${cls}" data-security-line="${encodeURIComponent(o.id)}">
+                        <span class="pd-park-name">${o.name}</span>
+                    </button>`;
+            })
+            .join("");
+
+        secListEl.querySelectorAll("[data-security-line]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                pending = decodeURIComponent(btn.getAttribute("data-security-line") || "regular");
+                secListEl.querySelectorAll(".pd-park-item").forEach((x) => x.classList.remove("is-selected"));
+                btn.classList.add("is-selected");
+            });
+        });
+
+        secModalEl.classList.remove("is-hidden");
+        secModalEl.removeAttribute("aria-hidden");
+
+        secModalEl.querySelectorAll("[data-action='close']").forEach((el) => {
+            el.addEventListener("click", () => {
+                closeSecurityModal();
+            });
+        });
+        secModalEl.querySelectorAll("[data-action='cancel']").forEach((el) => {
+            el.addEventListener("click", () => {
+                closeSecurityModal();
+            });
+        });
+        secConfirmEl?.addEventListener("click", () => {
+            pdApplySecurityChoice(pending);
+            closeSecurityModal();
+            recomputeUi();
+            renderWizard();
+        });
+    }
+
     function openParkModal() {
         if (!parkModalEl || !parkListEl) return;
         const lots = buildParkingLots();
@@ -460,11 +766,17 @@ function pdInit() {
                 const badge = lot.recommended ? `<span class="pd-park-badge">Recommended</span>` : "";
                 return `
                     <button type="button" class="${cls}" data-lot-id="${encodeURIComponent(lot.id)}">
-                        <div class="pd-park-top">
-                            <span class="pd-park-name">${lot.name}</span>
-                            ${badge}
-                        </div>
-                        <div class="pd-park-sub">${lot.sub}</div>
+                        <span class="pd-park-item-main">
+                            <span class="pd-park-top">
+                                <span class="pd-park-name">${lot.name}</span>
+                                ${badge}
+                            </span>
+                            <span class="pd-park-sub">${lot.sub}</span>
+                        </span>
+                        <span class="pd-park-selected-mark" aria-hidden="true">
+                            <svg class="pd-park-check" viewBox="0 0 20 20" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.5 10.2 8.3 14l7.2-7.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span class="pd-park-selected-pill">Selected</span>
+                        </span>
                     </button>
                 `;
             })
@@ -506,14 +818,31 @@ function pdInit() {
             closeParkModal();
             recomputeUi();
             renderWizard();
+            if (state.driveMin != null && hasAddress()) void recalcDrive();
+
+            const returnAfterOptions = state.wizardReturnStepAfterOptionsEdit;
+            if (typeof returnAfterOptions === "number" && Number.isFinite(returnAfterOptions)) {
+                state.wizardReturnStepAfterOptionsEdit = null;
+                recomputeUi();
+                setWizardStep(returnAfterOptions);
+            }
         });
+    }
+
+    function resetDriveDirectionsBubble() {
+        if (driveDirRouteEl) driveDirRouteEl.textContent = "\u2014";
+        if (openDriveMapsEl instanceof HTMLAnchorElement) {
+            openDriveMapsEl.href = "#";
+            openDriveMapsEl.classList.add("is-disabled");
+            openDriveMapsEl.setAttribute("aria-disabled", "true");
+            openDriveMapsEl.tabIndex = -1;
+        }
     }
 
     function recomputeUi() {
         // Make exclusivity robust: enforce on every recompute (covers any event ordering).
         enforceSecurityOptionExclusivity("none");
 
-        const cushion = Number(cushionEl?.value || 15);
         const precheck = Boolean(precheckEl?.checked);
         const hasClear = Boolean(clearEl?.checked);
         const bags = Boolean(bagsEl?.checked);
@@ -532,7 +861,7 @@ function pdInit() {
 
         const walkMin = 12;
         const driveMin = state.driveMin != null ? state.driveMin : 42;
-        const gateBufferMin = Math.max(0, Number(cushion || 0));
+        const gateBufferMin = PD_BASE_GATE_BUFFER_MIN;
         const addOnsMin = pdComputeAddOnsMinutes({ bags, park, parking_lot_id: state.parkingLotId });
 
         const secBase = state.securityBaseMin != null ? state.securityBaseMin : 18;
@@ -541,7 +870,14 @@ function pdInit() {
         else if (hasClear) securityMin = Math.max(3, Math.round(secBase * 0.8));
 
         if (driveEl) driveEl.textContent = state.driveMin != null ? String(state.driveMin) : "—";
-        if (driveSourceEl) driveSourceEl.textContent = state.driveMin != null ? "Google Routes" : "";
+        if (driveSourceEl) {
+            const addrLine = (originEl?.value || "").trim() || String(state.origin.address || "").trim();
+            if (addrLine) {
+                driveSourceEl.textContent = addrLine;
+            } else {
+                driveSourceEl.textContent = state.driveMin != null ? "Starting address" : "\u2014";
+            }
+        }
         if (securityEl) securityEl.textContent = String(securityMin);
         if (addOnsMinEl) addOnsMinEl.textContent = String(addOnsMin);
         if (addOnsWrapEl) {
@@ -556,6 +892,27 @@ function pdInit() {
                     : (park ? "Allow time to park and get to terminal" : "Allow time for bag drop");
             }
         }
+
+        (function syncAddonsParkingTimeline() {
+            const row = document.getElementById("pd-addons-park-edit-row");
+            const nameEl = document.getElementById("pd-addons-parking-name");
+            if (!row || !nameEl) return;
+            const show = Boolean(park) && addOnsMin > 0;
+            row.classList.toggle("is-hidden", !show);
+            if (show) {
+                nameEl.textContent = state.parkingLotId
+                    ? pdParkingLotName(state.parkingLotId)
+                    : "Choose a parking lot";
+            }
+        })();
+
+        (function syncSecurityTimelineLabels() {
+            const gateEl = document.getElementById("pd-security-gate");
+            const lineEl = document.getElementById("pd-security-line");
+            const termLetter = pdNormalizeTerminalLetter(flight.terminal);
+            if (gateEl) gateEl.textContent = termLetter ? `Terminal ${termLetter} checkpoint` : "Checkpoint";
+            if (lineEl) lineEl.textContent = pdSecurityLineLabel(precheck, hasClear);
+        })();
 
         // Timeline layout: alternate left/right based on VISIBLE steps (add-ons can be hidden).
         // Presentation-only; does not affect any timing or calculations.
@@ -601,9 +958,14 @@ function pdInit() {
                 openAirportMapEl.classList.toggle("is-disabled", !canLink);
                 openAirportMapEl.setAttribute("aria-disabled", canLink ? "false" : "true");
                 openAirportMapEl.tabIndex = canLink ? 0 : -1;
+                const planQs = window.location.search.replace(/^\?/, "");
+                const planSuffix =
+                    planQs !== "" ? `&plan_return=${encodeURIComponent(planQs)}` : "";
                 openAirportMapEl.href = canLink
-                    ? `airport-map.html?from=${encodeURIComponent(fromParam)}&to=${encodeURIComponent(toParam)}&terminal=${encodeURIComponent(terminalParam)}`
-                    : "airport-map.html";
+                    ? `airport-map.html?from=${encodeURIComponent(fromParam)}&to=${encodeURIComponent(toParam)}&terminal=${encodeURIComponent(terminalParam)}${planSuffix}`
+                    : planQs !== ""
+                      ? `airport-map.html?plan_return=${encodeURIComponent(planQs)}`
+                      : "airport-map.html";
             }
         })();
 
@@ -615,7 +977,10 @@ function pdInit() {
 
 
         if (!validDep) {
+            resetDriveDirectionsBubble();
             renderWizard();
+            pdClearLeaveGateNotes();
+            state.effectiveGateBufferMin = PD_BASE_GATE_BUFFER_MIN;
             if (leaveVerySafeEl) leaveVerySafeEl.textContent = "—";
             if (leaveSafeEl) leaveSafeEl.textContent = "—";
             if (leaveRecEl) leaveRecEl.textContent = "—";
@@ -628,13 +993,17 @@ function pdInit() {
             if (tlWalkEl) tlWalkEl.textContent = "—";
             if (tlGateEl) tlGateEl.textContent = "—";
             if (tlBoardingEl) tlBoardingEl.textContent = "—";
+            schedulePersistPlan();
             return;
         }
 
         // If the user hasn't calculated drive time yet, don't compute the later steps.
         // Keep the UI focused on the current step (address + calculate).
         if (!hasGoogle) {
+            resetDriveDirectionsBubble();
             renderWizard();
+            pdClearLeaveGateNotes();
+            state.effectiveGateBufferMin = PD_BASE_GATE_BUFFER_MIN;
             if (leaveVerySafeEl) leaveVerySafeEl.textContent = "—";
             if (leaveSafeEl) leaveSafeEl.textContent = "—";
             if (leaveRecEl) leaveRecEl.textContent = "—";
@@ -647,6 +1016,7 @@ function pdInit() {
             if (tlWalkEl) tlWalkEl.textContent = "—";
             if (tlGateEl) tlGateEl.textContent = "—";
             if (tlBoardingEl) tlBoardingEl.textContent = "—";
+            schedulePersistPlan();
             return;
         }
 
@@ -668,6 +1038,30 @@ function pdInit() {
         if (leaveTightEl) leaveTightEl.textContent = pdFmtTime(options.tight);
         if (leaveVeryTightEl) leaveVeryTightEl.textContent = pdFmtTime(options.very_tight);
 
+        const boardingMsForGate = times.boardingMs;
+        for (const [key, id] of PD_LEAVE_GATE_NOTE_IDS) {
+            const lm = options[key];
+            const mins = pdMinsAtGateBeforeBoarding(boardingMsForGate, lm, driveMin, addOnsMin, securityMin, walkMin);
+            const gel = document.getElementById(id);
+            if (gel) gel.textContent = pdFmtGateBeforeBoardingLine(mins);
+        }
+        const selLeaveKey = options[state.leaveChoice] != null ? state.leaveChoice : "rec";
+        state.effectiveGateBufferMin = pdMinsAtGateBeforeBoarding(
+            boardingMsForGate,
+            options[selLeaveKey],
+            driveMin,
+            addOnsMin,
+            securityMin,
+            walkMin,
+        );
+        const gateHintEl = document.getElementById("pd-gate-buffer-hint");
+        if (gateHintEl) {
+            const hm = Math.round(state.effectiveGateBufferMin);
+            if (!Number.isFinite(hm)) gateHintEl.textContent = "\u2014";
+            else if (hm >= 0) gateHintEl.textContent = `${hm} min before boarding starts`;
+            else gateHintEl.textContent = `${Math.abs(hm)} min after boarding starts`;
+        }
+
         const leaveMs = options[state.leaveChoice] != null ? options[state.leaveChoice] : options.rec;
 
         // Timeline should reflect the *selected leave time* all the way through arrival.
@@ -677,21 +1071,42 @@ function pdInit() {
         const securityStartMs = addOnsStartMs + addOnsMin * 60000;
         const walkStartMs = securityStartMs + securityMin * 60000;
         const gateArriveMs = walkStartMs + walkMin * 60000;
-        const boardingMs = times.boardingMs;
 
         if (tlLeaveEl) tlLeaveEl.textContent = pdFmtTime(leaveMs);
         if (tlAddOnsEl) tlAddOnsEl.textContent = pdFmtTime(addOnsStartMs);
         if (tlSecurityEl) tlSecurityEl.textContent = pdFmtTime(securityStartMs);
         if (tlWalkEl) tlWalkEl.textContent = pdFmtTime(walkStartMs);
         if (tlGateEl) tlGateEl.textContent = pdFmtTime(gateArriveMs);
-        if (tlBoardingEl) tlBoardingEl.textContent = pdFmtTime(boardingMs);
+        if (tlBoardingEl) tlBoardingEl.textContent = pdFmtTime(boardingMsForGate);
         if (supportEl) {
             supportEl.textContent = hasGoogle
                 ? "Pick a buffer level. You can change this later."
                 : "Submit your address to continue.";
         }
 
+        (function syncDriveDirectionsBubble() {
+            const addrLine = (originEl?.value || "").trim() || String(state.origin.address || "").trim();
+            const label =
+                addrLine.length > 46
+                    ? `${addrLine.slice(0, 44)}\u2026`
+                    : addrLine || (state.origin.placeId ? "Your starting place" : "");
+            const destKey = pdDriveDestinationKeyFromPlan(flight, park, state.parkingLotId);
+            const destShort = pdDriveDestinationShortLabel(destKey);
+            if (driveDirRouteEl) {
+                driveDirRouteEl.textContent = label ? `${label} \u2192 ${destShort}` : "\u2014";
+            }
+            const url = pdBuildGoogleMapsDriveUrl(state.origin.placeId, addrLine, destKey);
+            const canOpen = Boolean(url);
+            if (openDriveMapsEl instanceof HTMLAnchorElement) {
+                openDriveMapsEl.href = canOpen ? url : "#";
+                openDriveMapsEl.classList.toggle("is-disabled", !canOpen);
+                openDriveMapsEl.setAttribute("aria-disabled", canOpen ? "false" : "true");
+                openDriveMapsEl.tabIndex = canOpen ? 0 : -1;
+            }
+        })();
+
         renderWizard();
+        schedulePersistPlan();
     }
 
     function applyLeaveChoice(next) {
@@ -733,10 +1148,12 @@ function pdInit() {
 
         setDriveStatus("Submitting…");
         try {
+            const destinationKey = pdDriveDestinationKeyFromPlan(flight, Boolean(parkEl?.checked), state.parkingLotId);
             const m = await pdDriveEstimate({
                 placeId: state.origin.placeId,
                 address: addr,
                 departureIso: new Date(Math.max(Date.now() + 120000, depMs - 35 * 60000)).toISOString(),
+                destinationKey,
             });
             state.driveMin = m;
             state.driveSource = "google";
@@ -748,6 +1165,28 @@ function pdInit() {
             state.driveSource = "placeholder";
             setDriveStatus("Could not submit. Try a more specific address.");
             return false;
+        }
+    }
+
+    let addressStepBusy = false;
+
+    /** Same behavior as Submit on step 1: calculate drive, then advance (or return to timeline when editing address). */
+    async function advanceFromAddressStep() {
+        if (addressStepBusy) return;
+        addressStepBusy = true;
+        try {
+            const returnTo = state.wizardReturnStepAfterAddress;
+            const ok = await recalcDrive();
+            recomputeUi();
+            if (!ok) return;
+            state.wizardReturnStepAfterAddress = null;
+            if (typeof returnTo === "number" && Number.isFinite(returnTo)) {
+                setWizardStep(returnTo);
+            } else {
+                setWizardStep(1);
+            }
+        } finally {
+            addressStepBusy = false;
         }
     }
 
@@ -767,11 +1206,32 @@ function pdInit() {
     }
 
     calcBtn?.addEventListener("click", () => {
-        void (async () => {
-            const ok = await recalcDrive();
-            recomputeUi();
-            if (ok) setWizardStep(1);
-        })();
+        void advanceFromAddressStep();
+    });
+
+    document.getElementById("pd-edit-origin")?.addEventListener("click", () => {
+        state.wizardReturnStepAfterAddress = state.wizardStepIndex;
+        setWizardStep(0);
+        window.setTimeout(() => {
+            originEl?.focus();
+            try {
+                originEl?.select?.();
+            } catch {
+                /* ignore */
+            }
+        }, 320);
+    });
+
+    document.getElementById("pd-edit-security")?.addEventListener("click", () => {
+        openSecurityModal();
+    });
+
+    document.getElementById("pd-edit-parking")?.addEventListener("click", () => {
+        openParkModal();
+    });
+
+    document.getElementById("pd-edit-buffer")?.addEventListener("click", () => {
+        setWizardStep(2);
     });
 
     wizBackEl?.addEventListener("click", () => {
@@ -780,8 +1240,28 @@ function pdInit() {
 
     wizNextEl?.addEventListener("click", () => {
         if (state.wizardStepIndex >= 3) return;
-        // Enforce gating: only allow moving beyond Step 1 after drive is calculated.
-        if (state.wizardStepIndex === 0 && !isStepComplete(0)) return;
+
+        if (state.wizardStepIndex === 0) {
+            if (!hasAddress() || !validDep) return;
+            if (isStepComplete(0)) {
+                setWizardStep(1);
+                return;
+            }
+            void advanceFromAddressStep();
+            return;
+        }
+
+        const returnAfterOptions = state.wizardReturnStepAfterOptionsEdit;
+        if (
+            state.wizardStepIndex === 1 &&
+            typeof returnAfterOptions === "number" &&
+            Number.isFinite(returnAfterOptions)
+        ) {
+            state.wizardReturnStepAfterOptionsEdit = null;
+            recomputeUi();
+            setWizardStep(returnAfterOptions);
+            return;
+        }
         if (state.wizardStepIndex === 2 && !state.timelineVisible) {
             createTimeline();
         }
@@ -795,6 +1275,23 @@ function pdInit() {
             setWizardStep(idx);
         });
     });
+
+    // Block horizontal wheel / trackpad gestures — wizard moves only via Next/Back/dots (programmatic scrollLeft).
+    if (stepsViewportEl instanceof HTMLElement) {
+        stepsViewportEl.addEventListener(
+            "wheel",
+            (e) => {
+                const ax = Math.abs(e.deltaX);
+                const ay = Math.abs(e.deltaY);
+                if (ax < 1) return;
+                // Horizontal-dominant trackpad swipe — avoid stealing vertical-only scrolls.
+                if (ax >= ay * 0.85) {
+                    e.preventDefault();
+                }
+            },
+            { passive: false },
+        );
+    }
 
     // Keep the current step aligned after resizes (scroll-based slider).
     window.addEventListener(
@@ -832,7 +1329,7 @@ function pdInit() {
         recomputeUi();
     });
 
-    [cushionEl, bagsEl, parkEl].forEach((el) => {
+    [bagsEl, parkEl].forEach((el) => {
         el?.addEventListener("input", () => recomputeUi());
         el?.addEventListener("change", () => recomputeUi());
     });
@@ -846,30 +1343,69 @@ function pdInit() {
             closeParkModal();
             recomputeUi();
             renderWizard();
+            if (state.driveMin != null && hasAddress()) void recalcDrive();
         }
     });
 
     function savePlanNow() {
-        const cushion = Number(cushionEl?.value || 15);
         enforceSecurityOptionExclusivity("none");
-        const plan = {
-            id,
-            savedAt: Date.now(),
-            flight,
-            origin: { ...state.origin, address: (originEl?.value || "").trim() },
-            driveMin: state.driveMin,
-            cushion,
-            precheck: Boolean(precheckEl?.checked),
-            clear: Boolean(clearEl?.checked),
-            bags: Boolean(bagsEl?.checked),
-            park: Boolean(parkEl?.checked),
-            parkingLotId: state.parkingLotId,
-        };
-        pdUpsertPlan(plan);
+        // Cancel pending debounced autosave so this click writes one immediate snapshot of current UI + state.
+        if (persistPlanTimer != null) {
+            window.clearTimeout(persistPlanTimer);
+            persistPlanTimer = null;
+        }
+        pdUpsertPlan(buildPlanRecord());
     }
 
     saveTimelineEl?.addEventListener("click", () => {
         savePlanNow();
+    });
+
+    const sharePlanBtn = document.getElementById("pd-share-plan");
+    const sharePlanStatusEl = document.getElementById("pd-share-plan-status");
+
+    function setSharePlanStatus(text, isError) {
+        if (!sharePlanStatusEl) return;
+        const show = Boolean(text);
+        sharePlanStatusEl.textContent = show ? text : "";
+        sharePlanStatusEl.classList.toggle("is-hidden", !show);
+        sharePlanStatusEl.classList.toggle("is-error", Boolean(isError));
+    }
+
+    sharePlanBtn?.addEventListener("click", () => {
+        void (async () => {
+            const url = window.location.href;
+            const title = `AirFlow — ${flightNo} to ${dest}`;
+            const text = `EWR trip plan: ${flightNo} · Departs ${depTime}. Open in AirFlow for maps and timing.`;
+
+            try {
+                if (typeof navigator.share === "function") {
+                    await navigator.share({ title, text, url });
+                    setSharePlanStatus("");
+                    return;
+                }
+            } catch (e) {
+                const err = e;
+                if (err && typeof err === "object" && err.name === "AbortError") return;
+                // Fall through to clipboard.
+            }
+
+            try {
+                if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(`${text}\n\n${url}`);
+                    setSharePlanStatus("Link copied — paste it into a message or email for your travel companions.");
+                    return;
+                }
+            } catch {
+                /* fall through */
+            }
+
+            try {
+                window.prompt("Copy this link to share your plan:", url);
+            } catch {
+                setSharePlanStatus("Could not share or copy. Copy the address from your browser’s bar.", true);
+            }
+        })();
     });
 
     void refreshWaits();

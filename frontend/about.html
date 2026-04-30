@@ -1,84 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-    <style>
-    .airport-partnerships {
-        margin-top: 46px;
-    }
-
-    .airport-partnerships-head {
-        max-width: 860px;
-        margin-bottom: 24px;
-    }
-
-    .airport-partnerships-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-    }
-
-    .airport-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        padding: 24px 26px;
-        border-radius: 28px;
-        background: rgba(255, 255, 255, 0.82);
-        border: 1px solid rgba(185, 195, 214, 0.55);
-        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
-    }
-
-    .airport-card--active {
-        border-color: rgba(31, 86, 179, 0.28);
-        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(238,245,255,0.95));
-    }
-
-    .airport-code {
-        margin: 0 0 8px;
-        font-size: 13px;
-        font-weight: 900;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #6d778b;
-    }
-
-    .airport-card h3 {
-        margin: 0;
-        font-size: 21px;
-        line-height: 1.25;
-        color: #111827;
-    }
-
-    .airport-status {
-        flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 9px 14px;
-        border-radius: 999px;
-        background: #eef2f7;
-        color: #6d778b;
-        font-size: 13px;
-        font-weight: 800;
-        white-space: nowrap;
-    }
-
-    .airport-status--active {
-        background: #eaf1ff;
-        color: #1f56b3;
-    }
-
-    @media (max-width: 900px) {
-        .airport-partnerships-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .airport-card {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-    }
-</style>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -86,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style-premium.css?v=p1" />
+    <link rel="stylesheet" href="style-premium.css?v=p52" />
 </head>
 <body>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -113,37 +34,54 @@
         </div>
     </header>
 
-    <main class="container page">
+    <main class="container page about-page">
         <section class="hero hero--about">
             <div class="hero-copy">
                 <p class="kicker">About AirFlow</p>
                 <h1 class="hero-title">Built for calmer travel days.</h1>
-                <p class="hero-lede">
-                    AirFlow helps travelers at EWR make smarter decisions with a simple view of security conditions
-                    and an estimate of when to leave.
+                <p class="hero-lede hero-lede--about">
+                    AirFlow helps travelers at EWR make smarter decisions with flight-aware leave times, security estimates, and terminal navigation.
                 </p>
             </div>
-            <div class="hero-art" aria-hidden="true"></div>
+            <div class="hero-art hero-art--about" aria-hidden="true"></div>
         </section>
 
-        <section class="features">
+        <section class="features about-features">
             <article class="feature card">
-                <h2 class="feature-title">Accurate</h2>
-                <p class="feature-copy">Combines live data with historical patterns (demo values for now).</p>
+                <div class="feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3v3M12 18v3M4.5 12H2M22 12h-2.5M6.4 6.4 4.6 4.6M19.4 19.4l-1.8-1.8M6.4 17.6l-1.8 1.8M19.4 4.6l-1.8 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+                    </svg>
+                </div>
+                <h2 class="feature-title">Flight-aware timing</h2>
+                <p class="feature-copy">Leave-by and timeline steps follow your flight time, terminal, and the options you choose—so the plan stays tied to what you’re actually flying.</p>
             </article>
             <article class="feature card">
-                <h2 class="feature-title">Private</h2>
-                <p class="feature-copy">You control what you enter. We don’t need to store personal travel details.</p>
+                <div class="feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 20V10l8-5 8 5v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M9 20v-6h6v6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2 class="feature-title">Security + walking estimates</h2>
+                <p class="feature-copy">Security wait context and walking time to the gate help you stress-test the plan before you leave for the airport.</p>
             </article>
             <article class="feature card">
-                <h2 class="feature-title">Built for EWR</h2>
-                <p class="feature-copy">Focused on Newark Liberty International Airport to keep the experience simple.</p>
+                <div class="feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21s7-4.35 7-10a7 7 0 1 0-14 0c0 5.65 7 10 7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                        <circle cx="12" cy="11" r="2.25" stroke="currentColor" stroke-width="1.6"/>
+                    </svg>
+                </div>
+                <h2 class="feature-title">Airport navigation support</h2>
+                <p class="feature-copy">Maps and terminal context make it easier to orient yourself once you’re on the ground at EWR.</p>
             </article>
         </section>
 
-        <section class="how-helps card card--padded">
-            <p class="kicker" style="margin-bottom:0.5rem">How AirFlow helps</p>
-            <h2 class="section-title section-title--lg" style="margin-bottom:0.85rem">A simple 3-step workflow</h2>
+        <section class="how-helps card card--padded about-how">
+            <p class="kicker about-how-kicker">How AirFlow helps</p>
+            <h2 class="section-title section-title--lg about-how-title">A simple 3-step workflow</h2>
             <div class="steps">
                 <div class="step">
                     <div class="step-num" aria-hidden="true">1</div>
@@ -156,95 +94,89 @@
                     <div class="step-num" aria-hidden="true">2</div>
                     <div class="step-body">
                         <p class="step-title">See timing estimates</p>
-                        <p class="step-copy">Security wait plus walk time to gate.</p>
+                        <p class="step-copy">Security wait context plus walk time toward your gate.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num" aria-hidden="true">3</div>
                     <div class="step-body">
                         <p class="step-title">Decide when to leave</p>
-                        <p class="step-copy">A “Leave by” recommendation using placeholders for now.</p>
+                        <p class="step-copy">A clear leave-by window that updates as you adjust address, buffers, and options. Some estimates are still being refined.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <section class="about-disclaimer card card--padded" aria-label="Disclaimer">
+            <p class="about-disclaimer-copy">
+                AirFlow is an independent planning tool and is not affiliated with Newark Airport, TSA, or any airline.
+            </p>
+        </section>
+
         <section class="airport-partnerships">
-    <div class="airport-partnerships-head">
-        <p class="mini-kicker">Expansion Roadmap</p>
-        <h2 class="section-title section-title--lg">Airport Partnerships</h2>
-        <p class="muted">
-            AirFlow is designed to expand beyond Newark Liberty International Airport by partnering with
-            major airports to provide travelers with clearer wait-time, map, and gate-planning information.
-        </p>
-    </div>
-
-    <div class="airport-partnerships-grid">
-        <article class="airport-card airport-card--active">
-            <div>
-                <p class="airport-code">EWR</p>
-                <h3>Newark Liberty International Airport</h3>
+            <div class="airport-partnerships-head">
+                <p class="mini-kicker">Expansion roadmap</p>
+                <h2 class="section-title section-title--lg">Airport Partnerships</h2>
+                <p class="muted airport-partnerships-lede">
+                    Today’s experience is built around Newark (EWR). Additional hubs are planned as partnerships and data access mature—starting with the busiest NYC and Atlanta airports travelers ask for next.
+                </p>
             </div>
-            <span class="airport-status airport-status--active">Live</span>
-        </article>
 
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">JFK</p>
-                <h3>John F. Kennedy International Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
+            <div class="airport-partnerships-grid airport-partnerships-grid--core">
+                <article class="airport-card airport-card--active">
+                    <div>
+                        <p class="airport-code">EWR</p>
+                        <h3>Newark Liberty International Airport</h3>
+                    </div>
+                    <span class="airport-status airport-status--active">Live</span>
+                </article>
 
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">LGA</p>
-                <h3>LaGuardia Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
+                <article class="airport-card">
+                    <div>
+                        <p class="airport-code">JFK</p>
+                        <h3>John F. Kennedy International Airport</h3>
+                    </div>
+                    <span class="airport-status">Coming soon</span>
+                </article>
 
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">ATL</p>
-                <h3>Hartsfield-Jackson Atlanta Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
+                <article class="airport-card">
+                    <div>
+                        <p class="airport-code">LGA</p>
+                        <h3>LaGuardia Airport</h3>
+                    </div>
+                    <span class="airport-status">Coming soon</span>
+                </article>
 
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">ORD</p>
-                <h3>Chicago O'Hare International Airport</h3>
+                <article class="airport-card">
+                    <div>
+                        <p class="airport-code">ATL</p>
+                        <h3>Hartsfield-Jackson Atlanta International Airport</h3>
+                    </div>
+                    <span class="airport-status">Coming soon</span>
+                </article>
             </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
-
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">LAX</p>
-                <h3>Los Angeles International Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
-
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">DFW</p>
-                <h3>Dallas Fort Worth International Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
-
-        <article class="airport-card">
-            <div>
-                <p class="airport-code">MIA</p>
-                <h3>Miami International Airport</h3>
-            </div>
-            <span class="airport-status">Coming Soon</span>
-        </article>
-    </div>
-</section>
+        </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer-inner">
+            <nav class="site-footer-links" aria-label="Footer">
+                <a href="plan.html">Plan a trip</a>
+                <a href="waits.html">Security waits</a>
+                <a href="airport-map.html">Terminal map</a>
+                <a href="saved.html">Saved plans</a>
+                <a href="about.html">About</a>
+                <a href="profile.html">Account</a>
+            </nav>
+            <p class="site-footer-note">
+                Leave-by and wait estimates are for Newark (EWR) planning only—not official airport, TSA, or airline guidance.
+            </p>
+            <p class="site-footer-legal">
+                <a href="about.html">Privacy &amp; terms</a>
+                <span aria-hidden="true">·</span>
+                <span>&copy; 2026 AirFlow</span>
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
-

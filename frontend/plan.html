@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style-premium.css?v=p1" />
+    <link rel="stylesheet" href="style-premium.css?v=p57" />
 </head>
 <body>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -34,75 +34,96 @@
         </div>
     </header>
 
-    <main class="container page">
-        <section class="page-head">
-            <h1 class="page-title">Plan My Trip</h1>
-            <p class="page-subtitle">Search for your flight to get estimated security wait times and total time to your gate.</p>
+    <main class="container page plan-page">
+        <header class="plan-landing-head page-head">
+            <p class="plan-landing-kicker">Plan My Trip</p>
+            <h1 class="page-title plan-landing-title">Know exactly when to leave.</h1>
+            <p class="page-subtitle plan-landing-sub">
+                Search your EWR flight and build a personalized timeline with drive time, security, parking, and walk time.
+            </p>
+        </header>
+
+        <div class="plan-landing-hero">
+            <section class="card card--padded plan-search-card" aria-label="Flight search">
+                <div class="tabs" role="tablist" aria-label="Search mode">
+                    <button type="button" class="tab is-active" id="mode-flight" role="tab" aria-selected="true" data-mode="flight">Search by flight</button>
+                    <button type="button" class="tab" id="mode-route" role="tab" aria-selected="false" data-mode="route">Search by route</button>
+                </div>
+
+                <form id="lookup-form-flight" class="plan-form" aria-labelledby="mode-flight">
+                    <div class="plan-input-row plan-input-row--single">
+                        <label class="field">
+                            <span class="field-label">Flight number</span>
+                            <input type="text" id="flight-input" name="flight" autocomplete="off" placeholder="e.g. UA1234" class="field-input field-input--plan-hero" />
+                            <ul id="flight-input-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                        </label>
+                    </div>
+                    <p class="plan-input-hint">Try UA1234 or search by route.</p>
+                    <div class="plan-primary-action">
+                        <button type="submit" class="btn btn-primary btn-wide plan-submit-primary">Find my flight</button>
+                    </div>
+                </form>
+
+                <form id="lookup-form-route" class="plan-form is-hidden" aria-labelledby="mode-route">
+                    <div class="plan-input-row">
+                        <label class="field">
+                            <span class="field-label">Airline</span>
+                            <input type="text" id="airline-input" class="field-input field-input--plan-hero" placeholder="e.g. United" autocomplete="off" />
+                            <ul id="airline-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                        </label>
+                        <label class="field">
+                            <span class="field-label">Destination</span>
+                            <input type="text" id="destination-input" class="field-input field-input--plan-hero" placeholder="e.g. SFO or San Francisco" autocomplete="off" />
+                            <ul id="destination-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
+                        </label>
+                    </div>
+                    <div class="plan-input-row plan-input-row--single plan-input-row--date">
+                        <label class="field">
+                            <span class="field-label">Departure date</span>
+                            <input type="date" id="departure-date-input" class="field-input field-input--plan-hero" />
+                        </label>
+                    </div>
+                    <div class="plan-primary-action">
+                        <button type="submit" class="btn btn-primary btn-wide plan-submit-primary">Find flights</button>
+                    </div>
+                    <div class="plan-secondary-actions">
+                        <button type="button" class="btn btn-ghost" id="refresh-live-btn">Refresh live data</button>
+                    </div>
+                </form>
+
+                <p id="trip-error" class="trip-error is-hidden" role="alert"></p>
+            </section>
+        </div>
+
+        <section class="plan-value-cards" aria-label="What this planner includes">
+            <article class="plan-value-card">
+                <h2 class="plan-value-title">Flight-aware</h2>
+                <p class="plan-value-copy">Uses your selected departure, terminal, and gate.</p>
+            </article>
+            <article class="plan-value-card">
+                <h2 class="plan-value-title">Traffic-aware</h2>
+                <p class="plan-value-copy">Adds drive time with Google Routes when an address is entered.</p>
+            </article>
+            <article class="plan-value-card">
+                <h2 class="plan-value-title">Airport-ready</h2>
+                <p class="plan-value-copy">Includes security, parking, and walk-to-gate timing.</p>
+            </article>
         </section>
 
-        <section class="card card--padded plan-search-card">
-            <div class="tabs" role="tablist" aria-label="Search mode">
-                <button type="button" class="tab is-active" id="mode-flight" role="tab" aria-selected="true" data-mode="flight">Search by flight</button>
-                <button type="button" class="tab" id="mode-route" role="tab" aria-selected="false" data-mode="route">Search by route</button>
-            </div>
-
-            <form id="lookup-form-flight" class="plan-form" aria-labelledby="mode-flight">
-                <div class="plan-input-row plan-input-row--single">
-                    <label class="field">
-                        <span class="field-label">Flight number</span>
-                        <input type="text" id="flight-input" name="flight" autocomplete="off" placeholder="e.g. UA1234" class="field-input" />
-                        <ul id="flight-input-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
-                    </label>
-                </div>
-                <div class="plan-primary-action">
-                    <button type="submit" class="btn btn-primary btn-wide">Search</button>
-                </div>
-            </form>
-
-            <form id="lookup-form-route" class="plan-form is-hidden" aria-labelledby="mode-route">
-                <div class="plan-input-row">
-                    <label class="field">
-                        <span class="field-label">Airline</span>
-                        <input type="text" id="airline-input" class="field-input" placeholder="e.g. United" autocomplete="off" />
-                        <ul id="airline-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
-                    </label>
-                    <label class="field">
-                        <span class="field-label">Destination</span>
-                        <input type="text" id="destination-input" class="field-input" placeholder="e.g. SFO or San Francisco" autocomplete="off" />
-                        <ul id="destination-suggestions" class="suggestions-list is-hidden" role="listbox"></ul>
-                    </label>
-                </div>
-                <div class="plan-input-row plan-input-row--single plan-input-row--date">
-                    <label class="field">
-                        <span class="field-label">Departure date</span>
-                        <input type="date" id="departure-date-input" class="field-input" />
-                    </label>
-                </div>
-                <div class="plan-primary-action">
-                    <button type="submit" class="btn btn-primary btn-wide">Search</button>
-                </div>
-                <div class="plan-secondary-actions">
-                    <button type="button" class="btn btn-ghost" id="refresh-live-btn">Refresh live data</button>
-                </div>
-            </form>
-
-            <p id="trip-error" class="trip-error is-hidden" role="alert"></p>
-        </section>
-
-        <section class="subgrid">
-            <div class="subgrid-col">
-                <h2 class="section-title">Recent searches</h2>
+        <section class="subgrid plan-secondary-grid">
+            <div class="plan-chips-col">
+                <p class="plan-chips-kicker">Recent searches</p>
                 <div id="recent-searches" class="chips is-hidden" aria-label="Recent searches">
-                    <div id="recent-searches-list" class="chips-row"></div>
+                    <div id="recent-searches-list" class="chips-row chips-row--recent"></div>
                 </div>
             </div>
-            <div class="subgrid-col">
-                <h2 class="section-title">Popular routes from EWR</h2>
-                <div class="chips">
-                    <a class="chip" href="plan.html#popular" data-popular="EWR → SFO">EWR → SFO</a>
-                    <a class="chip" href="plan.html#popular" data-popular="EWR → MCO">EWR → MCO</a>
-                    <a class="chip" href="plan.html#popular" data-popular="EWR → LAX">EWR → LAX</a>
-                    <a class="chip" href="plan.html#popular" data-popular="EWR → ATL">EWR → ATL</a>
+            <div class="plan-chips-col">
+                <p class="plan-chips-kicker">Popular EWR routes</p>
+                <div class="chips chips-row chips-row--popular">
+                    <a class="chip chip--popular" href="plan.html#popular" data-popular="EWR → SFO">EWR → SFO</a>
+                    <a class="chip chip--popular" href="plan.html#popular" data-popular="EWR → MCO">EWR → MCO</a>
+                    <a class="chip chip--popular" href="plan.html#popular" data-popular="EWR → LAX">EWR → LAX</a>
+                    <a class="chip chip--popular" href="plan.html#popular" data-popular="EWR → ATL">EWR → ATL</a>
                 </div>
             </div>
         </section>
@@ -122,8 +143,28 @@
         </section>
     </main>
 
+    <footer class="site-footer">
+        <div class="container site-footer-inner">
+            <nav class="site-footer-links" aria-label="Footer">
+                <a href="plan.html">Plan a trip</a>
+                <a href="waits.html">Security waits</a>
+                <a href="airport-map.html">Terminal map</a>
+                <a href="saved.html">Saved plans</a>
+                <a href="about.html">About</a>
+                <a href="profile.html">Account</a>
+            </nav>
+            <p class="site-footer-note">
+                Leave-by and wait estimates are for Newark (EWR) planning only—not official airport, TSA, or airline guidance.
+            </p>
+            <p class="site-footer-legal">
+                <a href="about.html">Privacy &amp; terms</a>
+                <span aria-hidden="true">·</span>
+                <span>&copy; 2026 AirFlow</span>
+            </p>
+        </div>
+    </footer>
+
     <script src="saved-flights.js"></script>
-    <script src="app.js?v=maps2"></script>
+    <script src="app.js?v=maps4"></script>
 </body>
 </html>
-
